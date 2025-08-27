@@ -11,17 +11,10 @@
  */
 
 /* eslint-disable no-console */
-import {log, Device, AppSwitcher, MASAPI, Browser} from '@maximo/maximo-js-api';
-import MaximoMapConfigurationLoader from "@maximo/map-component/build/ejs/framework/loaders/MaximoMapConfigurationLoader";
-import MapConfigurationLoader from "@maximo/map-component/build/ejs/framework/loaders/MapConfigurationLoader";
+import {log, Device, AppSwitcher} from '@maximo/maximo-js-api';
 import StorageManager from "@maximo/map-component/build/ejs/framework/storage/StorageManager";
 import LocalStorageManager from "@maximo/map-component/build/ejs/framework/storage/LocalStorageManager";
 import FileSystemStorageManager from "@maximo/map-component/build/ejs/framework/storage/FileSystemStorageManager";
-import MapPreLoadAPI from '@maximo/map-component/build/ejs/framework/loaders/MapPreLoadAPI';
-import SynonymUtil from "./SharedResources/Technician/utils/SynonymUtil";
-import {DisconnectedSchemaFactory as DisconnectedFactory} from '@maximo/maximo-js-api';
-import WOTimerUtil from "./SharedResources/Technician/utils/WOTimerUtil";
-import WOUtil from "./SharedResources/Technician/utils/WOUtil";
 import appResolver from './SharedResources/Technician/utils/AppResolver';
 
 const TAG = 'ApprovalsApp';

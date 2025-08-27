@@ -11,7 +11,6 @@
  */
 
 import {log, Device} from '@maximo/maximo-js-api';
-import WOUtil from './Technician/utils/WOUtil';
 import commonUtil from './Technician/utils/CommonUtil';
 
 const TAG = 'ChangeStatusController';

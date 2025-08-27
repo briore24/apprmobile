@@ -11,8 +11,6 @@
  */
 
 import { log, Device, ShellCommunicator } from '@maximo/maximo-js-api';
-import WOUtil from './Technician/utils/WOUtil';
-import SynonymUtil from './Technician/utils/SynonymUtil';
 import CommonUtil from './Technician/utils/CommonUtil';
 const TAG = 'PurchaseOrderDetailsController';
 

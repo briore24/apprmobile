@@ -33,7 +33,6 @@ class POScheduleDataController {
 
     if (dataSource.name === page.state.selectedDS && items.length > 0) {
       this.app.state.firstPO = items[0].ponum;
-      this.app.state.highlightStop = (this.owner.state.firstLogin) ? true : this.isAllTaskComplete(items[0].woactivity)
     }
     if(dataSource.name === page.state.selectedDS){ 
       page.state.dataSourceIntializationCount += 1;
@@ -83,24 +82,6 @@ class POScheduleDataController {
           disabled: valueDisable,
         }];
     }
-  }
-
-  /**
-   * Highlight the stop/chevron button on the basis of task status
-   */
-  allLinesComplete(items) {
-    let highlightStop = true;
-    // istanbul ignore else
-    if (items && items.length > 0) {
-      for (const item of items) {
-        // istanbul ignore else
-        if (item.status_maxvalue !== 'COMP') {
-          highlightStop = false;
-          break;
-        }
-      }
-    }
-    return highlightStop;
   }
 }
 

@@ -12,8 +12,8 @@
 
 import { log, Device, ShellCommunicator } from "@maximo/maximo-js-api";
 import "regenerator-runtime/runtime";
-import SynonymUtil from "./utils/SynonymUtil";
-import CommonUtil from "./utils/CommonUtil";
+import SynonymUtil from "./Technician/utils/SynonymUtil";
+import CommonUtil from "./Technician/utils/CommonUtil";
 const TAG = "POSchedulePageController";
 
 
@@ -39,14 +39,13 @@ class POSchedulePageController {
    */
   showPODetail(item) {
     // istanbul ignore else
-    if (item && (item.ponum || item.href) && !this.page.state.transactionProgress) {
+    if (item && item.ponum && !this.page.state.transactionProgress) {
       this.app.setCurrentPage({
-        name: "purchaseOrderDetails",
+        name: "poDetails",
         resetScroll: true,
         params: {
           ponum: item.ponum,
           siteid: item.siteid,
-          // href: item.href,
           firstLogin: this.page.state.firstLogin,
         },
       });

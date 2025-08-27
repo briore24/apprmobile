@@ -1,13 +1,13 @@
 <maximo-application navigator-tile-order="200" controller="AppController" theme="touch" product-name="Maximo" product-name-adaptive="Maximo" title="PO Approvals" id="apprmobile" mas-id="manage" version="9.1.0.0" default-log-level="error" user-menu-enabled="true" nav-initial-open-state="false" mas-enabled="false">
-  <properties>
-    <property name="maximo.mobile.statusforphysicalsignature"/>
-    <property name="maximo.mobile.postatusforesig"/>
-    <property name="maximo.mobile.completestatus"/>
-    <property name="mxe.mobile.navigation.windows"/>
-    <property name="mxe.mobile.navigation.ios"/>
-    <property name="mxe.mobile.navigation.android"/>
+  <properties id="n5nx9">
+    <property name="maximo.mobile.statusforphysicalsignature" id="ee54n"/>
+    <property name="maximo.mobile.postatusforesig" id="ey_kz"/>
+    <property name="maximo.mobile.completestatus" id="bdwkx"/>
+    <property name="mxe.mobile.navigation.windows" id="pvme4"/>
+    <property name="mxe.mobile.navigation.ios" id="m6d7d"/>
+    <property name="mxe.mobile.navigation.android" id="vw2eg"/>
   </properties>
-  <states>
+  <states id="k7r_g">
     <!-- System properties -->
     <state name="systemProp" type="object" id="vk56k">
       <state name="maximo.mobile.completestatus" value="COMP" type="string" id="dq8k8"/>
@@ -19,252 +19,240 @@
     <state name="skipSignature" value="false" type="boolean" id="xn6p6"/>
     <state name="poOSName" value="MXAPIPO" type="string" id="dxkem"/>
   </states>
-  <menu slot="navigation-items">
-    <menu-item label="PO Approvals" icon="maximo:work-orders-approve" page="approvals"/>
+  <menu slot="navigation-items" id="ax__k">
+    <menu-item label="PO Approvals" icon="maximo:work-orders-approve" page="approvals" id="xz3x6"/>
   </menu>
-<!-- Maximo Datasources -->
-  <maximo-datasource id="synonymdomainData" offline-immediate-download="true" lookup-data="true" object-structure="mxapisynonymdomain" saved-query="MOBILEDOMAIN" selection-mode="single">
-    <schema id="bn686">
-      <attribute name="value" searchable="true" id="xp2e9"/>
-      <attribute name="maxvalue" searchable="true" id="g58pj"/>
-      <attribute name="description" searchable="true" id="wwwzq"/>
-      <attribute name="domainid" searchable="true" id="m2ebr"/>
-      <attribute name="valueid" unique-id="true" searchable="true" id="aakrv"/>
-      <attribute name="siteid" searchable="true" id="r27qk"/>
-      <attribute name="orgid" searchable="true" id="wz5gx"/>
-      <attribute name="defaults" id="avz96"/>
-    </schema>
-    <maximo-datasource-override id="assignmentdomainData" where="domainid=&quot;ASSTAT&quot;" pre-load="true" saved-query=""/>
-  </maximo-datasource>
-    <!-- Purchase Order details datasource -->
+  <!-- Purchase Order details datasource -->
   <maximo-datasource id="poDetailds" object-structure="mxapipo">
     <schema id="yb7bq">
-      <attribute name="ponum" unique-id="true"/>
-      <attribute name="poid"/>
-      <attribute name="description"/>
-      <attribute name="description_longdescription"/>
-      <attribute name="status"/>
-      <attribute name="siteid"/>
-      <attribute name="revisionnum"/>
-	    <attribute name="revcomments"/>
-      <attribute name="revcomments_longdescription"/>
+      <attribute name="ponum" unique-id="true" id="eanqy"/>
+      <attribute name="poid" id="kaen8"/>
+      <attribute name="description" id="g7dkr"/>
+      <attribute name="description_longdescription" id="zqmgx"/>
+      <attribute name="status" id="xvr67"/>
+      <attribute name="siteid" id="bkkvg"/>
+      <attribute name="revisionnum" id="byb5g"/>
+      <attribute name="revcomments" id="pbggx"/>
+      <attribute name="revcomments_longdescription" id="xb29e"/>
       <!-- details -->
-	    <attribute name="potype"/>
-      <attribute name="buyercompany"/>
-      <attribute name="buyer"/>
-      <attribute name="priority"/>
-      <attribute name="receipts"/>
-      <attribute name="contractrefnum"/>
-      <attribute name="contracttype"/>
-      <attribute name="contractrefrev"/>
-      <attribute name="contreleaseseq"/>
+      <attribute name="potype" id="j56w7"/>
+      <attribute name="buyercompany" id="yyb29"/>
+      <attribute name="buyer" id="zk_65"/>
+      <attribute name="priority" id="eg7ja"/>
+      <attribute name="receipts" id="r5b57"/>
+      <attribute name="contractrefnum" id="p8eg7"/>
+      <attribute name="contracttype" id="qy4ma"/>
+      <attribute name="contractrefrev" id="kyy_6"/>
+      <attribute name="contreleaseseq" id="va7wn"/>
       <!-- dates -->
-      <attribute name="statusdate"/>
-      <attribute name="orderdate"/>
-      <attribute name="requireddate"/>
-      <attribute name="followupdate"/>
-      <attribute name="vendeliverydate"/>
+      <attribute name="statusdate" id="kbwpm"/>
+      <attribute name="orderdate" id="ex2pj"/>
+      <attribute name="requireddate" id="wwpeg"/>
+      <attribute name="followupdate" id="edew5"/>
+      <attribute name="vendeliverydate" id="pkn8n"/>
       <!-- costs -->
-      <attribute name="pretaxtotal"/>
-      <attribute name="totaltax1"/>
-      <attribute name="totalcost"/>
-      <attribute name="currencycode"/>
-      <attribute name="totalbasecost"/>
+      <attribute name="pretaxtotal" id="wy82_"/>
+      <attribute name="totaltax1" id="k85a3"/>
+      <attribute name="totalcost" id="b2wxp"/>
+      <attribute name="currencycode" id="r79y5"/>
+      <attribute name="totalbasecost" id="jzx55"/>
       <!-- vendor -->
-      <attribute name="vendor{name,address1,address2,address3,address4,phone}"/>
-      <attribute name="contact"/>
-      <attribute name="customernum"/>
-      <attribute name="internalchange"/>
-      <attribute name="internal"/>
-      <attribute name="storeloc"/>
-      <attribute name="storelocsiteid"/>
-      <attribute name="freightterms"/>
-      <attribute name="paymentterms"/>
-      <attribute name="shipvia"/>
-      <attribute name="fob"/>
-      <attribute name="inclusive1"/>
-      <attribute name="payonreceipt"/>
-      <attribute name="inspectionrequired"/>
+      <attribute name="vendor{name,address1,address2,address3,address4,phone}" id="e8xb_"/>
+      <attribute name="contact" id="y2azw"/>
+      <attribute name="customernum" id="md8gn"/>
+      <attribute name="internalchange" id="a9ed5"/>
+      <attribute name="internal" id="gjvyz"/>
+      <attribute name="storeloc" id="j79j_"/>
+      <attribute name="storelocsiteid" id="wpyn7"/>
+      <attribute name="freightterms" id="e93v6"/>
+      <attribute name="paymentterms" id="nrak4"/>
+      <attribute name="shipvia" id="bz_rw"/>
+      <attribute name="fob" id="gzaj6"/>
+      <attribute name="inclusive1" id="d8_g3"/>
+      <attribute name="payonreceipt" id="j4rd9"/>
+      <attribute name="inspectionrequired" id="k2dq7"/>
       <!-- ship to -->
-      <attribute name="shipto{description,address1,address2,address3,address4}"/>
-      <attribute name="shiptoattn">
-        <attribute name="displayname"/>
+      <attribute name="shipto{description,address1,address2,address3,address4}" id="kj3yn"/>
+      <attribute name="shiptoattn" id="nd7e7">
+        <attribute name="displayname" id="rq7b8"/>
       </attribute>
       <!-- bill to -->
-      <attribute name="billto{description,address1,address2,address3,address4}"/>
-      <attribute name="billtoattn{displayname}"/>
+      <attribute name="billto{description,address1,address2,address3,address4}" id="dpz8a"/>
+      <attribute name="billtoattn{displayname}" id="qarnj"/>
     </schema>
     <!-- status data (child of poDetailds) -->
     <maximo-datasource id="poStatusds" relationship="postatus" depends-on="poDetailds">
-      <schema>
-        <attribute name="postatusid" unique-id="true"/>
-        <attribute name="ponum"/>
-        <attribute name="siteid"/>
-        <attribute name="orgid"/>
-        <attribute name="revisionnum"/>
-        <attribute name="status"/>
-        <attribute name="changeby"/>
-        <attribute name="changedate"/>
-        <attribute name="memo"/>
+      <schema id="vpkz6">
+        <attribute name="postatusid" unique-id="true" id="rjq62"/>
+        <attribute name="ponum" id="egd75"/>
+        <attribute name="siteid" id="xgar5"/>
+        <attribute name="orgid" id="ev5j2"/>
+        <attribute name="revisionnum" id="gmm9_"/>
+        <attribute name="status" id="agjk3"/>
+        <attribute name="changeby" id="mr96j"/>
+        <attribute name="changedate" id="drka9"/>
+        <attribute name="memo" id="w755a"/>
       </schema>
     </maximo-datasource>
     <!-- PO line data (child of poDetailds) -->
-	  <maximo-datasource id="poLineds" relationship="poline" depends-on="poDetailds">
-      <schema>
-        <attribute name="polinenum" unique-id="true"/>
-        <attribute name="polineid"/>
-        <attribute name="supervisor"/>
-        <attribute name="requestedby"/>
-        <attribute name="linetype"/>
-        <attribute name="itemnum"/>
-        <attribute name="description"/>
-        <attribute name="description_longdescription"/>
-        <attribute name="conditioncode"/>
-        <attribute name="remark"/>
-        <attribute name="remark_longdescription"/>
-        <attribute name="classstructureid">
-          <attribute name="hierarchypath"/>
-          <attribute name="description_class"/>
+    <maximo-datasource id="poLineds" relationship="poline" depends-on="poDetailds">
+      <schema id="wg22q">
+        <attribute name="polinenum" unique-id="true" id="ezeaz"/>
+        <attribute name="polineid" id="b5pbw"/>
+        <attribute name="supervisor" id="drgp2"/>
+        <attribute name="requestedby" id="j8p2y"/>
+        <attribute name="linetype" id="jn5aw"/>
+        <attribute name="itemnum" id="y9vkz"/>
+        <attribute name="description" id="yrx47"/>
+        <attribute name="description_longdescription" id="a4aq5"/>
+        <attribute name="conditioncode" id="jzmxq"/>
+        <attribute name="remark" id="v54qw"/>
+        <attribute name="remark_longdescription" id="mzy_r"/>
+        <attribute name="classstructureid" id="vz6bb">
+          <attribute name="hierarchypath" id="m3e_8"/>
+          <attribute name="description_class" id="kw_ge"/>
         </attribute>
-        <attribute name="manufacturer"/>
-        <attribute name="modelnum"/>
-        <attribute name="category"/>
-        <attribute name="catalogcode"/>
-        <attribute name="commoditygroup"/>
-        <attribute name="commoditycode"/>
-        <attribute name="receiptreqd"/>
-        <attribute name="inspectionrequired"/>
-        <attribute name="issue"/>
-        <attribute name="chargestore"/>
-        <attribute name="isdistributed"/>
-        <attribute name="prorateservice"/>
-        <attribute name="taxexempt"/>
-        <attribute name="consignment"/>
+        <attribute name="manufacturer" id="vdkn6"/>
+        <attribute name="modelnum" id="kyrnj"/>
+        <attribute name="category" id="qdmxa"/>
+        <attribute name="catalogcode" id="ewpbv"/>
+        <attribute name="commoditygroup" id="dgakm"/>
+        <attribute name="commoditycode" id="rq9g8"/>
+        <attribute name="receiptreqd" id="wzd3v"/>
+        <attribute name="inspectionrequired" id="gy5dm"/>
+        <attribute name="issue" id="d4n8q"/>
+        <attribute name="chargestore" id="yvq5w"/>
+        <attribute name="isdistributed" id="vagx7"/>
+        <attribute name="prorateservice" id="mm4bn"/>
+        <attribute name="taxexempt" id="er3vv"/>
+        <attribute name="consignment" id="a32n9"/>
         <!-- Quantity & costs -->
-        <attribute name="orderqty"/>
-        <attribute name="orderunit"/>
-        <attribute name="issueunit"/>
-        <attribute name="conversion"/>
-        <attribute name="unitcost"/>
-        <attribute name="linecost"/>
-        <attribute name="tax1code"/>
-        <attribute name="tax1"/>
-        <attribute name="loadedcost"/>
-        <attribute name="contractrefnum"/>
-        <attribute name="contracttype"/>
-        <attribute name="contractrefrev"/>
+        <attribute name="orderqty" id="g_egx"/>
+        <attribute name="orderunit" id="azmj3"/>
+        <attribute name="issueunit" id="d86jr"/>
+        <attribute name="conversion" id="e25v8"/>
+        <attribute name="unitcost" id="w4a2y"/>
+        <attribute name="linecost" id="dr5_b"/>
+        <attribute name="tax1code" id="w7ywr"/>
+        <attribute name="tax1" id="vm_w3"/>
+        <attribute name="loadedcost" id="w9zey"/>
+        <attribute name="contractrefnum" id="rrxaj"/>
+        <attribute name="contracttype" id="pgva7"/>
+        <attribute name="contractrefrev" id="jzm79"/>
         <!-- TODO: add scheduling (schpurchview.schedulenum) -->
         <!-- Charge to -->
-        <attribute name="storeloc"/>
-        <attribute name="wonum"/>
-        <attribute name="taskid"/>
-        <attribute name="location"/>
-        <attribute name="assetnum"/>
-        <attribute name="gldebitacct"/>
+        <attribute name="storeloc" id="b9ard"/>
+        <attribute name="wonum" id="z8y54"/>
+        <attribute name="taskid" id="pex_m"/>
+        <attribute name="location" id="dj9jk"/>
+        <attribute name="assetnum" id="qgea9"/>
+        <attribute name="gldebitacct" id="ndxz9"/>
         <!-- Related records -->
-        <attribute name="mrnum"/>
-        <attribute name="mrlinenum"/>
-        <attribute name="rfqnum"/>
-        <attribute name="rfqlinenum"/>
-        <attribute name="prnum"/>
-        <attribute name="prlinenum"/>
+        <attribute name="mrnum" id="pg2nq"/>
+        <attribute name="mrlinenum" id="bxzp2"/>
+        <attribute name="rfqnum" id="kd2kx"/>
+        <attribute name="rfqlinenum" id="pnbx3"/>
+        <attribute name="prnum" id="myw3d"/>
+        <attribute name="prlinenum" id="xa7d5"/>
         <!-- Receipts -->
-        <attribute name="receiptscomplete"/>
-        <attribute name="receivedqty"/>
-        <attribute name="receivedunitcost"/>
-        <attribute name="receivedtotalcost"/>
-        <attribute name="rejectedqty"/>
+        <attribute name="receiptscomplete" id="ap6y6"/>
+        <attribute name="receivedqty" id="j3g26"/>
+        <attribute name="receivedunitcost" id="a_krx"/>
+        <attribute name="receivedtotalcost" id="brgjg"/>
+        <attribute name="rejectedqty" id="gx5bj"/>
         <!-- Delivery Details -->
-        <attribute name="enterby"/>
-        <attribute name="enterdate"/>
-        <attribute name="requestedby"/>
-        <attribute name="reqdeliverydate"/>
-        <attribute name="supervisor"/>
-        <attribute name="shipto"/>
-        <attribute name="shiptoattn"/>
-        <attribute name="tositeid"/>
-        <attribute name="vendeliverydate"/>
+        <attribute name="enterby" id="x9r54"/>
+        <attribute name="enterdate" id="wa5xg"/>
+        <attribute name="requestedby" id="q9r3n"/>
+        <attribute name="reqdeliverydate" id="edb7k"/>
+        <attribute name="supervisor" id="dxwnw"/>
+        <attribute name="shipto" id="admay"/>
+        <attribute name="shiptoattn" id="b_z2w"/>
+        <attribute name="tositeid" id="qdbzw"/>
+        <attribute name="vendeliverydate" id="qngme"/>
       </schema>
-	  </maximo-datasource>
+    </maximo-datasource>
     <!-- PO term data (child of poDetailds) -->
     <maximo-datasource id="poTermds" relationship="poterm" depends-on="poDetailds">
-      <schema>
-        <attribute name="seqnum"/>
-        <attribute name="termid"/>
-        <attribute name="description"/>
-        <attribute name="description_longdescription"/>
-        <attribute name="sendtovendor"/>
+      <schema id="m79g8">
+        <attribute name="seqnum" id="znm95"/>
+        <attribute name="termid" id="g5d7z"/>
+        <attribute name="description" id="n7j2g"/>
+        <attribute name="description_longdescription" id="gn9m7"/>
+        <attribute name="sendtovendor" id="yearm"/>
       </schema>
     </maximo-datasource>
     <!-- work/comm logs (child of poDetailds) -->
     <maximo-datasource id="poWorkLogds" relationship="worklog" depends-on="poDetailds">
-      <schema>
-        <attribute name="recordkey"/>
-        <attribute name="class"/>
-        <attribute name="createby"/>
-        <attribute name="createdate"/>
-        <attribute name="logtype"/>
-        <attribute name="clientviewable"/>
-        <attribute name="description"/>
-        <attribute name="description_longdescription"/>
+      <schema id="n2pj8">
+        <attribute name="recordkey" id="mkb3a"/>
+        <attribute name="class" id="ybxdg"/>
+        <attribute name="createby" id="b7_vw"/>
+        <attribute name="createdate" id="x4mjm"/>
+        <attribute name="logtype" id="k5jgw"/>
+        <attribute name="clientviewable" id="nkmbn"/>
+        <attribute name="description" id="jy_p5"/>
+        <attribute name="description_longdescription" id="rm33v"/>
       </schema>
     </maximo-datasource>
     <maximo-datasource id="poCommLogds" relationship="commlog" depends-on="poDetailds">
-      <schema>
-        <attribute name="orgapp"/> <!-- originating application -->
-        <attribute name="commlogid"/> <!-- ID -->
-        <attribute name="createby"/>
-        <attribute name="sendto"/>
-        <attribute name="sendfrom"/>
-        <attribute name="createdate"/>
-        <attribute name="subject"/>
-        <attribute name="inbound"/>
-        <attribute name="message"/>
-        <attribute name="cc"/>
-        <attribute name="bcc"/>
+      <schema id="j5v6b">
+        <attribute name="orgapp" id="wn25d"/>
+        <!-- originating application -->
+        <attribute name="commlogid" id="bw76b"/>
+        <!-- ID -->
+        <attribute name="createby" id="eky89"/>
+        <attribute name="sendto" id="qp64x"/>
+        <attribute name="sendfrom" id="br4qv"/>
+        <attribute name="createdate" id="n_499"/>
+        <attribute name="subject" id="zq3vz"/>
+        <attribute name="inbound" id="zk7qg"/>
+        <attribute name="message" id="d7j44"/>
+        <attribute name="cc" id="bz39v"/>
+        <attribute name="bcc" id="yp5bj"/>
       </schema>
     </maximo-datasource>
   </maximo-datasource>
   <maximo-datasource id="defaultSetDs" offline-immediate-download="true" lookup-data="true" pre-load="true" object-structure="mxapiorganization" saved-query="MOBILEORG">
-    <schema>
-      <attribute name="itemsetid"/>
-      <attribute name="orgid" unique-id="true" searchable="true"/>
-      <attribute name="rel.maxvars{*}"/>
+    <schema id="x7qy4">
+      <attribute name="itemsetid" id="kaqzk"/>
+      <attribute name="orgid" unique-id="true" searchable="true" id="rgk7b"/>
+      <attribute name="rel.maxvars{*}" id="apv72"/>
     </schema>
   </maximo-datasource>
   <maximo-datasource id="conversionUnitDs" object-structure="MXAPICONVERSION" offline-immediate-download="true" pre-load="true" selection-mode="single">
-    <schema>
-      <attribute name="frommeasureunit" searchable="true"/>
-      <attribute name="tomeasureunit" searchable="true"/>
-      <attribute name="conversion" searchable="true"/>
-      <attribute name="conversionid" unique-id="true" searchable="true"/>
+    <schema id="jkdm6">
+      <attribute name="frommeasureunit" searchable="true" id="argda"/>
+      <attribute name="tomeasureunit" searchable="true" id="q329r"/>
+      <attribute name="conversion" searchable="true" id="qxp97"/>
+      <attribute name="conversionid" unique-id="true" searchable="true" id="axg8w"/>
     </schema>
   </maximo-datasource>
   <maximo-datasource id="numericDomainDS" offline-immediate-download="true" object-structure="MXAPINUMERICDOMAIN" page-size="5000" lookup-data="true" selection-mode="single">
-    <schema>
-      <attribute name="domainid" unique-id="true" searchable="true"/>
-      <attribute name="value" searchable="true"/>
-      <attribute name="description" searchable="true"/>
+    <schema id="d7476">
+      <attribute name="domainid" unique-id="true" searchable="true" id="r4yw_"/>
+      <attribute name="value" searchable="true" id="r75ab"/>
+      <attribute name="description" searchable="true" id="anam2"/>
     </schema>
   </maximo-datasource>
   <maximo-datasource id="tableDomainDS" offline-immediate-download="true" lookup-data="true" object-structure="MXAPITABLEDOMAIN" selection-mode="single" page-size="5000">
-    <schema>
-      <attribute name="value" searchable="true"/>
-      <attribute name="description" searchable="true"/>
-      <attribute name="domainid" unique-id="true"/>
-      <attribute name="siteid"/>
-      <attribute name="orgid"/>
+    <schema id="mmak2">
+      <attribute name="value" searchable="true" id="kkn97"/>
+      <attribute name="description" searchable="true" id="z3vy7"/>
+      <attribute name="domainid" unique-id="true" id="agmge"/>
+      <attribute name="siteid" id="qjz6d"/>
+      <attribute name="orgid" id="ym9mx"/>
     </schema>
   </maximo-datasource>
   <maximo-datasource id="alnDomainDS" id-attribute="domainid" lookup-data="true" object-structure="mxapialndomain" page-size="100" selection-mode="single">
-    <schema>
-      <attribute name="domainid" searchable="true"/>
-      <attribute name="value" searchable="true"/>
-      <attribute name="description" searchable="true"/>
-      <attribute name="valueid" unique-id="true"/>
+    <schema id="drame">
+      <attribute name="domainid" searchable="true" id="zyv_r"/>
+      <attribute name="value" searchable="true" id="ax53j"/>
+      <attribute name="description" searchable="true" id="mddw6"/>
+      <attribute name="valueid" unique-id="true" id="apxmd"/>
     </schema>
   </maximo-datasource>
-  <dialogs>
+  <dialogs id="p3gwn">
     <dialog id="confirmDialog" title="{app.state.confirmDialog.title}" primary-action-text="{app.state.confirmDialog.acceptButton}" primary-icon="{app.state.confirmDialog.acceptIcon}" on-primary-action="confirmDialogPrimaryClick" primary-kind="{app.state.confirmDialog.acceptKind}" on-secondary-action="confirmDialogSecondaryClick" secondary-action-text="{app.state.confirmDialog.rejectButton}" secondary-icon="{app.state.confirmDialog.rejectIcon}" on-close-action="confirmDialogCloseClick">
       <border-layout padding="false" fill-parent="true" id="qkg_2">
         <top id="j7kb3">
@@ -278,32 +266,32 @@
   </dialogs>
   <pages id="pages">
     <page padding="true" id="approvals" path="/approvals" title="Approvals" icon="maximo:work-orders-approve" controller="SharedResources/POSchedulePageController">
-      <states>
-        <state name="selectedSwitch" value="0" type="number"/>
-        <state name="dialogLabel" value="" type="string"/>
-        <state name="selectedDS" value="assignedpoDS" type="string"/>
-        <state name="firstPO" value="" type="string"/>
-        <state name="firstLogin" value="false" type="boolean"/>
-        <state name="previousPage" type="string" value=""/>
-        <state name="compDomainStatus" value="" type="string"/>
-        <state name="dataSourceIntializationCount" value="0" type="number"/>
-        <state name="checkForUpdateButton" value="false" type="boolean"/>
+      <states id="vnybx">
+        <state name="selectedSwitch" value="0" type="number" id="xq4pe"/>
+        <state name="dialogLabel" value="" type="string" id="w73r5"/>
+        <state name="selectedDS" value="assignedpoDS" type="string" id="wvvma"/>
+        <state name="firstPO" value="" type="string" id="mkg6z"/>
+        <state name="firstLogin" value="false" type="boolean" id="nwpyg"/>
+        <state name="previousPage" type="string" value="" id="n8r2j"/>
+        <state name="compDomainStatus" value="" type="string" id="z35nd"/>
+        <state name="dataSourceIntializationCount" value="0" type="number" id="qwvyg"/>
+        <state name="checkForUpdateButton" value="false" type="boolean" id="zqzdk"/>
       </states>
-       <maximo-datasource id="assignedpoDS" object-structure="mxapipo" saved-query="POWAPPR" mobile-qbe-filter="{{'status_maxvalue': '!=COMP,CAN,CLOSE,WAPPR'}}" offline-immediate-download="true" order-by="priority" pre-load="false" controller="SharedResources/POScheduleDataController" selection-mode="none" geometry-format="geojson" default="true" page-size="25">
-        <schema>
-          <attribute name="ponum" sortable="false" searchable="true"/>
-          <attribute name="description" searchable="true"/>
-          <attribute name="priority" searchable="true"/>
-          <attribute name="potype" searchable="true"/>
-          <attribute name="status" sortable="true" searchable="true"/>
-          <attribute name="status_description" sortable="false"/>
-          <attribute name="status_maxvalue" sortable="false" index="true"/>
-          <attribute name="siteid" sortable="false" searchable="true"/>
-          <attribute name="orgid" sortable="false"/>
+      <maximo-datasource id="assignedpoDS" object-structure="mxapipo" saved-query="POWAPPR" mobile-qbe-filter="{{'status_maxvalue': '!=COMP,CAN,CLOSE,WAPPR'}}" offline-immediate-download="true" order-by="priority" pre-load="false" controller="SharedResources/POScheduleDataController" selection-mode="none" geometry-format="geojson" default="true" page-size="25">
+        <schema id="amk2z">
+          <attribute name="ponum" sortable="false" searchable="true" id="r9w6v"/>
+          <attribute name="description" searchable="true" id="d324b"/>
+          <attribute name="priority" searchable="true" id="dg8jq"/>
+          <attribute name="potype" searchable="true" id="vp5mb"/>
+          <attribute name="status" sortable="true" searchable="true" id="ekmrx"/>
+          <attribute name="status_description" sortable="false" id="za44g"/>
+          <attribute name="status_maxvalue" sortable="false" index="true" id="qpyqk"/>
+          <attribute name="siteid" sortable="false" searchable="true" id="ykgwp"/>
+          <attribute name="orgid" sortable="false" id="a_vg5"/>
           <attribute name="np_statusmemo" id="zd69q"/>
           <attribute name="poid" sortable="false" unique-id="true" id="gzwj2"/>
           <attribute name="potype" sortable="true" id="wnpqk"/>
-          <attribute name="orgid" sortable="false"/>
+          <attribute name="orgid" sortable="false" id="mayz5"/>
         </schema>
       </maximo-datasource>
       <maximo-datasource id="poAttachmentDs" object-structure="mxapipo" item-url="{page.params.href}">
@@ -313,30 +301,31 @@
           <attribute name="siteid" id="gqb8q"/>
         </schema>
         <maximo-datasource id="signatureAttachment" attachment="true" relationship="doclinks" selection-mode="none" notify-when-parent-loads="true">
-          <schema>
-            <attribute name="*" unique-id="true"/>
+          <schema id="wz82w">
+            <attribute name="*" unique-id="true" id="knwn2"/>
           </schema>
         </maximo-datasource>
       </maximo-datasource>
       <json-datasource id="rejectList" src="{[]}" items="statusItems" selection-mode="single" id-attribute="value">
-        <schema>
-          <attribute name="value"/>
-          <attribute name="description"/>
-          <attribute name="valuid"/> <!-- TODO: check if typo -->
-          <attribute name="domainid"/>
+        <schema id="wvm59">
+          <attribute name="value" id="zqdvj"/>
+          <attribute name="description" id="j8bpj"/>
+          <attribute name="valuid" id="pgy35"/>
+          <!-- TODO: check if typo -->
+          <attribute name="domainid" id="rkp_p"/>
         </schema>
       </json-datasource>
       <json-datasource id="dsstatusDomainList" src="{[]}" items="statusItems" selection-mode="single" id-attribute="value">
-        <schema>
-          <attribute name="value"/>
-          <attribute name="description"/>
-          <attribute name="maxvalue"/>
+        <schema id="gr2dm">
+          <attribute name="value" id="qyj26"/>
+          <attribute name="description" id="jw9kr"/>
+          <attribute name="maxvalue" id="qvn5b"/>
         </schema>
       </json-datasource>
       <header-template hide-breadcrumb="true" title-column-width="{page.state.breadcrumbWidth ? page.state.breadcrumbWidth : app.state.screen.size === 'md' ? 50 : app.state.screen.size === 'lg' ? 30 : app.state.screen.size === 'xlg' ? 21 : 65}" id="zewd_">
-      <!-- dropdown items -->
-        <dropdown slot="dropdown" background-color="white" selected-item="{page.state.selectedDS}" on-change="loadPOListData" hide-unselected-placeholder="true">
-          <dropdown-item value="assignedpoDS" text="Purchase orders awaiting approval"/>
+        <!-- dropdown items -->
+        <dropdown slot="dropdown" background-color="white" selected-item="{page.state.selectedDS}" on-change="loadPOListData" hide-unselected-placeholder="true" id="a7dap">
+          <dropdown-item value="assignedpoDS" text="Purchase orders awaiting approval" id="vpdz8"/>
         </dropdown>
       </header-template>
       <stacked-panel selected-index="{page.state.selectedSwitch}" id="qzfnm">
@@ -371,28 +360,27 @@
             <button icon="carbon:checkmark--outline" kind="primary" disabled="{page.state.disableDoneButton}" loading="{page.state.loadingstatus===true}" on-click="rejectStatus" id="k3_xr"/>
           </button-group>
         </sliding-drawer>
-        <lookup id="logTypeLookup" show-search="false" lookup-heading="Select log type" show-count="false" datasource="synonymdomainData" on-item-click="setLogType" border="true" lookup-attributes="{['value','description']}" height="400" width="60"/>
-        <sliding-drawer id="poStatusChangeDialog" align="start" header-text="Change status" content-padding="false" controller="ChangeStatusController">
-          <box direction="column">
+        <sliding-drawer id="poStatusChangeDialog" align="start" header-text="Change status" content-padding="false" controller="SharedResources/ChangeStatusController">
+          <box direction="column" id="wqmqr">
             <panel id="changeStatusPanel">
-              <box direction="row" vertical-align="center" padding-start="1" padding-top="0.5" padding-bottom="0.5">
-                <label theme="20-regular" label="Select a status" padding="default"/>
+              <box direction="row" vertical-align="center" padding-start="1" padding-top="0.5" padding-bottom="0.5" id="erjjx">
+                <label theme="20-regular" label="Select a status" padding="default" id="xvk52"/>
               </box>
-              <data-list datasource="dsstatusDomainList" show-single-select-icon="true" on-item-click="selectStatus" selected-icon="carbon:checkmark--filled" unselected-icon="carbon:radio-button" show-search="false">
+              <data-list datasource="dsstatusDomainList" show-single-select-icon="true" on-item-click="selectStatus" selected-icon="carbon:checkmark--filled" unselected-icon="carbon:radio-button" show-search="false" id="yjgxr">
                 <list-item id="changeStatusList">
-                  <border-layout fill-parent="true" padding="false">
-                    <middle horizontal-overflow="hidden">
-                      <label label="{item.description}" theme="16-regular" padding="none"/>
-                      <label label="{item.value}" padding="none"/>
+                  <border-layout fill-parent="true" padding="false" id="rd54j">
+                    <middle horizontal-overflow="hidden" id="k5n46">
+                      <label label="{item.description}" theme="16-regular" padding="none" id="bq6g3"/>
+                      <label label="{item.value}" padding="none" id="zrmr9"/>
                     </middle>
                   </border-layout>
                 </list-item>
               </data-list>
             </panel>
             <panel id="changeStatusMemo">
-              <box direction="row" vertical-align="center" padding-top="1" fill-parent="true" background-color="field-01">
-                <border-layout padding="true" fill-parent="true" background-color="field-01">
-                  <start>
+              <box direction="row" vertical-align="center" padding-top="1" fill-parent="true" background-color="field-01" id="ere99">
+                <border-layout padding="true" fill-parent="true" background-color="field-01" id="z7pj6">
+                  <start id="kj5x5">
                     <text-area id="statusMemo" value="{page.state.statusMemo}" on-change="setStatusMemo" placeholder="Add a comment about the status change" max-length="{page.state.memoMaxLength}" label="Add a comment (optional)"/>
                   </start>
                 </border-layout>
@@ -400,196 +388,211 @@
             </panel>
           </box>
           <button-group slot="header-button" align="end" id="changeStatusButton">
-            <button icon="carbon:checkmark--outline" kind="primary" disabled="{page.state.disableDoneButton}" loading="{page.state.loadingstatus===true}" on-click="changeStatus"/>
+            <button icon="carbon:checkmark--outline" kind="primary" disabled="{page.state.disableDoneButton}" loading="{page.state.loadingstatus===true}" on-click="changeStatus" id="xne_g"/>
           </button-group>
         </sliding-drawer>
         <!-- lookups -->
-         <lookup id="logTypeLookup" show-search="false" lookup-heading="Select Log Type" show-count="false" datasource="synonymDomainData" on-item-click="setLogType" border="true" lookup-attributes="{['value', 'description']}" height="400" width="60"/>
+        <lookup id="logTypeLookup" show-search="false" lookup-heading="Select Log Type" show-count="false" datasource="synonymDomainData" on-item-click="setLogType" border="true" lookup-attributes="{['value', 'description']}" height="400" width="60"/>
       </dialogs>
     </page>
     <!-- PO detail page -->
     <page padding="true" id="poDetails" path="/poDetails" title="Purchase Order" controller="SharedResources/PurchaseOrderDetailsController">
-      <states>
-
-      </states>
-      <maximo-datasource id="poDetailResource" object-structure="mxapipo" where="ponum=&quot;{page.params.ponum}&quot; and siteid=&quot;{page.params.siteid}&quot;" controller="PurchaseOrderDataController" cache-expiry-ms="1" geometry-format="geojson">
-        <schema>
-          <attribute name="ponum" unique-id="true"/>
-          <attribute name="poid"/>
-          <attribute name="description"/>
-          <attribute name="description_longdescription"/>
-          <attribute name="status"/>
-          <attribute name="siteid"/>
-          <attribute name="revisionnum"/>
-          <attribute name="revcomments"/>
-          <attribute name="revcomments_longdescription"/>
+      <states id="m6prr"/>
+      <maximo-datasource id="poDetailResource" object-structure="mxapipo" where="ponum=&quot;{page.params.ponum}&quot; and siteid=&quot;{page.params.siteid}&quot;" controller="SharedResources/PurchaseOrderDataController" cache-expiry-ms="1" geometry-format="geojson">
+        <schema id="na2_d">
+          <attribute name="ponum" unique-id="true" id="v6bq7"/>
+          <attribute name="poid" id="yxyad"/>
+          <attribute name="description" id="xj883"/>
+          <attribute name="description_longdescription" id="ma8bq"/>
+          <attribute name="status" id="rrggn"/>
+          <attribute name="siteid" id="yky_7"/>
+          <attribute name="revisionnum" id="bpbr7"/>
+          <attribute name="revcomments" id="n86wn"/>
+          <attribute name="revcomments_longdescription" id="v5vkg"/>
           <!-- details -->
-          <attribute name="potype"/>
-          <attribute name="buyercompany"/>
-          <attribute name="buyer"/>
-          <attribute name="priority"/>
-          <attribute name="receipts"/>
-          <attribute name="contractrefnum"/>
-          <attribute name="contracttype"/>
-          <attribute name="contractrefrev"/>
-          <attribute name="contreleaseseq"/>
+          <attribute name="potype" id="p7yxj"/>
+          <attribute name="buyercompany" id="qw829"/>
+          <attribute name="buyer" id="e2ggj"/>
+          <attribute name="priority" id="enz8j"/>
+          <attribute name="receipts" id="rqgxr"/>
+          <attribute name="contractrefnum" id="qj4v_"/>
+          <attribute name="contracttype" id="kwrzz"/>
+          <attribute name="contractrefrev" id="nz24y"/>
+          <attribute name="contreleaseseq" id="zq6p7"/>
           <!-- dates -->
-          <attribute name="statusdate"/>
-          <attribute name="orderdate"/>
-          <attribute name="requireddate"/>
-          <attribute name="followupdate"/>
-          <attribute name="vendeliverydate"/>
+          <attribute name="statusdate" id="d3w9d"/>
+          <attribute name="orderdate" id="rrvgw"/>
+          <attribute name="requireddate" id="b2a3k"/>
+          <attribute name="followupdate" id="zdggg"/>
+          <attribute name="vendeliverydate" id="w5g_p"/>
           <!-- costs -->
-          <attribute name="pretaxtotal"/>
-          <attribute name="totaltax1"/>
-          <attribute name="totalcost"/>
-          <attribute name="currencycode"/>
-          <attribute name="totalbasecost"/>
+          <attribute name="pretaxtotal" id="bgqx5"/>
+          <attribute name="totaltax1" id="p2mz6"/>
+          <attribute name="totalcost" id="g7zp2"/>
+          <attribute name="currencycode" id="v8p7m"/>
+          <attribute name="totalbasecost" id="j8w_g"/>
           <!-- vendor -->
-          <attribute name="vendor{name,address1,address2,address3,address4,phone}"/>
-          <attribute name="contact"/>
-          <attribute name="customernum"/>
-          <attribute name="internalchange"/>
-          <attribute name="internal"/>
-          <attribute name="storeloc"/>
-          <attribute name="storelocsiteid"/>
-          <attribute name="freightterms"/>
-          <attribute name="paymentterms"/>
-          <attribute name="shipvia"/>
-          <attribute name="fob"/>
-          <attribute name="inclusive1"/>
-          <attribute name="payonreceipt"/>
-          <attribute name="inspectionrequired"/>
+          <attribute name="vendor{name,address1,address2,address3,address4,phone}" id="ba5wq"/>
+          <attribute name="contact" id="vn2gy"/>
+          <attribute name="customernum" id="m65pr"/>
+          <attribute name="internalchange" id="w9a2w"/>
+          <attribute name="internal" id="yqqx5"/>
+          <attribute name="storeloc" id="aq_yq"/>
+          <attribute name="storelocsiteid" id="g_3k7"/>
+          <attribute name="freightterms" id="kn9by"/>
+          <attribute name="paymentterms" id="kvy3e"/>
+          <attribute name="shipvia" id="mj_5a"/>
+          <attribute name="fob" id="ygwyn"/>
+          <attribute name="inclusive1" id="dex4k"/>
+          <attribute name="payonreceipt" id="mprz7"/>
+          <attribute name="inspectionrequired" id="pq6p9"/>
           <!-- ship to -->
-          <attribute name="shipto{description,address1,address2,address3,address4}"/>
-          <attribute name="shiptoattn">
-            <attribute name="displayname"/>
+          <attribute name="shipto{description,address1,address2,address3,address4}" id="yg5zx"/>
+          <attribute name="shiptoattn" id="zrmbp">
+            <attribute name="displayname" id="ryjpx"/>
           </attribute>
           <!-- bill to -->
-          <attribute name="billto{description,address1,address2,address3,address4}"/>
-          <attribute name="billtoattn{displayname}"/>
+          <attribute name="billto{description,address1,address2,address3,address4}" id="yp365"/>
+          <attribute name="billtoattn{displayname}" id="vvyg8"/>
         </schema>
       </maximo-datasource>
       <maximo-datasource id="workLogTypeDomain" lookup-data="true" object-structure="mxapisynonymdomain" saved-query="MOBILEDOMAIN" selection-mode="single">
-        <schema>
-          <attribute name="value" searchable="true"/>
-          <attribute name="maxvalue" searchable="true"/>
-          <attribute name="description" searchable="true"/>
-          <attribute name="domainid" searchable="true"/>
-          <attribute name="valueid" unique-id="true" searchable="true"/>
-          <attribute name="siteid" searchable="true"/>
-          <attribute name="orgid" searchable="true"/>
-          <attribute name="defaults"/>
+        <schema id="m6ad8">
+          <attribute name="value" searchable="true" id="xy3yw"/>
+          <attribute name="maxvalue" searchable="true" id="g55q8"/>
+          <attribute name="description" searchable="true" id="pgjq3"/>
+          <attribute name="domainid" searchable="true" id="n6b94"/>
+          <attribute name="valueid" unique-id="true" searchable="true" id="pvxdm"/>
+          <attribute name="siteid" searchable="true" id="d2gvz"/>
+          <attribute name="orgid" searchable="true" id="jbaaw"/>
+          <attribute name="defaults" id="eepwz"/>
+        </schema>
+      </maximo-datasource>
+      <maximo-datasource id="synonymdomainData" offline-immediate-download="true" lookup-data="true" object-structure="mxapisynonymdomain" saved-query="MOBILEDOMAIN" selection-mode="single">
+        <schema id="bn686">
+          <attribute name="value" searchable="true" id="xp2e9"/>
+          <attribute name="maxvalue" searchable="true" id="g58pj"/>
+          <attribute name="description" searchable="true" id="wwwzq"/>
+          <attribute name="domainid" searchable="true" id="m2ebr"/>
+          <attribute name="valueid" unique-id="true" searchable="true" id="aakrv"/>
+          <attribute name="siteid" searchable="true" id="r27qk"/>
+          <attribute name="orgid" searchable="true" id="wz5gx"/>
+          <attribute name="defaults" id="avz96"/>
         </schema>
       </maximo-datasource>
       <dialogs id="poDetailsDialogList">
         <dialog id="longDescDialog" title="Long Description" passive="true" size="lg">
-          <rich-text-viewer content="{poDetailResource.item.description_longdescription}" stripped="true"/>
+          <rich-text-viewer content="{poDetailResource.item.description_longdescription}" stripped="true" id="rd_4m"/>
         </dialog>
         <dialog id="revDetailsDialog" title="Revision Comments" passive="true" size="lg">
-          <rich-text-viewer content="{poDetailResource.item.revcomments_longdescription" stripped="true"/>
+          <rich-text-viewer content="{poDetailResource.item.revcomments_longdescription" stripped="true" id="nk48p"/>
         </dialog>
         <dialog id="saveDiscardWorkLogDetail" title="Save or discard changes?" sm-auto-height="true" size="sm" primary-action-text="Save" on-primary-action="saveWorkLogSaveDiscard" primary-kind="secondary" primary-button-disabled="{page.state.workLogData.sendDisable}" on-secondary-action="closeWorkLogSaveDiscard" secondary-action-text="Discard">
-          <label wrap="true" label="To leave this page, you must first discard or save your changes."/>
+          <label wrap="true" label="To leave this page, you must first discard or save your changes." id="kx5n_"/>
         </dialog>
         <!-- sliding drawers -->
         <sliding-drawer id="poWorkLogDrawer" validate="workLogValidate" align="start" header-text="Work Log" content-padding="false">
           <chat-log messages="{page.state.chatLogGroupData}" default-log-type="{page.state.initialDefaultLogType}" default-log-type-key="value" datasource="synonymdomainData" content-limit="{page.state.chatLogDescLength}" log-type-attribute="{['value', 'description']}" on-click="saveWorkLog" loading="{page.state.chatLogLoading}" is-config-btn="true" watch-changes="watchChatLogChanges" id="poDetailsWorkLog"/>
         </sliding-drawer>
         <!-- lookups -->
-         <lookup id="logTypeLookupDetailsPage" show-search="false" lookup-heading="Select log type" show-count="false" datasource="workLogTypeDomain" on-item-click="setPODetailsLogType" border="true" lookup-attributes="{['value', 'description']}" height="400" width="60"/>
+        <lookup id="logTypeLookupDetailsPage" show-search="false" lookup-heading="Select log type" show-count="false" datasource="workLogTypeDomain" on-item-click="setPODetailsLogType" border="true" lookup-attributes="{['value', 'description']}" height="400" width="60"/>
       </dialogs>
-      <header-template hidden="{page.state.loading}" title-column-width="{app.state.screen.size === 'lg' ? 45 : 60}">
+      <header-template hidden="{page.state.loading}" title-column-width="{app.state.screen.size === 'lg' ? 45 : 60}" id="y7_4_">
         <button slot="buttons" label="Approve" icon="" loading="{page.state.workloading || page.state.transactionProgress}" kind="secondary" on-click="approvePO" on-click-arg="{{'item': poDetailResource.item, 'datasource': poDetailResource.datasource}}" id="poDetailApproveBtn"/>
         <button slot="buttons" label="Reject" icon="" loading="{page.state.workloading || page.state.transactionProgress}" kind="secondary" on-click="rejectPO" on-click-arg="{{'item': poDetailResource.item, 'datasource': poDetailResource.datasource}}" id="poDetailRejectBtn"/>
       </header-template>
-      <header-template hidden="{!page.state.loading}">
-        <button slot="buttons" loading="true" kind="ghost"/>
+      <header-template hidden="{!page.state.loading}" id="w_dp5">
+        <button slot="buttons" loading="true" kind="ghost" id="q9gjd"/>
       </header-template>
-      <adaptive-row>
-        <adaptive-column xlarge-width="60" large-width="100" medium-width="100" small-width="100"> 
-          <border-layout fill-parent="true" padding="true">
-            <middle vertical-align="center">
-              <box padding-start="{app.state.screen.size === 'lg' || app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '.5'}" 
-              padding-bottom="{app.state.screen.size === 'lg' || app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '-.5' : '1.5'}"
-              padding-top="{app.state.screen.size === 'lg' || app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '.5' : '1.5'}">
-                <wrapped-text size="large" label="{poDetailResource.item.description}" sub-label="{woDetailResource.item.revisionnum}" truncation-type="end"/>
+      <adaptive-row id="jx8ea">
+        <adaptive-column xlarge-width="60" large-width="100" medium-width="100" small-width="100" id="dmj2r">
+          <border-layout fill-parent="true" padding="true" id="q6vjj">
+            <middle vertical-align="center" id="exp96">
+              <box padding-start="{app.state.screen.size === 'lg' || app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '.5'}" padding-bottom="{app.state.screen.size === 'lg' || app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '-.5' : '1.5'}" padding-top="{app.state.screen.size === 'lg' || app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '.5' : '1.5'}" id="wg26q">
+                <wrapped-text size="large" label="{poDetailResource.item.description}" sub-label="{woDetailResource.item.revisionnum}" truncation-type="end" id="nkra5"/>
               </box>
             </middle>
           </border-layout>
         </adaptive-column>
-        <box direction="column" background-color="field-01" padding="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? 0 : 0.5}">
-          <border-layout padding="true" fill-parent="true" top-border="true">
-            <top>
-              <label label="Details" theme="20-regular"/>
-            </top>
-            <middle horizontal-overflow="hidden">
-              <border-layout fill-parent="true" top-border="true">
-                <top>
-                  <adaptive-row>
-                    <adaptive-column small-width="100" medium-width="100" large-width="50" medium-horizontal-align="start">
-                      <border-layout fill-parent="true">
-                        <middle>
-                          <button hidden="{!poDetailResource.item.description_longdescription}" padding="false" icon="carbon:maximize" kind="secondary" dialog="longDescDialog"/>
-                          <box direction="row" fill-parent-horizontal="true" padding="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '.5' : '0'}" id="longDescBox">
-                            <rich-text-viewer content="{poDetailResource.item.description_longdescription}" padding="0.5" content-limit="256" stripped="false"/>
-                          </box>
-                        </middle>
-                      </border-layout>
-                    </adaptive-column>
-                    <adaptive-column small-width="100" medium-width="100" large-width="50" medium-horizontal-align="start">
-                      <border-layout>
-                        <middle id="vendorInfo">
-                          <box direction="row" id="vendorContact">
-                            <label label="Vendor"/>
-                            <label label="{poDetailResource.item.vendor.name}"/>
-                            <label label="Phone"/>
-                            <label label="{poDetailResource.item.vendor.phone}"/>
-                          </box>
-                          <box id="vendorAddress">
-                            <label label="Vendor Address"/>
-                            <label label="{poDetailResource.item.vendor.address1}" hidden="{!poDetailResource.item.vendor.address1}"/>
-                            <label label="{poDetailResource.item.vendor.address2}" hidden="{!poDetailResource.item.vendor.address2}"/>
-                            <label label="{poDetailResource.item.vendor.address3}" hidden="{!poDetailResource.item.vendor.address3}"/>
-                            <label label="{poDetailResource.item.vendor.address4}" hidden="{!poDetailResource.item.vendor.address4}"/>
-                          </box>
-                        </middle>
-                        <bottom>
-                          <box>
-                            <button-group>
-                              <button icon="carbon:document" kind="secondary" loading="{page.state.chatLogLoading || page.state.loading}" on-click="openWorkLogDrawer" on-click-arg="{{'item':poDetailResource.item}}" disabled="{page.state.loading}" id="openWorkLogBtn"/>
-                              <button icon="carbon:list--numbered" on-click="navigateToLines" hidden="{!poLineDetailds.state.itemCount}" tag-type="dark-gray" tag-value="{app.state.lineCount}" on-click-arg="{poDetailResource.item}" kind="{page.params.ponum === app.state.firstPO ? page.state.firstLogin ? 'primary' : 'secondary'}" id="openPOLineDetailBtn"/>
-                            </button-group>
-                          </box>
-                        </bottom>
-                      </border-layout>
-                    </adaptive-column>
-                  </adaptive-row>
-                </top>
-              </border-layout>
-            </middle>
-          </border-layout>
-        </box>
+        <adaptive-column id="dz642">
+          <box direction="column" background-color="field-01" padding="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? 0 : 0.5}" id="rgbgw">
+            <border-layout padding="true" fill-parent="true" top-border="true" id="zmk9x">
+              <top id="knew6">
+                <label label="Details" theme="20-regular" id="kkm2j"/>
+              </top>
+              <middle horizontal-overflow="hidden" id="qnq_5">
+                <border-layout fill-parent="true" top-border="true" id="zd22e">
+                  <top id="zb7xr">
+                    <adaptive-row id="gyrey">
+                      <adaptive-column small-width="100" medium-width="100" large-width="50" medium-horizontal-align="start" id="mjnwx">
+                        <border-layout fill-parent="true" id="z2neq">
+                          <middle id="gg5rd">
+                            <button hidden="{!poDetailResource.item.description_longdescription}" padding="false" icon="carbon:maximize" kind="secondary" dialog="longDescDialog" id="nq5md"/>
+                            <box direction="row" fill-parent-horizontal="true" padding="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '.5' : '0'}" id="longDescBox">
+                              <rich-text-viewer content="{poDetailResource.item.description_longdescription}" padding="0.5" content-limit="256" stripped="false" id="wbak3"/>
+                            </box>
+                          </middle>
+                        </border-layout>
+                      </adaptive-column>
+                      <adaptive-column small-width="100" medium-width="100" large-width="50" medium-horizontal-align="start" id="jm5vp">
+                        <border-layout id="xnvnw">
+                          <middle id="vendorInfo">
+                            <box direction="row" id="vendorContact">
+                              <label label="Vendor" id="zpe68"/>
+                              <label label="{poDetailResource.item.vendor.name}" id="yew6r"/>
+                              <label label="Phone" id="d4wgp"/>
+                              <label label="{poDetailResource.item.vendor.phone}" id="w6_re"/>
+                            </box>
+                            <box id="vendorAddress">
+                              <label label="Vendor Address" id="d7_67"/>
+                              <label label="{poDetailResource.item.vendor.address1}" hidden="{!poDetailResource.item.vendor.address1}" id="dem5d"/>
+                              <label label="{poDetailResource.item.vendor.address2}" hidden="{!poDetailResource.item.vendor.address2}" id="jn6y_"/>
+                              <label label="{poDetailResource.item.vendor.address3}" hidden="{!poDetailResource.item.vendor.address3}" id="bx5d4"/>
+                              <label label="{poDetailResource.item.vendor.address4}" hidden="{!poDetailResource.item.vendor.address4}" id="nw293"/>
+                            </box>
+                          </middle>
+                          <bottom id="jw3kv">
+                            <box id="vbbr5">
+                              <button-group id="nn5z5">
+                                <button icon="carbon:document" kind="secondary" loading="{page.state.chatLogLoading || page.state.loading}" on-click="openWorkLogDrawer" on-click-arg="{{'item':poDetailResource.item}}" disabled="{page.state.loading}" id="openWorkLogBtn"/>
+                                <button icon="carbon:list--numbered" on-click="navigateToLines" hidden="{!poLineDetailds.state.itemCount}" tag-type="dark-gray" tag-value="{app.state.lineCount}" on-click-arg="{poDetailResource.item}" kind="{page.state.firstLogin ? 'primary' : 'secondary'}" id="openPOLineDetailBtn"/>
+                              </button-group>
+                            </box>
+                          </bottom>
+                        </border-layout>
+                      </adaptive-column>
+                    </adaptive-row>
+                  </top>
+                </border-layout>
+              </middle>
+            </border-layout>
+          </box>
+        </adaptive-column>
       </adaptive-row>
       <box direction="column" id="poDetailsNavigatorBox">
-        <navigator width="100%" theme="ui-05" mode="list" fade-background-color="false">
+        <navigator width="100%" theme="ui-05" mode="list" fade-background-color="false" id="nn8nd">
           <navigator-tile tile-label="Attachments" pictogram="maximo:document--attachments" onclick-action="showAttachmentPage" onclick-action-arg="{{'item':poDetailResource.item}}" badge-value="{app.state.doclinksCount}" badge-type="dark-gray" id="poDetailsAttachmentsTile"/>
-          <navigator-tile tile-label="Revision History" onclick-action="openRevisionHistory" onclick-action-arg="{{'item': poDetailResource.item}}"/>
+          <navigator-tile tile-label="Revision History" onclick-action="openRevisionHistory" onclick-action-arg="{{'item': poDetailResource.item}}" id="rqj4g"/>
         </navigator>
       </box>
       <border-layout width="100%" padding="true" id="poDetailsPageFooter">
-        <middle>
-          <adaptive-row>
-            <adaptive-column>
-              <box direction="column">
-                <label label="Order Date"/>
-                <label label="{poDetailResource.item.orderdate}"/>
+        <middle id="vvyxd">
+          <adaptive-row id="qdrxr">
+            <adaptive-column id="re29k">
+              <box direction="column" id="xg45q">
+                <label label="Order Date" id="mzrxk"/>
+                <label label="{poDetailResource.item.orderdate}" id="kby6p"/>
+              </box>
+            </adaptive-column>
+            <adaptive-column id="w73j8">
+              <box direction="column" id="w97x4">
+                <label label="Contact" id="k2y4d"/>
+                <label label="{poDetailResource.item.contact}" id="bp4n8"/>
               </box>
             </adaptive-column>
           </adaptive-row>
         </middle>
       </border-layout>
-
     </page>
     <!-- PO Line Details 
     <page id="poLineDetails" path="/poLineDetails" title="PO Line" controller="SharedResources/LineController">
@@ -599,19 +602,19 @@
     -->
     <page id="attachments" title="Attachments" padding="true" controller="SharedResources/AttachmentController">
       <maximo-datasource id="purchaseOrderAttachmentResource" default="true" object-structure="mxapipo">
-        <schema>
-          <attribute name="ponum"/>
-          <attribute name="description"/>
-          <attribute name="poid" unique-id="true"/>
+        <schema id="qv7z_">
+          <attribute name="ponum" id="a3v8e"/>
+          <attribute name="description" id="kd2ka"/>
+          <attribute name="poid" unique-id="true" id="d9xga"/>
         </schema>
         <maximo-datasource id="attachmentListDS" attachment="true" page-size="250" relationship="doclinks" selection-mode="none">
-          <schema>
-            <attribute name="*" unique-id="true"/>
+          <schema id="rx7_8">
+            <attribute name="*" unique-id="true" id="p235p"/>
           </schema>
         </maximo-datasource>
       </maximo-datasource>
       <panel id="vn25k">
-        <attachment-list datasource="attachmentListDS" hide-when-empty="false" show-search="false" show-managed-header="true" is-editable="{(app.checkSigOption(`${app.state.poOSName}.ADDATTACHMENTS`) &amp;&amp; app.state.poStatus !== 'CLOSE' &amp;&amp; app.state.poStatus !== 'CAN')}" allow-naming="true"/>
+        <attachment-list datasource="attachmentListDS" hide-when-empty="false" show-search="false" show-managed-header="true" is-editable="{(app.checkSigOption(`${app.state.poOSName}.ADDATTACHMENTS`) &amp;&amp; app.state.poStatus !== 'CLOSE' &amp;&amp; app.state.poStatus !== 'CAN')}" allow-naming="true" id="jpd9j"/>
       </panel>
     </page>
   </pages>
@@ -634,7 +637,7 @@
     <message id="approved" text="Approved"/>
     <message id="waitappr" text="Waiting for Approval"/>
     <message id="others" text="Others"/>
-     <message id="accepted" text="Accepted"/>
+    <message id="accepted" text="Accepted"/>
     <message id="rejected" text="Rejected"/>
     <message id="accepted_po" text="Purchase order {0} was accepted."/>
     <message id="accepted_po_failure" text="Purchase order {0} could not be accepted by you."/>
