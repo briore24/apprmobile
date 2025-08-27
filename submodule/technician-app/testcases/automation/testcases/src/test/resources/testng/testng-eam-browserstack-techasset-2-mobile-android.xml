@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="MobileTestSuite test run on eam-browserstack-techasset-2-mobile-android">
+	<parameter name="configPath"
+		value="src/test/resources/config.eam.browserstack.techasset.mobile.android.properties" />
+	<parameter name="testType" value="mobileapp" />
+	<listeners>
+    	<listener class-name="com.ibm.maximo.technician.listener.ScreenShotListener" />
+    	<listener class-name="com.ibm.maximo.technician.listener.FastFailClass"/>
+	</listeners>
+	<test thread-count="1" name="StartWorkOrderWithoutTimer"
+		  preserve-order="true">
+		<groups>
+			<run>
+				<include name="mobile" />
+			</run>
+		</groups>
+		<classes>
+			<class name="com.ibm.maximo.technician.testcases.TestSuite" />
+			<class
+					name="com.ibm.maximo.technician.testcases.StartWorkOrderWithoutTimer" />
+		</classes>
+	</test>
+	<test thread-count="1" name="StartWorkWithTimer"
+		  preserve-order="true">
+		<groups>
+			<run>
+				<include name="mobile" />
+			</run>
+		</groups>
+		<classes>
+			<class name="com.ibm.maximo.technician.testcases.TestSuite" />
+			<class
+					name="com.ibm.maximo.technician.testcases.StartWorkWithTimer" />
+		</classes>
+	</test>
+	<test thread-count="1" name="InspectionIntegration"
+		  preserve-order="true">
+		<groups>
+			<run>
+				<include name="mobile" />
+			</run>
+		</groups>
+		<classes>
+			<class name="com.ibm.maximo.technician.testcases.TestSuite" />
+			<class
+					name="com.ibm.maximo.technician.testcases.InspectionIntegration" />
+		</classes>
+	</test>
+	<test thread-count="1" name="ActualLaborToolsMaterialTest"
+		  preserve-order="true">
+		<groups>
+			<run>
+				<include name="mobile" />
+			</run>
+		</groups>
+		<classes>
+			<class name="com.ibm.maximo.technician.testcases.TestSuite" />
+			<class
+					name="com.ibm.maximo.technician.testcases.ActualLaborToolsMaterialTest" />
+		</classes>
+	</test>
+	<test thread-count="1"
+		  name="MultiAssetLocationTestSuiteOne"
+		  preserve-order="true">
+		<groups>
+			<run>
+				<include name="mobile" />
+			</run>
+		</groups>
+		<classes>
+			<class name="com.ibm.maximo.technician.testcases.TestSuite" />
+			<class
+					name="com.ibm.maximo.technician.testcases.MultiAssetLocationTestSuiteOne" />
+		</classes>
+	</test>
+	<test thread-count="1"
+		  name="MultiAssetLocationTestSuiteTwo"
+		  preserve-order="true">
+		<groups>
+			<run>
+				<include name="mobile" />
+			</run>
+		</groups>
+		<classes>
+			<class name="com.ibm.maximo.technician.testcases.TestSuite" />
+			<class
+					name="com.ibm.maximo.technician.testcases.MultiAssetLocationTestSuiteTwo" />
+		</classes>
+	</test>
+	<test thread-count="1"
+		  name="MultiAssetLocationTestSuiteThree"
+		  preserve-order="true">
+		<groups>
+			<run>
+				<include name="mobile" />
+			</run>
+		</groups>
+		<classes>
+			<class name="com.ibm.maximo.technician.testcases.TestSuite" />
+			<class
+					name="com.ibm.maximo.technician.testcases.MultiAssetLocationTestSuiteThree" />
+		</classes>
+	</test>
+	<test thread-count="1"
+		  name="SwitchToAssetDetailsTest"
+		  preserve-order="true">
+		<groups>
+			<run>
+				<include name="mobile" />
+			</run>
+		</groups>
+		<classes>
+			<class name="com.ibm.maximo.technician.testcases.TestSuite" />
+			<class
+					name="com.ibm.maximo.technician.testcases.SwitchToAssetDetailsTest" />
+		</classes>
+	</test>
+
+</suite>

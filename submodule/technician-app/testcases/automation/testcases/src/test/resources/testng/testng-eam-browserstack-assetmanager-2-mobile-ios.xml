@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="MobileTestSuite test run on eam-browserstack-assetmanager-2-mobile-ios">
+	<parameter name="configPath"
+		value="src/test/resources/config.eam.browserstack.assetmanager.mobile.ios.properties" />
+	<parameter name="testType" value="mobileapp" />
+	<listeners>
+		<listener class-name="com.ibm.maximo.technician.listener.ScreenShotListener" />
+    	<listener class-name="com.ibm.maximo.technician.listener.FastFailClass"/>
+	</listeners>
+	<test thread-count="1" name="CompleteWorkOrder">
+		<groups>
+			<run>
+				<include name="mobile" />
+			</run>
+		</groups>
+
+		<classes>
+			<class name="com.ibm.maximo.technician.testcases.TestSuite" />
+			<class name="com.ibm.maximo.technician.testcases.CompleteWorkOrder" />
+
+		</classes>
+	</test>
+	<test thread-count="1" name="ReservedItemsTest">
+		<groups>
+			<run>
+				<include name="mobile" />
+			</run>
+		</groups>
+
+		<classes>
+			<class name="com.ibm.maximo.technician.testcases.TestSuite" />
+			<class name="com.ibm.maximo.technician.testcases.ReservedItemsTest" />
+
+		</classes>
+	</test>
+	<test thread-count="1" name="TaskWorkOrder">
+		<groups>
+			<run>
+				<include name="mobile" />
+			</run>
+		</groups>
+
+		<classes>
+			<class name="com.ibm.maximo.technician.testcases.TestSuite" />
+			<class name="com.ibm.maximo.technician.testcases.TaskWorkOrder" />
+
+		</classes>
+	</test>
+
+	<test thread-count="1" name="TaskWorkOrdersParentReflectsSubtaskChangeTest">
+		<groups>
+			<run>
+				<include name="mobile" />
+			</run>
+		</groups>
+
+		<classes>
+			<class name="com.ibm.maximo.technician.testcases.TestSuite" />
+			<class name="com.ibm.maximo.technician.testcases.TaskWorkOrdersParentReflectsSubtaskChangeTest" />
+		</classes>
+	</test>
+	<test thread-count="1"
+		  name="TaskWorkOrderVerifyInWorkOrderDetailsPage" preserve-order="true">
+		<groups>
+			<run>
+				<include name="mobile" />
+			</run>
+		</groups>
+		<classes>
+			<class name="com.ibm.maximo.technician.testcases.TestSuite" />
+			<class
+					name="com.ibm.maximo.technician.testcases.TaskWorkOrderVerifyInWorkOrderDetailsPage" />
+		</classes>
+	</test>
+	<test thread-count="1"
+		  name="TaskWorkOrdersVerifyWorkLogTest"
+		  preserve-order="true">
+		<groups>
+			<run>
+				<include name="mobile" />
+			</run>
+		</groups>
+		<classes>
+			<class name="com.ibm.maximo.technician.testcases.TestSuite" />
+			<class
+					name="com.ibm.maximo.technician.testcases.TaskWorkOrdersVerifyWorkLogTest" />
+		</classes>
+	</test>
+	<test thread-count="1" name="ViewSpecificationTest"
+		  preserve-order="true">
+		<groups>
+			<run>
+				<include name="mobile" />
+			</run>
+		</groups>
+		<classes>
+			<class name="com.ibm.maximo.technician.testcases.TestSuite" />
+			<class
+					name="com.ibm.maximo.technician.testcases.ViewSpecificationTest" />
+		</classes>
+	</test>
+</suite>

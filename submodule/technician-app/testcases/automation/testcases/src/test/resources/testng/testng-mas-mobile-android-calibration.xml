@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="CalibrationApp_MAS_Android_Test Suite">
+	<parameter name="configPath" value="src/test/resources/config.mas.mobile.android.calibration.properties"/>
+
+	<listeners>
+		<listener class-name="com.ibm.maximo.technician.listener.ScreenShotListener" />
+  	</listeners>
+
+	<parameter name="testType" value="mobileapp"/>
+	<parameter name="calibrationWONum" value="1203"/>
+	<parameter name="envCondiTempValue" value="25"/>
+	<parameter name="envCondiHumidValue" value="31"/>
+	<parameter name="envCondiBaroPressureValue" value="15"/>
+
+	<test thread-count="1" name="AnalogDatasheetTests">
+		<groups>
+			<run>
+				<include name="mobile" />
+			</run>
+		</groups>
+		<classes>
+			<class name="com.ibm.maximo.technician.testcases.TestSuite" />
+			<class name="com.ibm.maximo.technician.testcases.calibration.tests.EUAWOAnalogDatasheetTests" />
+			<class name="com.ibm.maximo.technician.testcases.calibration.tests.SUMIRPTAnalogDatasheetTests" />
+			<class name="com.ibm.maximo.technician.testcases.calibration.tests.SUMNRPTAnalogDatasheetTests" />
+			<class name="com.ibm.maximo.technician.testcases.calibration.tests.EUOWOOPPAnalogDatasheetTests" />
+			<class name="com.ibm.maximo.technician.testcases.calibration.tests.SUMNSFAnalogDatasheetTests" />
+			<class name="com.ibm.maximo.technician.testcases.calibration.tests.URVNIWOAnalogDatasheetTests" />
+			<class name="com.ibm.maximo.technician.testcases.calibration.tests.URVOWOAnalogDatasheetTests" />
+			<class name="com.ibm.maximo.technician.testcases.calibration.tests.EUIWO1AnalogDatasheetTests" />
+			<class name="com.ibm.maximo.technician.testcases.calibration.tests.EUIWO2AnalogDatasheetTests" />
+		</classes>
+	</test>
+	<test thread-count="1" name="MiscDatasheetTests">
+		<groups>
+			<run>
+				<include name="mobile" />
+			</run>
+		</groups>
+		<classes>
+			<class name="com.ibm.maximo.technician.testcases.TestSuite" />
+			<class name="com.ibm.maximo.technician.testcases.calibration.tests.MULTIASSETDatasheetTests" />
+		</classes>
+	</test>
+	<test thread-count="1" name="Environmental Condition Tests">
+		<groups>
+			<run>
+				<include name="mobile" />
+			</run>
+		</groups>
+		<classes>
+			<class name="com.ibm.maximo.technician.testcases.TestSuite" />
+			<class name="com.ibm.maximo.technician.testcases.calibration.tests.EnvironmentalConditionTest" />
+		</classes>
+	</test>
+	<test thread-count="1" name="As found Tolerance Tests SUMIWO, EUIWO2">
+		<groups>
+			<run>
+				<include name="mobile" />
+			</run>
+		</groups>
+		<classes>
+			<class name="com.ibm.maximo.technician.testcases.TestSuite" />
+			<class name="com.ibm.maximo.technician.testcases.calibration.tests.AsFoundToleranceTests" />
+		</classes>
+	</test>
+		<test thread-count="1" name="As left Tolerance Tests SUMIWO, EUIWO2">
+		<groups>
+			<run>
+				<include name="mobile" />
+			</run>
+		</groups>
+		<classes>
+			<class name="com.ibm.maximo.technician.testcases.TestSuite" />
+			<class name="com.ibm.maximo.technician.testcases.calibration.tests.AsLeftToleranceTests" />
+		</classes>
+	</test>
+	<test thread-count="1" name="Asset Function No Adjustment Test">
+		<groups>
+			<run>
+				<include name="mobile" />
+			</run>
+		</groups>
+		<classes>
+			<class name="com.ibm.maximo.technician.testcases.TestSuite" />
+			<class name="com.ibm.maximo.technician.testcases.calibration.tests.AssetFunctionNoAdjustmentTest" />
+		</classes>
+	</test>
+	<test thread-count="1" name="Repeatable Calibration Point Datasheet Test">
+		<groups>
+			<run>
+				<include name="mobile" />
+			</run>
+		</groups>
+		<classes>
+			<class name="com.ibm.maximo.technician.testcases.TestSuite" />
+			<class name="com.ibm.maximo.technician.testcases.calibration.tests.RepeatableCalPointTest" />
+		</classes>
+	</test>
+	<test thread-count="1" name="Function Checks Test">
+		<groups>
+			<run>
+				<include name="mobile" />
+			</run>
+		</groups>
+		<classes>
+			<class name="com.ibm.maximo.technician.testcases.TestSuite" />
+			<class name="com.ibm.maximo.technician.testcases.calibration.tests.FunctionCheckTest" />
+		</classes>
+	</test>
+	<test thread-count="1" name="Dynamic Checks Test">
+		<groups>
+			<run>
+				<include name="mobile" />
+			</run>
+		</groups>
+		<classes>
+			<class name="com.ibm.maximo.technician.testcases.TestSuite" />
+			<class name="com.ibm.maximo.technician.testcases.calibration.tests.DynamicCheckTest" />
+		</classes>
+	</test>
+	<test thread-count="1" name="Calibration History Test">
+		<groups>
+			<run>
+				<include name="mobile" />
+			</run>
+		</groups>
+		<classes>
+			<class name="com.ibm.maximo.technician.testcases.TestSuite" />
+			<class name="com.ibm.maximo.technician.testcases.calibration.tests.CalibrationHistoryTest" />
+		</classes>
+	</test>
+	<test thread-count="1" name="Asset Status History Test">
+		<groups>
+			<run>
+				<include name="mobile" />
+			</run>
+		</groups>
+		<classes>
+			<class name="com.ibm.maximo.technician.testcases.TestSuite" />
+			<class name="com.ibm.maximo.technician.testcases.calibration.tests.AssetStatusHistoryTest" />
+		</classes>
+	</test>
+</suite> 

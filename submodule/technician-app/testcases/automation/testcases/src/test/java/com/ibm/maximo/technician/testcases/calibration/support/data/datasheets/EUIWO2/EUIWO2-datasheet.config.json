@@ -1,0 +1,19 @@
+{
+	"pluscdsconfig": {
+		"pluscdsconfigid": 93,
+		"dsplannum": "DsName",
+		"orgid": null,
+		"siteid": null,
+		"revisionnum": 0,
+		"asseterror": 1,
+		"assetnplaces": 1,
+		"assettruncate": 0,
+		"tolerror": 1,
+		"tolnplaces": 3,
+		"toltruncate": 0,
+		"repeatvalue": 1,
+		"stddev": 1,
+		"outputtruncate": 1,
+		"rangetruncate": 1
+	}
+}

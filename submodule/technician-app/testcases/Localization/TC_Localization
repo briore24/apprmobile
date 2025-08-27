@@ -1,0 +1,615 @@
+# Language,Time Zone Test Cases of Technician App
+
+These test scenarios will verify language and time zone testing of technician app for different pages, app navigator, validation or confirmation message, lookup, drawers, edit flow pages.
+
+## Scenario 1 - Verify strings are localized on app "Navigator page" as per user's selected language.
+
+**Pre-condition:**
+
+1. Logged in Maximo Classic App
+2. Goto user's profile(Manage Profile) Page
+3. Set different language other than English in Language and Region tab
+
+**Steps:**
+
+1. Logged in Maximo Mobile App
+2. Go to navigator page
+3. Verify "Technician" tile/list string
+4. Click on + icon
+5. Verify "Create Work Order" string
+
+**Result:**
+
+Verify that "Technician" tile and "Create Work Order" option string should be localized as per logged in user's profile language selection
+
+**Note**
+
+Same steps can be performed for approvals
+
+## Scenario 2 - Verify strings are localized on "Create Work Order and Edit Work Order" page as per user's selected language.
+
+**Pre-condition:**
+
+1. Logged in Maximo Classic App
+2. Goto user's profile(Manage Profile) Page
+3. Set different language other than English in Language and Region tab
+
+**Steps:**
+
+1. Logged in Maximo Mobile App
+2. Go to navigator page
+3. Click on + icon
+4. Select Create Work Order option
+5. Open create Work Order page and verify
+6. Go back after creating WO and click on edit icon.
+7. First enter wrong values and then correct values in all lookup fields
+8. Verify validation message strings
+
+**Result:**
+
+Verify that create work order page header/text/lables/fields name/Scheduled start and Finish dates/Time/search lookup/ strings should be localized as per logged in user's profile language selection and time zone selected
+Verify that each validation message strings should be localized as per logged in user's profile language selection present on the Edit Work order page
+
+**Note**
+
+The same steps can be performed for approvals for edit WO page.
+
+## Scenario 3 - Verify discard changes popup strings are localized on "Create,Edit and other editable" pages as per user's selected language.
+
+**Pre-condition:**
+
+1. Logged in Maximo Classic App
+2. Goto user's profile(Manage Profile) Page
+3. Set different language other than English in Language and Region tab
+
+**Steps:**
+
+1. Logged in Maximo Mobile App
+2. Go to navigator page
+3. Click on + icon
+4. Select Create new Work Order
+5. Open create work order or open existing work order page
+6. Add some values in the fields
+7. Click < back button
+8. Verify discard/Save changes popup
+
+**Result:**
+
+Verify that discard changes popup strings should be localized as per logged in user's profile language selection.
+
+## Scenario 4 - Verify strings are localized on "Assigned Work" "PMS due this week" "Work created by me" "Work order history" list page as per user's selected language.
+
+**Pre-condition:**
+
+1. Logged in Maximo Classic App
+2. Goto user's profile(Manage Profile) Page
+3. Set different language other than English in Language and Region tab
+
+**Steps:**
+
+1. Logged in Maximo Mobile App
+2. Go to navigator page
+3. Select My Schedule
+4. User should be landed on Assigned Work list page
+5. Verify strings/text
+
+**Result:**
+
+Verify that "Assigned Work" "PMS due this week" "Work created by me" "Work order history" drop down text, Record labels, check for update button, Search box watermark text, Work order cards view, service address, strings should be localized as per logged in user's profile language selection.
+
+**Note**
+
+Same steps can be performed for approvals "work order to review", "completed wo" and "work order history"
+
+## Scenario 5 - Verify strings are localized on "Work Order" Details page as per user's selected language and time zone.
+
+**Pre-condition:**
+
+1. Logged in Maximo Classic App
+2. Goto user's profile(Manage Profile) Page
+3. Set different language other than English in Language and Region tab
+
+**Steps:**
+
+1. Logged in Maximo Mobile App
+2. Go to navigator page
+3. Select My Schedule
+4. Search your Work order
+5. Goto work order details page
+
+**Result:**
+
+Verify that all attribute field's name, section header name,specification attirbute name, releted records, change status page, UP/DOWN strings  Attachments, follow-up Work on asset details page should be localized as per logged in user's profile language selection.
+
+**Note**
+
+Same steps can be performed for approvals
+
+## Scenario 6 - Verify strings are localized on "Materials and tools" page as per user's selected language.
+
+**Pre-condition:**
+
+1. Logged in Maximo Classic App
+2. Goto user's profile(Manage Profile) Page
+3. Set different language other than English in Language and Region tab
+
+**Steps:**
+
+1. Logged in Maximo Mobile App
+2. Go to navigator page
+3. Select My Schedule
+4. Search your work order
+5. Goto work order details page
+6. Click on Materials and Tools icon
+7. Click on 3 dots
+8. Click on Request Materials
+9. Material Request page opens up
+10. Enter all fields
+
+**Result:**
+
+Verify that material request page header/text/date/labels/fields name/search lookup/Should be localized as per logged in user's profile language.
+
+**Note**
+
+Same steps can be performed for approvals
+
+## Scenario 7 - Verify strings are localized on "Work log" page as per user's selected language.
+
+**Pre-condition:**
+
+1. Logged in Maximo Classic App
+2. Goto user's profile(Manage Profile) Page
+3. Set different language other than English in Language and Region tab
+
+**Steps:**
+
+1. Logged in Maximo Mobile App
+2. Go to navigator page
+3. Select My Schedule
+4. Search your work order
+5. Goto work order details page
+6. Click on work log icon
+7. Work log slider opens
+8. Click on the expanded icon
+9. Enter all fields
+
+**Result:**
+
+Verify that Add note page header/text/labels/fields name/radio button/checkbox/Should be localized as per logged in user's profile language.
+
+**Note**
+
+Same steps can be performed for approvals
+
+## Scenario 8 - Verify strings are localized on "Inspection" page as per user's selected language.
+
+**Pre-condition:**
+
+1. Logged in Maximo Classic App
+2. Goto user's profile(Manage Profile) Page
+3. Set different language other than English in Language and Region tab
+
+**Steps:**
+
+1. Logged in Maximo Mobile App
+2. Go to navigator page
+3. Select My Schedule
+4. Search your work order
+5. Goto work order details page
+6. Click on Inspections icon
+7. Redirected to the inspection form
+7. Verify strings/text
+
+**Result:**
+
+Verify that Inspection page header/text/labels/fields name/radio button/checkbox/Should be localized as per logged in user's profile language.
+
+**Note**
+
+Same steps can be performed for approvals
+
+## Scenario 9 - Verify strings are localized on "Asset" page as per user's selected language.
+
+**Pre-condition:**
+
+1. Logged in Maximo Classic App
+2. Goto user's profile(Manage Profile) Page
+3. Set different language other than English in Language and Region tab
+
+**Steps:**
+
+1. Logged in Maximo Mobile App
+2. Go to navigator page
+3. Select My Schedule
+4. Search your work order
+5. Goto work order details page
+6. Click on Asset and Location chevron icon
+7. Redirected to the Asset Page
+7. Verify strings/texts
+
+**Result:**
+
+Verify that Asset page header/text/labels/fields name should be localized as per logged in user's profile language.
+
+**Note**
+
+Same steps can be performed for approvals
+
+## Scenario 10 - Verify strings are localized on "Report Work" page as per user's selected language.
+
+**Pre-condition:**
+
+1. Logged in Maximo Classic App
+2. Goto user's profile(Manage Profile) Page
+3. Set different language other than English in Language and Region tab
+
+**Steps:**
+
+1. Logged in Maximo Mobile App
+2. Go to navigator page
+3. Select My Schedule
+4. Search your work order
+5. Goto work order details page
+6. Click on report work icon
+7. Click on edit icon of failure
+8. Click on Labor + button
+9. Click on Tools + icon
+10. Check Materials used
+
+**Result:**
+
+Verify that edit failure page header/text/labels/fields name/send button/Should be localized as per logged in user's profile language.
+Verify that labor page header/text/labels/date/time/search look up Should be localized as per logged in user's profile language.
+Verify that Add Material page header/text/labels/search look up Should be localized as per logged in user's profile language.
+Verify that Add tool page header/text/labels/search look up Should be localized as per logged in user's profile language.
+
+**Note**
+
+Same steps can be performed for approvals
+
+## Scenario 11 -Verify strings are localized on "Attachments" page as per user's selected language.
+
+**Pre-condition:**
+
+1. Logged in Maximo Classic App
+2. Goto user's profile(Manage Profile) Page
+3. Set different language other than English in Language and Region tab
+
+**Steps:**
+
+1. Logged in Maximo Mobile App
+2. Go to navigator page
+3. Select My Schedule
+4. Search your work order
+5. Goto work order details page
+6. Click on Attachments
+
+**Result:**
+
+Verify that attachments page header/text/labels/left drawer/Success or Validation messages strings should be localized as per logged in user's profile language selection.
+
+**Note**
+
+Same steps can be performed for approvals
+
+## Scenario 12 -Verify strings are localized on "Follow-up work" page as per user's selected language.
+
+**Pre-condition:**
+
+1. Logged in Maximo Classic App
+2. Goto user's profile(Manage Profile) Page
+3. Set different language other than English in Language and Region tab
+
+**Steps:**
+
+1. Logged in Maximo Mobile App
+2. Go to navigator page
+3. Select My Schedule
+4. Search your work order
+5. Goto work order details page
+6. Click on Follow-up work
+7. Click on Create Follow-up work order
+8. Create follow-up wo opens
+
+**Result:**
+
+Verify that Create follow-up WO page header/text/labels/fields name/dates/time/search look/save button up Should be localized as per logged in user's profile language.
+
+**Note**
+
+Same steps can be performed for approvals
+
+## Scenario 13 -Verify strings are localized on "Create Follow-up work order" page as per user's selected language.
+
+**Pre-condition:**
+
+1. Logged in Maximo Classic App
+2. Goto user's profile(Manage Profile) Page
+3. Set different language other than English in Language and Region tab
+
+**Steps:**
+
+1. Logged in Maximo Mobile App
+2. Go to navigator page
+3. Select My Schedule
+4. Search your work order
+5. Goto work order details page
+6. Click on Follow-up work
+7. Click on Create Follow-up work order
+8. Create follow-up wo opens
+9. Enter invalid values
+10. Enter correct values in all fields
+11. Go back without saving
+12. opens discard/save pop up
+
+**Result:**
+
+Verify that Create follow-up WO page invalid values should be localized as per logged in user's profile language.
+Verify that discard changes popup strings should be localized as per logged in user's profile language selection.
+
+**Note**
+
+Same steps can be performed for approvals
+
+## Scenario 14 - Verify strings are localized on "Meter" page as per user's selected language.
+
+**Pre-condition:**
+
+1. Logged in Maximo Classic App
+2. Goto user's profile(Manage Profile) Page
+3. Set different language other than English in Language and Region tab
+
+**Steps:**
+
+1. Logged in Maximo Mobile App
+2. Go to navigator page
+3. Select My Schedule
+4. Search your work order with meters associated
+5. WO detail page opens up
+6. Click on Meter touch point and Verify
+
+**Result:**
+
+Verify that meter page header/text/added meters name and date and times strings should be localized as per logged in user's profile language selection.
+
+**Note**
+
+Same steps can be performed for approvals
+
+## Scenario 15 - Verify strings are localized for "Capture GPS" functional behavior as per user's selected language.
+
+**Pre-condition:**
+
+1. Logged in Maximo Classic App
+2. Goto user's profile(Manage Profile) Page
+3. Set different language other than English in Language and Region tab
+
+**Steps:**
+
+1. Logged in Maximo Mobile App
+2. Go to navigator page
+3. Select My Schedule
+4. Search your work order
+5. Goto work order details page
+6. Click on GPS icon and verify
+
+**Result:**
+
+Verify that Capture GPS Position Success or Validation messages strings should be localized as per logged in user's profile language selection.
+
+**Note**
+
+Same steps can be performed for approvals
+
+## Scenario 16 - Verify strings are localized on "MAP" page as per user's selected language.
+
+**Pre-condition:**
+
+1. Logged in Maximo Classic App
+2. Goto user's profile(Manage Profile) Page
+3. Set different language other than English in Language and Region tab
+
+**Steps:**
+
+1. Logged in Maximo Mobile App
+2. Go to navigator page
+3. Select Maps
+4. Map page should open
+
+**Result:**
+
+Verify that maps related strings like search data list, view wo details, summary card of wo, on map page should be localized as per logged in user's profile language selection.
+
+**Note**
+
+Same steps can be performed for approvals
+
+## Scenario 17 - Verify strings are localized for "No Results Found" text message as per user's selected language.
+
+**Pre-condition:**
+
+1. Logged in Maximo Classic App
+2. Goto user's profile(Manage Profile) Page
+3. Set different language other than English in Language and Region tab
+
+**Steps:**
+
+1. Logged in Maximo Mobile App
+2. Go to navigator page
+3. Select My Schedule
+4. Search Work orders with random strings
+
+**Result:**
+
+Verify that "No Results Found" text message strings should be localized as per logged in user's profile language selection.
+
+**Note**
+
+Same steps can be performed for approvals
+
+## Scenario 18 - Verify formats of date and time of "Create work order" page as per user's selected timezone.
+
+**Pre-condition:**
+
+1. Logged in Maximo Classic App
+2. Goto user's profile(Manage Profile) Page
+3. Select timzone
+
+**Steps:**
+
+1. Logged in Maximo Mobile App
+2. Go to navigator page
+3. Click on + icon
+4. Select Create work order
+5. Create work order page open up
+6. Enter Scheduled start and Finish dates
+
+**Result:**
+
+Verify that "Create Work order" Scheduled start and Finish dates and time strings should be localized as per logged in user's profile timezone selection.
+In Web-Verify time should be in 08 '8' 27(Example) format and date format should be the same as September 29,2023 during localization as well.
+In Mobile-Verify in mobile, the format should be fetched from the timezone of mobile server. The date selection should be in the format 2023-09-14 and time selection should be in 06:37(HH:mm) for example.
+
+**Note**
+
+TIME is preserved and it is stored in Maximo in a DATETIME sql type and in the TimeZone of the server.
+No TimeZone conversion is done on this field. If you send 11:00am in the user’s GMT-5 timezone then maximo stores 11:00am in the server’s timezone without converting. Maximo will strip the Date from the field and replace with a common start date (Jan 1, 1970), but preserve the TIME information without respect of the TimeZone.
+
+## Scenario 19 - Verify formats of date and time of "Edit Work order and Work order details page" as per user's selected timezone and localization.
+
+**Pre-condition:**
+
+1. Logged in Maximo Classic App
+2. Goto user's profile(Manage Profile) Page
+3. Select timzone
+
+**Steps:**
+
+1. Logged in Maximo Mobile App
+2. Go to navigator page
+3. Click on My Schedule
+4. Open any existing WO
+5. WO details page open up
+6. Verify date and time format as per laungauge and timezone changes
+7. Click on edit icon
+8. Verify date and time format
+
+**Result:**
+
+In mobile and Web - Verify time should be in 08 '8' 27(Example) format and date format should be the same as September 29,2023(août 29, 2023)during localization as well on the WO details page.
+In Mobile -Verity date selection in the field Scheduled start and finish dates should be in the format 2023-09-14 and time should in the format of  06:37(HH:mm) for example in Edit WO page.
+
+**Note**
+
+Same steps can be performed for approvals
+
+## Scenario 20 - Verify formats of date and time of "Meters" Page as per user's selected timezone and localization.
+
+**Pre-condition:**
+
+1. Logged in Maximo Classic App
+2. Goto user's profile(Manage Profile) Page
+3. Select timzone
+
+**Steps:**
+
+1. Logged in Maximo Mobile App
+2. Go to navigator page
+3. Click on My Schedule
+4. Open any existing WO in which meter is associated or create on from classic application
+5. Click on 3 dots to enter meter reading
+
+**Result:**
+
+In web - Verify default time and date present in the fields should be in the format of 29.08.23 and 08 '8' 27 for example.
+In Mobile - Verify default time and date present in the fields should be in the format of 2023-09-14 and 06:37(HH:mm) for example.
+
+**Note**
+
+Same steps can be performed for approvals
+
+## Scenario 21 - Verify formats of date and time of "Asset status" Page as per user's selected timezone and localization.
+
+**Pre-condition:**
+
+1. Logged in Maximo Classic App
+2. Goto user's profile(Manage Profile) Page
+3. Select timzone
+
+**Steps:**
+
+1. Logged in Maximo Mobile App
+2. Go to navigator page
+3. Click on My Schedule
+4. Open any existing WO
+5. Click on the up down icon
+6. Asset slider page opens up
+7. Click on the down button, if it's up or vice-versa
+
+**Result:**
+
+In Web - Verify default time and date present in the fields should be in the format of 29.08.23 and 08 '8' 27 for example.
+In Mobile - Verify default time and date present in the fields should be in the format of 2023-09-14 and 06:37(HH:mm) for example.
+
+**Note**
+
+Same steps can be performed for approvals
+
+## Scenario 22 - Verify formats of date and time of "Failure class" Page as per user's selected timezone and localization.
+
+**Pre-condition:**
+
+1. Logged in Maximo Classic App
+2. Goto user's profile(Manage Profile) Page
+3. Select timzone
+
+**Steps:**
+
+1. Logged in Maximo Mobile App
+2. Go to navigator page
+3. Click on My Schedule
+4. Open any existing WO
+5. Go to report work page
+6. Click on edit icon to add failure class
+
+**Result:**
+
+In Web - Verify that the Failure data and time format which is fetched should be in the format 14.09.23 07 '7' 01 '1in' 59 '59'(9/14/23 11:31:22 am).
+In Mobile - Verify that the Failure data and time format which is fetched should be in the format 2023-09-14 11:17(HH:mm) for example.
+
+**Note**
+
+Same steps can be performed for approvals
+
+## Scenario 23 - Verify formats of date and time of "Labor" Page as per user's selected timezone and localization.
+
+**Pre-condition:**
+
+1. Logged in Maximo Classic App
+2. Goto user's profile(Manage Profile) Page
+3. Select timzone
+
+**Steps:**
+
+1. Logged in Maximo Mobile App
+2. Go to navigator page
+3. Click on My Schedule
+4. Open any existing WO
+5. Go to report work page
+6. click on the + icon present on the Labor section
+7. labor page opens up
+8. Add all values
+9. Save and then open the added labor
+
+**Result:**
+
+In Web - Verify that the start date present should be in the format of 14.09.23, end data should be selected in the format of 14.09.23 and start and end time should be in the format 08 '8' 27 for example.
+Verify Added date and time should be in the format août 29, 2023 à 07 '7' 37 on the labor added page.
+
+In Mobile - Verify that the start date present should be in the format of 2023-09-14, end data should be selected in the format of 2023-09-14 and start and end time should be in the format 11:17(HH:mm) for example.
+Verify Added date and time should be in the format août 29, 2023 à 11:55 on the labor added page.
+
+**Note**
+
+Same steps can be performed for approvals

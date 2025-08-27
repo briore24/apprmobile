@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="MobileTestSuite test run on eam-browserstack-P2-mobile-ios">
+	<parameter name="configPath" value="src/test/resources/config.eam.browserstack.techasset91.mobile.ios.properties" />
+	<parameter name="testType" value="mobileapp" />
+	<listeners>
+    	<listener class-name="com.ibm.maximo.technician.listener.ScreenShotListener" />
+    	<listener class-name="com.ibm.maximo.technician.listener.FastFailClass"/>
+	</listeners>
+	<test thread-count="1" name="CreateWorkOrderTest" preserve-order="true">
+		<groups>
+			<run>
+				<include name="priority2" />
+			</run>
+		</groups>
+		<classes>
+			<class name="com.ibm.maximo.technician.testcases.TestSuite" />
+			<class name="com.ibm.maximo.technician.testcases.CreateWorkOrderTest" />
+		</classes>
+	</test>
+	<test thread-count="1" name="FailureReportTest" preserve-order="true">
+		<groups>
+			<run>
+				<include name="priority2" />
+			</run>
+		</groups>
+		<classes>
+			<class name="com.ibm.maximo.technician.testcases.TestSuite" />
+			<class name="com.ibm.maximo.technician.testcases.FailureReportTest" />
+		</classes>
+	</test>
+	<test thread-count="1" name="MultiAssetLocationTestSuiteFour" preserve-order="true">
+		<groups>
+			<run>
+				<include name="priority2" />
+			</run>
+		</groups>
+		<classes>
+			<class name="com.ibm.maximo.technician.testcases.TestSuite" />
+			<class name="com.ibm.maximo.technician.testcases.MultiAssetLocationTestSuiteFour" />
+		</classes>
+	</test>
+	<test thread-count="1" name="StartStopPauseWorkTest" preserve-order="true">
+		<groups>
+			<run>
+				<include name="priority2" />
+			</run>
+		</groups>
+		<classes>
+			<class name="com.ibm.maximo.technician.testcases.TestSuite" />
+			<class name="com.ibm.maximo.technician.testcases.StartStopPauseWorkTest" />
+		</classes>
+	</test>
+	<test thread-count="1" name="TaskCardTest" preserve-order="true">
+		<groups>
+			<run>
+				<include name="priority2" />
+			</run>
+		</groups>
+		<classes>
+			<class name="com.ibm.maximo.technician.testcases.TestSuite" />
+			<class name="com.ibm.maximo.technician.testcases.TaskCardTest" />
+		</classes>
+	</test>
+	<test thread-count="1" name="TaskFlowControl" preserve-order="true">
+		<groups>
+			<run>
+				<include name="priority2" />
+			</run>
+		</groups>
+		<classes>
+			<class name="com.ibm.maximo.technician.testcases.TestSuite" />
+			<class name="com.ibm.maximo.technician.testcases.TaskFlowControl" />
+		</classes>
+	</test>
+</suite>

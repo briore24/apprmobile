@@ -1,0 +1,186 @@
+{
+    "DataSheetName": "EUIRPTSTDDEV",
+    "asfoundpasscalstatus": "PASS",
+    "asfounderrorcalstatus": "ADJREQD",
+    "asfounderrorcalstatusstddev": "FAIL",
+    "asleftpasscalstatus": "PASS",
+    "aslefterrorcalstatus": "ADJREQD",
+    "aslefterrorcalstatusstddev": "FAIL",
+    "pass": [
+        {
+            "Input Label": "0%",
+            "Input Value": "100.00",
+            "Output Value": "4.00",
+            "Direction": "INCREASING",
+            "Asset Error": "0.00",
+            "Process Error": "0.00",
+            "T1 From": "3.92",
+            "T1 To": "4.08",
+            "T1 Error": "0.00",
+            "T2 From": "3.84",
+            "T2 To": "4.16",
+            "T2 Error": "0.00",
+            "T3 From": "3.76",
+            "T3 To": "4.24",
+            "T3 Error": "0.00",
+            "T4 From": "3.68",
+            "T4 To": "4.32",
+            "T4 Error": "0.00",
+            "Standard Deviation": "Standard deviation",
+            "Input Standard Deviation Limit": "1",
+            "Input Standard Deviation": "0.00",
+            "Input Standard Deviation Error": "1.00",
+            "Output Standard Deviation Limit": "1",
+            "Output Standard Deviation": "0.00",
+            "Output Standard Deviation Error": "1.00"
+        }
+    ],
+    "failAsFound": [
+         {
+            "Input Label": "0%",
+            "Repeatable Values": [
+                {
+                    "Input Value": "99.5",
+                    "Output Value": "4.20"
+                },
+                {
+                    "Input Value": "101.00",
+                    "Output Value": "4.25"
+                }
+            ],
+            "Direction": "INCREASING",
+            "Asset Error": "0.21",
+            "Process Error": "2.63",
+            "T1 From": "3.94",
+            "T1 To": "4.10",
+            "T1 Error": "0.13",
+            "T2 From": "3.86",
+            "T2 To": "4.18",
+            "T2 Error": "0.05",
+            "T3 From": "3.78",
+            "T3 To": "4.26",
+            "T3 Error": "0.00",
+            "T4 From": "3.70",
+            "T4 To": "4.34",
+            "T4 Error": "0.00",
+            "Standard Deviation": "Standard deviation",
+            "Input Standard Deviation Limit": "1",
+            "Input Standard Deviation": "0.75",
+            "Input Standard Deviation Error": "0.25",
+            "Output Standard Deviation Limit": "1",
+            "Output Standard Deviation": "0.02",
+            "Output Standard Deviation Error": "0.98"
+        }
+    ],
+    "failAsLeft": [
+        {
+            "Input Label": "0%",
+            "Repeatable Values": [
+                {
+                    "Input Value": "99.5",
+                    "Output Value": "4.20"
+                },
+                {
+                    "Input Value": "101.00",
+                    "Output Value": "4.25"
+                }
+            ],
+            "Direction": "INCREASING",
+            "Asset Error": "0.21",
+            "Process Error": "2.63",
+            "T1 From": "3.94",
+            "T1 To": "4.10",
+            "T1 Error": "0.13",
+            "T2 From": "3.86",
+            "T2 To": "4.18",
+            "T2 Error": "0.05",
+            "T3 From": "3.78",
+            "T3 To": "4.26",
+            "T3 Error": "0.00",
+            "T4 From": "3.70",
+            "T4 To": "4.34",
+            "T4 Error": "0.00",
+            "Standard Deviation": "Standard deviation",
+            "Input Standard Deviation Limit": "1",
+            "Input Standard Deviation": "0.75",
+            "Input Standard Deviation Error": "0.25",
+            "Output Standard Deviation Limit": "1",
+            "Output Standard Deviation": "0.02",
+            "Output Standard Deviation Error": "0.98"
+        }
+    ],
+    "failAsFoundStdDev": [
+         {
+            "Input Label": "0%",
+            "Repeatable Values": [
+                {
+                    "Input Value": "98.5",
+                    "Output Value": "4.20"
+                },
+                {
+                    "Input Value": "101.00",
+                    "Output Value": "4.25"
+                }
+            ],
+            "Direction": "INCREASING",
+            "Asset Error": "0.25",
+            "Process Error": "3.13",
+            "T1 From": "3.90",
+            "T1 To": "4.06",
+            "T1 Error": "0.17",
+            "T2 From": "3.82",
+            "T2 To": "4.14",
+            "T2 Error": "0.09",
+            "T3 From": "3.74",
+            "T3 To": "4.22",
+            "T3 Error": "0.01",
+            "T4 From": "3.66",
+            "T4 To": "4.30",
+            "T4 Error": "0.00",
+            "Standard Deviation": "Standard deviation",
+            "Input Standard Deviation Limit": "1",
+            "Input Standard Deviation": "1.25",
+            "Input Standard Deviation Error": "-0.25",
+            "Output Standard Deviation Limit": "1",
+            "Output Standard Deviation": "0.02",
+            "Output Standard Deviation Error": "0.98"
+        }
+    ],
+    "failAsLeftStdDev": [
+         {
+            "Input Label": "0%",
+            "Repeatable Values": [
+                {
+                    "Input Value": "98.5",
+                    "Output Value": "4.20"
+                },
+                {
+                    "Input Value": "101.00",
+                    "Output Value": "4.25"
+                }
+            ],
+            "Direction": "INCREASING",
+            "Asset Error": "0.25",
+            "Process Error": "3.13",
+            "T1 From": "3.90",
+            "T1 To": "4.06",
+            "T1 Error": "0.17",
+            "T2 From": "3.82",
+            "T2 To": "4.14",
+            "T2 Error": "0.09",
+            "T3 From": "3.74",
+            "T3 To": "4.22",
+            "T3 Error": "0.01",
+            "T4 From": "3.66",
+            "T4 To": "4.30",
+            "T4 Error": "0.00",
+            "Standard Deviation": "Standard deviation",
+            "Input Standard Deviation Limit": "1",
+            "Input Standard Deviation": "1.25",
+            "Input Standard Deviation Error": "-0.25",
+            "Output Standard Deviation Limit": "1",
+            "Output Standard Deviation": "0.02",
+            "Output Standard Deviation Error": "0.98"
+        }
+    ]
+}
