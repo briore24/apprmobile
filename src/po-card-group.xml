@@ -10,7 +10,7 @@
     </box>
     <wrapped-text slot="slot7" size="large" label="{item.revisionnum}" sub-label="{item.revcomments}" hidden="{!item.revisionnum}" id="pocardRevisions"/>
     <field slot="slot8" label="Vendor" value="{item.vendor}" hidden="{!item.vendor}" label-placement="top" id="pocardVendor"/>
-    <button slot="slot12" icon="carbon:error" on-click="rejectPO" on-click-arg="{{ 'item': item, 'datasource': {page.state.selectedDS} }}" kind="secondary" id="pocardRejectBtn"/>
-    <button slot="slot13" icon="carbon:checkmark" on-click="approvePO" on-click-arg="{{ 'item': item, 'datasource': {page.state.selectedDS} }}" id="pocardAcceptBtn" kind="primary"/>
+    <button slot="slot12" icon="carbon:error" on-click="rejectPO" on-click-arg="{item}" kind="secondary" id="pocardRejectBtn"/>
+    <button slot="slot13" icon="carbon:checkmark" on-click="approvePO" on-click-arg="{item}" id="pocardAcceptBtn" kind="primary"/>
   </approvals-card-template>
 </card-group>
