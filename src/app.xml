@@ -319,8 +319,8 @@
     <!-- Purchase Order Detail View -->
     <page padding="true" id="poDetails" path="/poDetails" title="Purchase Order" controller="SharedResources/PurchaseOrderDetailsController">
       <states id="m6prr">
-        <state name="itemToOpen" value="" type="string" id="poDetails.itemToOpen"/>
-        <state name="isWorkLogEdit" value="true" type="boolean" id="poDetails.isWorkLogEdit"/>
+        <state name="itemToOpen" value="" type="string" id="b4m94"/>
+        <state name="isWorkLogEdit" value="true" type="boolean" id="a35v3"/>
       </states>
       <maximo-datasource id="poDetailResource" object-structure="mxapipo" where="ponum=&quot;{page.params.ponum}&quot; and siteid=&quot;{page.params.siteid}&quot;" controller="SharedResources/PurchaseOrderDataController" cache-expiry-ms="1" geometry-format="geojson">
         <schema id="na2_d">
@@ -408,8 +408,8 @@
         <lookup id="logTypeLookupDetailsPage" show-search="false" lookup-heading="Select log type" show-count="false" datasource="workLogTypeDomain" on-item-click="setPODetailsLogType" border="true" lookup-attributes="{['value', 'description']}" height="400" width="60"/>
       </dialogs>
       <header-template hidden="{page.state.loading}" title-column-width="{app.state.screen.size === 'lg' ? 45 : 60}" id="y7_4_">
-        <button slot="buttons" label="Approve" icon="" loading="{page.state.workloading || page.state.transactionProgress}" kind="secondary" on-click="approvePO" on-click-arg="{{'item': poDetailResource.item, 'datasource': poDetailResource.datasource}}" id="poDetailApproveBtn"/>
-        <button slot="buttons" label="Reject" icon="" loading="{page.state.workloading || page.state.transactionProgress}" kind="secondary" on-click="rejectPO" on-click-arg="{{'item': poDetailResource.item, 'datasource': poDetailResource.datasource}}" id="poDetailRejectBtn"/>
+        <button slot="buttons" label="Approve" icon="carbon:checkmark" loading="{page.state.workloading || page.state.transactionProgress}" kind="secondary" on-click="approvePO" on-click-arg="{{'item': poDetailResource.item, 'datasource': poDetailResource.datasource}}" id="poDetailApproveBtn"/>
+        <button slot="buttons" label="Reject" icon="carbon:error" loading="{page.state.workloading || page.state.transactionProgress}" kind="secondary" on-click="rejectPO" on-click-arg="{{'item': poDetailResource.item, 'datasource': poDetailResource.datasource}}" id="poDetailRejectBtn"/>
       </header-template>
       <header-template hidden="{!page.state.loading}" id="w_dp5">
         <button slot="buttons" loading="true" kind="ghost" id="q9gjd"/>
@@ -424,13 +424,13 @@
             </middle>
           </border-layout>
         </adaptive-column>
-        <adaptive-column id="dz642">
-          <box direction="column" background-color="field-01" padding="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? 0 : 0.5}" id="rgbgw">
+        <adaptive-column xlarge-width="60" large-width="100" medium-width="100" small-width="100" id="dz642">
+          <box direction="column" background-color="field-01" padding="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? 0 : 0.5}" id="poDetailsBox">
             <border-layout padding="true" fill-parent="true" top-border="true" id="zmk9x">
               <top id="knew6">
                 <label label="Details" theme="20-regular" id="kkm2j"/>
               </top>
-              <middle horizontal-overflow="hidden" id="qnq_5">
+              <middle vertical-align="center" id="qnq_5">
                 <border-layout fill-parent="true" top-border="true" id="zd22e">
                   <top id="zb7xr">
                     <adaptive-row id="gyrey">
@@ -445,20 +445,18 @@
                         </border-layout>
                       </adaptive-column>
                       <adaptive-column small-width="100" medium-width="100" large-width="50" medium-horizontal-align="start" id="jm5vp">
-                        <border-layout id="xnvnw">
+                        <border-layout fill-parent="true" id="xnvnw">
                           <middle id="vendorInfo">
-                            <box direction="row">
-                              <field label="Vendor" value="{poDetailResource.item.vendor.name}" label-placement="top" hidden="{!poDetailResource.item.vendor}" id="poDetailsVendorField">
-                                <sub-field value="{poDetailResource.item.vendor.phone}"/>
-                              </field>
+                            <box direction="row" id="zg47p">
+                              <field label="Vendor" value="{poDetailResource.item.vendor.name}" label-placement="top" hidden="{!poDetailResource.item.vendor}" id="poDetailsVendorField"/>
                             </box>
                           </middle>
                         </border-layout>
                       </adaptive-column>
                     </adaptive-row>
                   </top>
-                  <middle>
-                    <box direction="row" background-color="ui-02">
+                  <middle id="q5p2w">
+                    <box direction="row" background-color="ui-02" id="bkje5">
                       <field label="Type" label-placement="top" value="{poDetailResource.item.potype}" hidden="{!poDetailResource.item.potype}" id="poDetailsPotypeField"/>
                       <field label="Priority" label-placement="top" value="{poDetailResource.item.priority}" hidden="{!poDetailResource.item.priority}" id="poDetailsPriorityField"/>
                       <field label="Site" label-placement="top" value="{poDetailResource.item.siteid}" id="poDetailsSiteField"/>
