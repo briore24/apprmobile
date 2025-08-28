@@ -23,24 +23,12 @@ class PurchaseOrderDetailsController {
       this.handleDeleteTransaction.bind(this)
     );
   }
-
-  /**
-   * Method implemented in controller itself.
-   */
   constructor() {
     this.onUpdateDataFailed = this.onUpdateDataFailed.bind(this);
     this.saveDataSuccessful = true;
     CommonUtil.sharedData.newPageVisit = true;
   }
 
-
-  /**
-   * Function to open a sliding-drawer dialog to show Purchase Log for the Work Order with Long Description in Expanded View
-   * @param event - should contain
-   * event - event containing information about current item.
-   * datasource - The Synonymdata Datasource to filter logType
-   * item - The Work ORder Selected
-   */
   async openWorkLogDrawer(event) {
     this.page.state.editPo = !['CAN'].includes(event?.item?.status_maxvalue);
     await CommonUtil.openWorkLogDrawer(this.app, this.page, event, this.page.datasources["poDetailsWorklogDs"], "poWorkLogDrawer");
@@ -55,6 +43,7 @@ class PurchaseOrderDetailsController {
       this.page.state.navigateToLinePage = true;
     }
   }
+
   async pageResumed(page, app) {
     CommonUtil.sharedData.newPageVisit = true;
     page.state.editPo = page.state.editDetails = false;
@@ -63,38 +52,23 @@ class PurchaseOrderDetailsController {
     page.state.historyDisable = false;
     page.state.isMobile = Device.get().isMaximoMobile;
     const poDetailResource = page.datasources['poDetailResource'];
-    await poDetailResource?.load({ noCache: true, itemUrl: page.params.href });
-    this.page.state.canloadpoDetailResource = true;
 
     const device = Device.get();
 
     page.state.loadedLog = true;
     page.state.lineLoading = true;
-    page.params.href = page.params.href || page.params.itemhref;
-    // app.datasources['poLineDetailds']?.resetState();
-
     // offline mode sync
     if (this.page.state.disConnected && this.app.state.networkConnected && this.app.state.refreshOnSubsequentLogin !== false) {
       await poDetailResource?.load({
         noCache: true,
         forceSync: true,
-        itemUrl: page.params.href,
       });
       this.page.state.disConnected = false;
     } 
 
     let poDetailds = app.datasources['poDetailds'];
-    await poDetailds?.load({ noCache: true, itemUrl: page.params.href });
-    this.app.state.canLoadPoDetailDS = true;
+    await poDetailds?.load({ noCache: true });
 
-    // const poLineDetailds = app.datasources["poLineDetailds"];
-
-    /*
-    if (poLineDetailds) {
-      CommonUtil._resetDataSource(poLineDetailds);
-      await poLineDetailds?.load({ noCache: true });
-    }
-      */
     page.state.loading = false;
     const rejectLabel = app.getLocalizedLabel('rejected', 'Rejected').toUpperCase();
     const index = (poDetailResource?.item?.assignment?.length > 0) ? poDetailResource?.item?.assignment?.findIndex(assignment => assignment?.laborcode === this.app.client?.userInfo?.labor?.laborcode) : 0;
@@ -123,9 +97,7 @@ class PurchaseOrderDetailsController {
     let ponum = this.page.datasources['poDetailResource']?.item.ponum;
     page.state.editDetails = !['CAN', 'CLOSE'].includes(this.page.datasources['poDetailResource']?.item?.status_maxvalue);
     page.state.editPo = !['CAN'].includes(this.page.datasources['poDetailResource']?.item?.status_maxvalue);
-    this.app.state.lineCountData = this.app.state.lineCountData
-      ? this.app.state.lineCountData
-      : {};
+
     if (!app.state.doclinksCountData) {
       app.state.doclinksCountData = {};
     }
@@ -178,7 +150,6 @@ class PurchaseOrderDetailsController {
     }
   }
 
-
   async pagePaused() {
     this.page.state.isSafetyPlanReviewed = false;
     this.page.findDialog('poWorkLogDrawer')?.closeDialog();
@@ -186,7 +157,6 @@ class PurchaseOrderDetailsController {
     this.app?.findPage("schedule")?.findDialog('poStatusChangeDialog')?.closeDialog();
     this.app?.findPage("schedule")?.findDialog('rejectPO')?.closeDialog();
   }
-
   /**
   * Validate before closing sliding drawer.
   * @param {validateEvent} validateEvent
@@ -200,9 +170,8 @@ class PurchaseOrderDetailsController {
     }
   }
 
-  /**
-  * This method calls when click save button on save discard prompt.
-  */
+
+  // calls when save button chosen on save discard prompt
   saveWorkLogSaveDiscard() {
     // Save Entered Data to chat Log
     if (!this.page.state.workLogData?.sendDisable) {
@@ -210,14 +179,8 @@ class PurchaseOrderDetailsController {
     }
   }
 
-  /**
-  * This method calls when click discard button on save discard prompt.
-  */
-  closeWorkLogSaveDiscard() {
-    // Close Work Log Drawer
-    this.page.findDialog('poWorkLogDrawer')?.closeDialog();
-  }
-
+  // calls when discard button chosen on save discard prompt
+  closeWorkLogSaveDiscard() { this.page.findDialog('poWorkLogDrawer')?.closeDialog(); }
   /**
   * This method is called when any changes done on work log screen and return value as Object with all field value.
   * @param {value} value
@@ -241,9 +204,6 @@ class PurchaseOrderDetailsController {
     }, 500);
   }
 
-  /*
-   * Method to add new work log
-   */
   async saveWorkLog(value, directSave = false) {
     let longDescription = value.longDescription;
     let summary = value.summary;
@@ -393,16 +353,6 @@ class PurchaseOrderDetailsController {
       event.item.ponum
     );
 
-    this.page.state.poloading = true;
-    const poDetailDs = await this.app.findDatasource("poDetailds");
-
-    //istanbul ignore if
-    if (!this.page?.params?.href) {
-      this.app.state.canLoadPoDetailDS = false;
-    }
-    await poDetailDs?.load({ noCache: true, itemUrl: this.page.params.href });
-    this.app.state.canLoadPoDetailDS = true;
-
     const schedPage = this.app.findPage('schedule') || this.app.findPage("approvals");
     const polistds = this.app.findDatasource(schedPage.state.selectedDS);
     await CommonUtil.markStatusAssigned(this.app, this.page, poDetailDs, polistds);
@@ -410,26 +360,10 @@ class PurchaseOrderDetailsController {
     // TODO: this.app.state.showAssignment = CommonUtil.canInteractWorkOrder(poDetailDs.item, this.app);
   }
 
-  /**
-* This method is called by clicking on start work or stop work button on work order detail page
-* and start/stop timer for specific work order accordingly.
-* @param {event} event
-*/
-  //istanbul ignore next
   async openSignatureDialog(event) {
-    let po = event.item;
-
-    let poDetailds = this.app.findDatasource("podetails");
-    //istanbul ignore else
-    if (!po?.href) {
-      this.page.state.canloadpodetails = false;
-    }
-    await poDetailds.load({ noCache: true, itemUrl: po.href });
-    this.page.state.canloadpodetails = true;
     await this.app.userInteractionManager.openSignature(
       async imageData => {
         log.t(TAG, "base64 image" + imageData);
-
       }
       ,
       {
@@ -468,10 +402,6 @@ class PurchaseOrderDetailsController {
     }
     this.updateSignaturePrompt();
   }
-
-  /**
-   * Redirects to attachments page.
-   */
   showAttachmentPage(event) {
     this.app.state.poStatus = event.item.status_maxvalue;
     this.app.setCurrentPage({
@@ -480,55 +410,6 @@ class PurchaseOrderDetailsController {
     });
   }
 
-  /**
-   * Function to open edit work order page when click on edit icon
-   * Passing current po details in page params to get the current work order details on edit page
-   */
-  purchaseOrderEdit(event) {
-    let po = event.item;
-    let poSchema = this.app.findDatasource(event.datasource).getSchema();
-    // istanbul ignore next
-    if (po && (po.ponum || po.href)) {
-      this.app.state.poDetail = {
-        page: 'purchaseOrderDetails',
-        ponum: this.page.params.ponum,
-        siteid: this.page.params.siteid,
-        href: this.page.params.href,
-      };
-      this.app.setCurrentPage({
-        name: 'poedit',
-        resetScroll: true,
-        params: { // TODO: params
-          href: po.href,
-          po, poSchema,
-          ponum: po.ponum,
-          //istask: po.istask,
-          //wogroup: po.wogroup,
-          //taskid: po.taskid,
-          po: event.item
-          // fromQuickReport: po.isquickreported
-        },
-      });
-    }
-  }
-
-  /*
-   * Set current Date/Time
-   */
-  async setCurrentDateTime() {
-    let downTimeReportAsset = this.page.datasources['downTimeReportAsset'];
-    let downTimeData = [
-      {
-        statuschangedate: this.app.dataFormatter.convertDatetoISO(new Date()),
-      },
-    ];
-    await downTimeReportAsset.load({ src: downTimeData, noCache: true });
-  }
-
-  /*
-   * Functions that support to display the local timezone
-   */
-  // istanbul ignore next 
   async setLocaleTime(date_value) {
     const poDetailResource = this.page.datasources['poDetailResource'];
 
@@ -543,35 +424,17 @@ class PurchaseOrderDetailsController {
     poDetailResource.item[date_value] = new_date_value;
   }
 
-  /**
-   * Set the Log Type from the Lookup
-   */
-  async setPODetailsLogType(event) {
-    this.page.state.defaultLogType = event.value;
-  }
+  async setPODetailsLogType(event) { this.page.state.defaultLogType = event.value; }
 
-  /**
-   * Function to set flag for 'save-data-failed' event
-   */
-  onUpdateDataFailed() {
-    this.saveDataSuccessful = false;
-  }
+  onUpdateDataFailed() { this.saveDataSuccessful = false; }
 
-  /**
-   * closing all dialogs of po detail page
-   */
   _closeAllDialogs(page) {
-    /* istanbul ignore else */
     if (page?.dialogs?.length) {
       page.dialogs.map((dialog) => page.findDialog(dialog.name).closeDialog());
     }
   }
 
-  /**
-   * Handle Delete transaction
-   */
   async handleDeleteTransaction(event) {
-    //istanbul ignore else
     if (
       event.app === this.app.name &&
       (this.app.currentPage.name === this.page.name ||

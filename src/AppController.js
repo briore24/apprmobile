@@ -154,10 +154,7 @@ class AppController {
     }
     return statusArr;
   }
-  /**
-    * @description update page title dynamically get value of worktype and ponum from url parameter
-    * @param  {parameters} parameters parameters object contains object of page, label and labelValue
-    */
+
   updatePageTitle (parameters) {
     const ponum = parameters.page.params.ponum || "";
     let pageTitle = this.app.getLocalizedLabel(
@@ -167,12 +164,7 @@ class AppController {
       );
     return pageTitle;
   }
-  /*
-   * This method checks status transition based on internal values.
-   * @param from This the maxvalue (internal value) for current status.
-   * @param to This the maxvalue (internal value) for status you want
-   * to transition to.
-   */
+
   _isValidTransitionMaxVal(from, to) {
     log.t(TAG, 'isValidTransition : from --> ' + from + ' to --> ' + to);
     let transitionMatrix = {
@@ -274,6 +266,10 @@ class AppController {
     this.app.state.scanParameter = {};
   }
 
+  resetSkipState() {
+    this.app.state.skipSignature = false;
+  }
+  
   confirmDialogPrimaryClick() {
     this.app.state.confirmDialog.onPrimaryClick(this.app);
   }
@@ -286,8 +282,6 @@ class AppController {
     app.state.confirmDialog.onCloseClick();
   }
 
-  resetSkipState() {
-    this.app.state.skipSignature = false;
-  }
+
 }
 export default AppController;

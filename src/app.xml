@@ -161,18 +161,6 @@
       <attribute name="valueid" unique-id="true" id="apxmd"/>
     </schema>
   </maximo-datasource>
-  <maximo-datasource id="synonymdomainData" offline-immediate-download="true" lookup-data="true" object-structure="mxapisynonymdomain" saved-query="MOBILEDOMAIN" selection-mode="single">
-    <schema id="bn686">
-      <attribute name="value" searchable="true" id="xp2e9"/>
-      <attribute name="maxvalue" searchable="true" id="g58pj"/>
-      <attribute name="description" searchable="true" id="wwwzq"/>
-      <attribute name="domainid" searchable="true" id="m2ebr"/>
-      <attribute name="valueid" unique-id="true" searchable="true" id="aakrv"/>
-      <attribute name="siteid" searchable="true" id="r27qk"/>
-      <attribute name="orgid" searchable="true" id="wz5gx"/>
-      <attribute name="defaults" id="avz96"/>
-    </schema>
-  </maximo-datasource>
   <dialogs id="p3gwn">
     <dialog id="confirmDialog" title="{app.state.confirmDialog.title}" primary-action-text="{app.state.confirmDialog.acceptButton}" primary-icon="{app.state.confirmDialog.acceptIcon}" on-primary-action="confirmDialogPrimaryClick" primary-kind="{app.state.confirmDialog.acceptKind}" on-secondary-action="confirmDialogSecondaryClick" secondary-action-text="{app.state.confirmDialog.rejectButton}" secondary-icon="{app.state.confirmDialog.rejectIcon}" on-close-action="confirmDialogCloseClick">
       <border-layout padding="false" fill-parent="true" id="qkg_2">
@@ -213,6 +201,18 @@
           <attribute name="poid" sortable="false" unique-id="true" id="gzwj2"/>
           <attribute name="potype" sortable="true" id="wnpqk"/>
           <attribute name="orgid" sortable="false" id="mayz5"/>
+        </schema>
+      </maximo-datasource>
+      <maximo-datasource id="synonymdomainData" offline-immediate-download="true" lookup-data="true" object-structure="mxapisynonymdomain" saved-query="MOBILEDOMAIN" selection-mode="single">
+        <schema id="bn686">
+          <attribute name="value" searchable="true" id="xp2e9"/>
+          <attribute name="maxvalue" searchable="true" id="g58pj"/>
+          <attribute name="description" searchable="true" id="wwwzq"/>
+          <attribute name="domainid" searchable="true" id="m2ebr"/>
+          <attribute name="valueid" unique-id="true" searchable="true" id="aakrv"/>
+          <attribute name="siteid" searchable="true" id="r27qk"/>
+          <attribute name="orgid" searchable="true" id="wz5gx"/>
+          <attribute name="defaults" id="avz96"/>
         </schema>
       </maximo-datasource>
       <maximo-datasource id="poAttachmentDs" object-structure="mxapipo" item-url="{page.params.href}">
@@ -262,7 +262,7 @@
         <sliding-drawer id="workLogDrawer" validate="workLogValidate" align="start" header-text="Work log" content-padding="false">
           <chat-log messages="{page.state.chatLogGroupData}" default-log-type="{page.state.initialDefaultLogType}" default-log-type-key="value" datasource="synonymdomainData" content-limit="{page.state.chatLogDescLength}" log-type-attribute="{['value','description']}" id="g7wpp" on-click="saveWorkLog" loading="{page.state.chatLogLoading}" is-config-btn="true" watch-changes="watchChatLogChanges"/>
         </sliding-drawer>
-        <sliding-drawer id="rejectPO" align="start" header-text="{page.state.assignmentHeader}" sub-title="{page.state.assignmentSubHeader}" content-padding="false" controller="SharedResources/RejectController">
+        <sliding-drawer id="rejectPO" align="start" header-text="reject header" sub-title="reject subheader" content-padding="false" controller="SharedResources/RejectController">
           <box direction="column" id="dyyr5">
             <panel id="g_zay">
               <data-list datasource="rejectList" show-single-select-icon="true" on-item-click="selectStatus" selected-icon="carbon:checkmark--filled" unselected-icon="carbon:radio-button" show-search="false" id="jjxb_">
@@ -319,7 +319,8 @@
     <!-- Purchase Order Detail View -->
     <page padding="true" id="poDetails" path="/poDetails" title="Purchase Order" controller="SharedResources/PurchaseOrderDetailsController">
       <states id="m6prr">
-        <state name="itemToOpen" value="" type="string" id="ay5j2"/>
+        <state name="itemToOpen" value="" type="string" id="poDetails.itemToOpen"/>
+        <state name="isWorkLogEdit" value="true" type="boolean" id="poDetails.isWorkLogEdit"/>
       </states>
       <maximo-datasource id="poDetailResource" object-structure="mxapipo" where="ponum=&quot;{page.params.ponum}&quot; and siteid=&quot;{page.params.siteid}&quot;" controller="SharedResources/PurchaseOrderDataController" cache-expiry-ms="1" geometry-format="geojson">
         <schema id="na2_d">
@@ -446,31 +447,23 @@
                       <adaptive-column small-width="100" medium-width="100" large-width="50" medium-horizontal-align="start" id="jm5vp">
                         <border-layout id="xnvnw">
                           <middle id="vendorInfo">
-                            <box direction="row" id="vendorContact">
-                              <label label="Vendor" id="zpe68"/>
-                              <label label="{poDetailResource.item.vendor.name}" id="yew6r"/>
-                              <label label="Phone" id="d4wgp"/>
-                              <label label="{poDetailResource.item.vendor.phone}" id="w6_re"/>
-                            </box>
-                            <box id="vendorAddress">
-                              <label label="Vendor Address" id="d7_67"/>
-                              <label label="{poDetailResource.item.vendor.address1}" hidden="{!poDetailResource.item.vendor.address1}" id="dem5d"/>
-                              <label label="{poDetailResource.item.vendor.address2}" hidden="{!poDetailResource.item.vendor.address2}" id="jn6y_"/>
-                              <label label="{poDetailResource.item.vendor.address3}" hidden="{!poDetailResource.item.vendor.address3}" id="bx5d4"/>
-                              <label label="{poDetailResource.item.vendor.address4}" hidden="{!poDetailResource.item.vendor.address4}" id="nw293"/>
+                            <box direction="row">
+                              <field label="Vendor" value="{poDetailResource.item.vendor.name}" label-placement="top" hidden="{!poDetailResource.item.vendor}" id="poDetailsVendorField">
+                                <sub-field value="{poDetailResource.item.vendor.phone}"/>
+                              </field>
                             </box>
                           </middle>
-                          <bottom id="jw3kv">
-                            <box id="vbbr5">
-                              <button-group id="poDetailsBtnGroup">
-                                <button icon="carbon:document" kind="secondary" loading="{page.state.chatLogLoading || page.state.loading}" on-click="openWorkLogDrawer" on-click-arg="{{'item':poDetailResource.item}}" disabled="{page.state.loading}" id="openWorkLogBtn"/>
-                              </button-group>
-                            </box>
-                          </bottom>
                         </border-layout>
                       </adaptive-column>
                     </adaptive-row>
                   </top>
+                  <middle>
+                    <box direction="row" background-color="ui-02">
+                      <field label="Type" label-placement="top" value="{poDetailResource.item.potype}" hidden="{!poDetailResource.item.potype}" id="poDetailsPotypeField"/>
+                      <field label="Priority" label-placement="top" value="{poDetailResource.item.priority}" hidden="{!poDetailResource.item.priority}" id="poDetailsPriorityField"/>
+                      <field label="Site" label-placement="top" value="{poDetailResource.item.siteid}" id="poDetailsSiteField"/>
+                    </box>
+                  </middle>
                 </border-layout>
               </middle>
             </border-layout>
