@@ -1,23 +1,17 @@
 <card-group datasource="{page.state.selectedDS}" can-sort="true" show-refresh="true" disconnected="{!app.state.networkConnected}" refresh-disconnected-message="This feature is not available while offline" enable-barcode-scanner="true" readers="{[`ean_reader`]}" timeout="{45}" hide-count-search="{(page.state.selectedSwitch===1)}" id="poCardGroup">
   <filter-button slot="actions" kind="ghost" datasource="{page.state.selectedDS}" id="djzbd"/>
   <multi-sort-button slot="actions" kind="ghost" datasource="{page.state.selectedDS}" icon="Carbon:caret--sort" id="m2bpv"/>
-  <card-template1 id="cardtemplate1" chevron-kind="{index === 0 ? 'ghost' : 'primary'}" slot="item" show-chevron="true" on-chevron-click="showPODetail" on-chevron-click-arg="{item}">
-    <wrapped-text slot="slot1" size="large" label="{item.description}" sub-label="{item.ponum}" id="n942w"/>
-    <box slot="slot3" manage-children="false" id="pocardRevisionDetails">
-      <label label="{item.revisionnum}" padding="none" id="poCardRevNum"/>
-      <wrapped-text label="{item.revcomments}" max-length="250" padding="none" size="medium" id="poCardRevComments"/>
+  <approvals-card-template id="approvalscardtemplate" chevron-kind="{index === 0 ? 'ghost' : 'primary'}" slot="item" show-chevron="true" on-chevron-click="showPODetail" on-chevron-click-arg="{item}">
+    <wrapped-text slot="slot1" size="large" label="{item.description}" sub-label="{item.ponum}" id="pocardNumDesc"/>
+    <wrapped-text slot="slot2" size="large" label="{item.revisionnum}" hidden="{!item.revisionnum}" id="pocardRevNum"/>
+    <box slot="slot3" direction="column">    
+      <field label="Type" value="{item.potype}" label-placement="top" hidden="{!item.potype}" id="pocardPOtype" />
+      <field label="Site" value="{item.siteid}" label-placement="top" id="pocardSite"/>
     </box>
-    <button-group padding="false" slot="slot4" id="bxek9" hidden="{app.state.hideFeature}">
-      <!-- work log -->
-      <button kind="secondary" icon="carbon:document" on-click="openWorkLogDrawer" on-click-arg="{{'item': item}}" id="workLogBtn"/>
-      <!-- po lines -->
-      <button kind="secondary" icon="carbon:list--numbered" on-click="openPOLineDetailPage" id="poLineBtn"/>
-    </button-group>
-    <button-group slot="slot5" padding="false" align="end" id="r9wq6">
-      <!-- approve -->
-      <button label="Approve" icon="carbon:play" loading="{item.ponum === page.state.currentItem &amp;&amp; page.state.loading}" on-click="changePurchaseorderStatus" on-click-arg="{{'item': item, status: 'POSTATUS|APPR'}}" kind="{index===0 ? page.state.firstLogin ? 'secondary' : 'primary' :'secondary'}" hidden="{item.status_maxvalue !== 'WAPPR'}" id="yjpma"/>
-      <!-- view details -->
-      <button label="View" icon="carbon:view" kind="{index===0 ? page.state.firstLogin ? 'secondary' : 'primary' :'secondary'}" hidden="{item.status_maxvalue === 'WAPPR'}" on-click="showPODetail" on-click-arg="{item}" id="qkx_r"/>
-    </button-group>
-  </card-template1>
+    <wrapped-text slot="slot7" size="medium" label="Revision Comments" sub-label="{item.revcomments}" hidden="{!item.revcomments}" id="emx4d"/>
+
+    <field slot="slot8" label="Vendor" value="{item.vendor}" hidden="{!item.vendor}" label-placement="top" id="pocardVendor"/>
+
+    <button slot="slot13" icon="carbon:checkmark--outline" on-click="approvePO" on-click-arg="{item}" id="pocardAcceptBtn"/>
+  </approvals-card-template>
 </card-group>

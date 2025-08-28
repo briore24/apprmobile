@@ -335,8 +335,8 @@ class POSchedulePageController {
    */
   dialogClosed() {
     this.app?.findPage("schedule")?.findDialog('rejectAssignment')?.closeDialog();
-    this.app?.findPage("schedule")?.findDialog('laborAssignmentLookup')?.closeDialog();
-    CommonUtil.clearSharedData(CommonUtil.sharedData?.allowReassignmentPage);
+    // this.app?.findPage("schedule")?.findDialog('laborAssignmentLookup')?.closeDialog();
+    // CommonUtil.clearSharedData(CommonUtil.sharedData?.allowReassignmentPage);
     CommonUtil.clearSharedData(CommonUtil.sharedData?.event);
   }
 

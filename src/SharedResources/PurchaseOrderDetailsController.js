@@ -241,15 +241,6 @@ class PurchaseOrderDetailsController {
     }, 500);
   }
 
-  /**
-   * Computes the user name based on the provided item.
-   * @param {Object} item The item object containing displayname or personid.
-   * @returns {string} The computed user name.
-   */
-  computedUserName(item) {
-    return item?.displayname || item?.personid
-  }
-
   /*
    * Method to add new work log
    */

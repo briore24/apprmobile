@@ -15,30 +15,6 @@ class PurchaseOrderDataController {
     this.owner = owner;
     this.app = app;
   }
-  /**
-   * Function called after loading the data
-   * @param {dataSource} dataSource 
-   * @param {items} items 
-   */
-  /*
-  async onAfterLoadData(dataSource, items) {
-    let incompleteItems = [];
-    let page = this.app.findPage("lines");
-    page.state.itemToOpen = page.state.itemToOpen ? page.state.itemToOpen : '';
-    if (dataSource.name === 'poLineDetailds' && items.length) {
-      items.forEach((item) => {
-        let status = item.status_maxvalue;
-        if (item.taskid && status !== 'COMP' && status !== 'CLOSE' && status !== 'CAN') {
-          incompleteItems.push(item);
-        }
-        if (this.app.currentPage.name === 'lines' && page.state.itemToOpen === '' && status !== 'CLOSE' && status !== 'CAN' && status !== 'COMP') {
-          page.state.itemToOpen = item.poid;
-        }
-      });  
-      // this.app.state.taskCount = incompleteItems.length;
-    }
-  }
-  */
    /**
    * Return boolean value to show or hide border
    * @param {item} task item
