@@ -20,12 +20,12 @@ class PurchaseOrderDataController {
    * @param {dataSource} dataSource 
    * @param {items} items 
    */
-  //istanbul ignore next
+  /*
   async onAfterLoadData(dataSource, items) {
     let incompleteItems = [];
     let page = this.app.findPage("lines");
     page.state.itemToOpen = page.state.itemToOpen ? page.state.itemToOpen : '';
-    if (dataSource.name === 'woLineDetailds' && items.length) {
+    if (dataSource.name === 'poLineDetailds' && items.length) {
       items.forEach((item) => {
         let status = item.status_maxvalue;
         if (item.taskid && status !== 'COMP' && status !== 'CLOSE' && status !== 'CAN') {
@@ -35,10 +35,10 @@ class PurchaseOrderDataController {
           page.state.itemToOpen = item.poid;
         }
       });  
-      this.app.state.taskCount = incompleteItems.length;
+      // this.app.state.taskCount = incompleteItems.length;
     }
   }
-
+  */
    /**
    * Return boolean value to show or hide border
    * @param {item} task item

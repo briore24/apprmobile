@@ -72,12 +72,10 @@
       <attribute name="inspectionrequired" id="k2dq7"/>
       <!-- ship to -->
       <attribute name="shipto{description,address1,address2,address3,address4}" id="kj3yn"/>
-      <attribute name="shiptoattn" id="nd7e7">
-        <attribute name="displayname" id="rq7b8"/>
-      </attribute>
+      <attribute name="shiptoattn" id="nd7e7"/>
       <!-- bill to -->
       <attribute name="billto{description,address1,address2,address3,address4}" id="dpz8a"/>
-      <attribute name="billtoattn{displayname}" id="qarnj"/>
+      <attribute name="billtoattn" id="qarnj"/>
     </schema>
     <!-- status data (child of poDetailds) -->
     <maximo-datasource id="poStatusds" relationship="postatus" depends-on="poDetailds">
@@ -252,17 +250,17 @@
     </schema>
   </maximo-datasource>
   <maximo-datasource id="synonymdomainData" offline-immediate-download="true" lookup-data="true" object-structure="mxapisynonymdomain" saved-query="MOBILEDOMAIN" selection-mode="single">
-  <schema id="bn686">
-    <attribute name="value" searchable="true" id="xp2e9"/>
-    <attribute name="maxvalue" searchable="true" id="g58pj"/>
-    <attribute name="description" searchable="true" id="wwwzq"/>
-    <attribute name="domainid" searchable="true" id="m2ebr"/>
-    <attribute name="valueid" unique-id="true" searchable="true" id="aakrv"/>
-    <attribute name="siteid" searchable="true" id="r27qk"/>
-    <attribute name="orgid" searchable="true" id="wz5gx"/>
-    <attribute name="defaults" id="avz96"/>
-  </schema>
-</maximo-datasource>
+    <schema id="bn686">
+      <attribute name="value" searchable="true" id="xp2e9"/>
+      <attribute name="maxvalue" searchable="true" id="g58pj"/>
+      <attribute name="description" searchable="true" id="wwwzq"/>
+      <attribute name="domainid" searchable="true" id="m2ebr"/>
+      <attribute name="valueid" unique-id="true" searchable="true" id="aakrv"/>
+      <attribute name="siteid" searchable="true" id="r27qk"/>
+      <attribute name="orgid" searchable="true" id="wz5gx"/>
+      <attribute name="defaults" id="avz96"/>
+    </schema>
+  </maximo-datasource>
   <dialogs id="p3gwn">
     <dialog id="confirmDialog" title="{app.state.confirmDialog.title}" primary-action-text="{app.state.confirmDialog.acceptButton}" primary-icon="{app.state.confirmDialog.acceptIcon}" on-primary-action="confirmDialogPrimaryClick" primary-kind="{app.state.confirmDialog.acceptKind}" on-secondary-action="confirmDialogSecondaryClick" secondary-action-text="{app.state.confirmDialog.rejectButton}" secondary-icon="{app.state.confirmDialog.rejectIcon}" on-close-action="confirmDialogCloseClick">
       <border-layout padding="false" fill-parent="true" id="qkg_2">
@@ -408,7 +406,9 @@
     </page>
     <!-- Purchase Order Detail View -->
     <page padding="true" id="poDetails" path="/poDetails" title="Purchase Order" controller="SharedResources/PurchaseOrderDetailsController">
-      <states id="m6prr"/>
+      <states id="m6prr">
+        <state name="itemToOpen" value="" type="string" id="ay5j2"/>
+      </states>
       <maximo-datasource id="poDetailResource" object-structure="mxapipo" where="ponum=&quot;{page.params.ponum}&quot; and siteid=&quot;{page.params.siteid}&quot;" controller="SharedResources/PurchaseOrderDataController" cache-expiry-ms="1" geometry-format="geojson">
         <schema id="na2_d">
           <attribute name="ponum" unique-id="true" id="v6bq7"/>
@@ -550,9 +550,8 @@
                           </middle>
                           <bottom id="jw3kv">
                             <box id="vbbr5">
-                              <button-group id="nn5z5">
+                              <button-group id="poDetailsBtnGroup">
                                 <button icon="carbon:document" kind="secondary" loading="{page.state.chatLogLoading || page.state.loading}" on-click="openWorkLogDrawer" on-click-arg="{{'item':poDetailResource.item}}" disabled="{page.state.loading}" id="openWorkLogBtn"/>
-                                <button icon="carbon:list--numbered" on-click="navigateToLines" tag-type="dark-gray" tag-value="{app.state.lineCount}" on-click-arg="{poDetailResource.item}" kind="{page.state.firstLogin ? 'primary' : 'secondary'}" id="openPOLineDetailBtn"/>
                               </button-group>
                             </box>
                           </bottom>
@@ -591,12 +590,6 @@
         </middle>
       </border-layout>
     </page>
-    <!-- PO Line Details 
-    <page id="poLineDetails" path="/poLineDetails" title="PO Line" controller="SharedResources/LineController">
-      <states>
-      </states>
-    </page>
-    -->
     <page id="attachments" title="Attachments" padding="true" controller="SharedResources/AttachmentController">
       <maximo-datasource id="purchaseOrderAttachmentResource" default="true" object-structure="mxapipo">
         <schema id="qv7z_">
