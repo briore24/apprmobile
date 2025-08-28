@@ -3,15 +3,15 @@
   <multi-sort-button slot="actions" kind="ghost" datasource="{page.state.selectedDS}" icon="Carbon:caret--sort" id="m2bpv"/>
   <approvals-card-template id="approvalscardtemplate" chevron-kind="{index === 0 ? 'ghost' : 'primary'}" slot="item" show-chevron="true" on-chevron-click="showPODetail" on-chevron-click-arg="{item}">
     <wrapped-text slot="slot1" size="large" label="{item.description}" sub-label="{item.ponum}" id="pocardNumDesc"/>
-    <wrapped-text slot="slot2" size="large" label="{item.revisionnum}" hidden="{!item.revisionnum}" id="pocardRevNum"/>
-    <box slot="slot3" direction="column">    
+    <label slot="slot2" size="large" label="View Details"/>
+    <box slot="slot3" direction="column">
       <field label="Type" value="{item.potype}" label-placement="top" hidden="{!item.potype}" id="pocardPOtype" />
       <field label="Site" value="{item.siteid}" label-placement="top" id="pocardSite"/>
     </box>
-    <wrapped-text slot="slot7" size="medium" label="Revision Comments" sub-label="{item.revcomments}" hidden="{!item.revcomments}" id="emx4d"/>
-
+    <wrapped-text slot="slot7" size="large" label="{item.revisionnum}" sub-label="{item.revcomments}" hidden="{!item.revisionnum}" id="pocardRevisions"/>
     <field slot="slot8" label="Vendor" value="{item.vendor}" hidden="{!item.vendor}" label-placement="top" id="pocardVendor"/>
 
-    <button slot="slot13" icon="carbon:checkmark--outline" on-click="approvePO" on-click-arg="{item}" id="pocardAcceptBtn"/>
+    <button slot="slot12" icon="carbon:misuse--outline" on-click="rejectPO" on-click-arg="{item}" kind="secondary" id="pocardRejectBtn"/>
+    <button slot="slot13" icon="carbon:checkmark--outline" on-click="approvePO" on-click-arg="{item}" id="pocardAcceptBtn" kind="primary"/>
   </approvals-card-template>
 </card-group>

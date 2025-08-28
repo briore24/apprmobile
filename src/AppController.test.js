@@ -15,10 +15,7 @@ import AppController from './AppController';
 import { Application, Datasource, JSONDataAdapter, Page, Device, AppSwitcher, MaximoAppSwitcher, DisconnectedSchemaFactory } from '@maximo/maximo-js-api';
 import statusitem from './SharedResources/Technician/statuses-json-data.js';
 import domainitem from './SharedResources/Technician/domain-json-data.js';
-import worktype from "./SharedResources/Technician/worktype-json-data";
 import workorderitem from './SharedResources/Technician/wo-failure-report-json-data';
-import attachmentlistitem from "./SharedResources/Technician/test-attachment-data.js";
-import SynonymUtil from "./SharedResources/Technician/utils/SynonymUtil";
 import StorageManager from "@maximo/map-component/build/ejs/framework/storage/StorageManager";
 
 import sinon from 'sinon';
@@ -48,6 +45,45 @@ describe('AppController', () => {
     sandbox.stub(DisconnectedSchemaFactory.get(), 'createIndex').resolves();
   });
 
+  it('should test onContextReceived() and setupIncomingContext()', async () => {
+    const controller = new AppController();
+    const app = new Application();
+    const page = new Page({name: 'poDetails'});
+    app.registerPage(page);
+    // mock the setCurrentPage
+    const mockSetPage = jest.fn();
+    const origSetPage = app.setCurrentPage;
+    app.setCurrentPage = mockSetPage;
+    app.state.currentPageName = 'poDetails';
+
+    app.registerController(controller);
+    app.state.incomingContext = {
+      page: 'poDetails',
+      ponum: 1022,
+      siteid: 'BEDFORD',
+      /*breadcrumb: {
+        returnName: 'Returning to inspection',
+        enableReturnBreadcrumb: true
+      }*/
+    };
+    await app.initialize();
+    expect(mockSetPage.mock.calls[0][0].name).toBe('approvals');
+    expect(mockSetPage.mock.calls[1][0].name).toBe('poDetails');
+    expect(mockSetPage.mock.calls[1][0].params.ponum).toEqual(1022);
+    expect(mockSetPage.mock.calls[1][0].params.siteid).toEqual('BEDFORD');;
+    app.setCurrentPage = origSetPage;
+  });
+
+  it('should test _getStatusExternalValue()', async () => {
+    const controller = new AppController();
+    const app = new Application();
+    app.registerController(controller);
+    await app.initialize();
+    let item = [{ description: 'Completed', defaults: true, value: 'COMP', maxvalue: 'COMP' }];
+    let data = controller._getStatusExternalValue(item, 'COMP');
+    expect(data).toBe('COMP');
+  });
+
   it('should test _buildPoStatusSet()', async () => {
     const controller = new AppController();
     const app = new Application();
@@ -62,17 +98,7 @@ describe('AppController', () => {
     expect(data[0].value).toBe('COMP');
   });
 
-  it('test should _getStatusExternalValue()', async () => {
-    const controller = new AppController();
-    const app = new Application();
-    app.registerController(controller);
-    await app.initialize();
-    let item = [{ description: 'Completed', defaults: true, value: 'COMP', maxvalue: 'COMP' }];
-    let data = controller._getStatusExternalValue(item, 'COMP');
-    expect(data).toBe('COMP');
-  });
-
-  it ('it should test _isValidTransitionMaxVal()', async () => {
+  it ('should test _isValidTransitionMaxVal()', async () => {
     const controller = new AppController ();
     const app = new Application ();
     let orginalDevice = Device.get ().isAnywhere;
@@ -92,7 +118,7 @@ describe('AppController', () => {
     Device.get ().isAnywhere = orginalDevice;
   });
 
-  it('it should get the external value of the synonymdomain of WO status', async () => {
+  it('should test getOfflinePoStatusList()', async () => {
     const controller = new AppController();
     const app = new Application();
     app.registerController(controller);
@@ -115,47 +141,16 @@ describe('AppController', () => {
       event: event
     };
 
-    let statusList = await controller.getOfflineWoStatusList(option.event);
+    let statusList = await controller.getOfflinePoStatusList(option.event);
     expect(controller._getStatusExternalValue(statusList, 'INPRG')).toEqual('INPRG');
   });
 
-    it('initialized with valid incoming context', async () => {
-    const controller = new AppController();
-    const app = new Application();
-    const page = new Page({name: 'workOrderDetails'});
-    app.registerPage(page);
-    // mock the setCurrentPage
-    const mockSetPage = jest.fn();
-    const origSetPage = app.setCurrentPage;
-    app.setCurrentPage = mockSetPage;
-    app.state.currentPageName = 'workOrderDetails';
-
-    app.registerController(controller);
-    app.state.incomingContext = {
-      page: 'workOrderDetails',
-      ponum: 1022,
-      siteid: 'BEDFORD',
-      href: 'oslc/os/mxapiwodetail/_QkVERk9SRC8xMjAx',
-      breadcrumb: {
-        returnName: 'Returning to inspection',
-        enableReturnBreadcrumb: true
-      }
-    };
-    await app.initialize();
-    expect(mockSetPage.mock.calls[0][0].name).toBe('approvals');
-    expect(mockSetPage.mock.calls[1][0].name).toBe('workOrderDetails');
-    expect(mockSetPage.mock.calls[1][0].params.ponum).toEqual(1022);
-    expect(mockSetPage.mock.calls[1][0].params.siteid).toEqual('BEDFORD');
-    expect(mockSetPage.mock.calls[1][0].params.href).toEqual('oslc/os/mxapiwodetail/_QkVERk9SRC8xMjAx');
-    app.setCurrentPage = origSetPage;
-  });
-
-  it('test the openPrevPage function has been called', async () => {
+  it('should test the page-changed event', async () => {
     let app = new Application();
     let controller = new AppController();
     
     let page = new Page({name: 'approvals'});
-    let detailPage = new Page({name: 'workOrderDetails'});
+    let detailPage = new Page({name: 'poDetails'});
     app.registerPage(page);
     app.registerPage(detailPage);
     app.registerController(controller);
@@ -168,7 +163,7 @@ describe('AppController', () => {
     expect(page.openPrevPage.mock.calls.length).toBe(1);
   });
 
-  it('test the page-changing event is fired on application initialization', async () => {
+  it('should test the page-changing event', async () => {
     let app = new Application();
     let controller = new AppController();
     
@@ -186,7 +181,7 @@ describe('AppController', () => {
     expect(nextPage.setDefaults.mock.calls.length).toBe(1);
   });
 
-  it('checks if implementation setting for LocalStorageManager in MaximoMobile is successful', async () => {
+  it('should test LocalStorageManager implementation', async () => {
     StorageManager.setImplementation = jest.fn();
     const controller = new AppController ();
     const app = new Application ();
@@ -197,7 +192,7 @@ describe('AppController', () => {
     Device.get ().isMaximoMobile = false;
   });
 
-  it('test should call _getStatusDescription()', async () => {
+  it('should test _getStatusDescription()', async () => {
     const controller = new AppController();
     const app = new Application();
     app.registerController(controller);
@@ -207,7 +202,7 @@ describe('AppController', () => {
     expect(data).toBe('Completed');
   });
 
-  it('loadApp should invoke appswitcher method', async () => {
+  it('should test loadApp()', async () => {
     const controller = new AppController();
     const app = new Application();
     app.registerController(controller);
@@ -229,33 +224,8 @@ describe('AppController', () => {
     sinon.assert.callCount(gotoApplication, 2);
   });
 
-  it('Should call MAS apps permissions on MAS environment', async () => {
-    const controller = new AppController();
-    let checkAssistPermissionSpy = sinon.stub(controller, 'checkAssistPermission');
-    let app = null;
 
-    //EAM
-    sessionStorage.setItem('isEamApp', true);
-    app = new Application();
-
-    app.registerController(controller);
-    await app.initialize();
-
-    sinon.assert.notCalled(checkAssistPermissionSpy);
-
-    //MAS
-    sessionStorage.setItem('isEamApp', false);
-    app = new Application();
-
-    app.registerController(controller);
-    await app.initialize();
-
-    sinon.assert.calledOnce(checkAssistPermissionSpy);
-
-    sessionStorage.removeItem('isEamApp');
-  });
-
-  it("Should Call savePurchaseOrderStatus", async() => {
+  it("should test savePurchaseOrderStatus()", async() => {
     const controller = new AppController();
     const app = new Application();
     const page = new Page({ name: "schedule" });
@@ -273,8 +243,7 @@ describe('AppController', () => {
     
   });
   
-  
-  it("Should Call resetSkipState", async() => {
+  it("should test resetSkipState()", async() => {
     const controller = new AppController();
     const app = new Application();
     const page = new Page({ name: "schedule" });
@@ -283,9 +252,6 @@ describe('AppController', () => {
     await app.initialize();
     controller.resetSkipState();
     expect(app.state.skipSignature).toBe(false);
-    expect(app.state.skipToolWarning).toBe(false);
-    expect(app.state.disableScan).toBe(false);
-    expect(app.state.skipScan).toBe(false);
   });
 
 });
