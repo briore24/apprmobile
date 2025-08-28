@@ -1,7 +1,6 @@
 <maximo-application navigator-tile-order="200" controller="AppController" theme="touch" product-name="Maximo" product-name-adaptive="Maximo" title="PO Approvals" id="apprmobile" mas-id="manage" version="9.1.0.0" default-log-level="error" user-menu-enabled="true" nav-initial-open-state="false" mas-enabled="false">
   <properties id="n5nx9">
     <property name="maximo.mobile.statusforphysicalsignature" id="ee54n"/>
-    <property name="maximo.mobile.postatusforesig" id="ey_kz"/>
     <property name="maximo.mobile.completestatus" id="bdwkx"/>
     <property name="mxe.mobile.navigation.windows" id="pvme4"/>
     <property name="mxe.mobile.navigation.ios" id="m6d7d"/>
@@ -176,7 +175,7 @@
     <maximo-datasource id="poTermds" relationship="poterm" depends-on="poDetailds">
       <schema id="m79g8">
         <attribute name="seqnum" id="znm95"/>
-        <attribute name="termid" id="g5d7z"/>
+        <attribute name="termid" id="g5d7z" unique-id="true"/>
         <attribute name="description" id="n7j2g"/>
         <attribute name="description_longdescription" id="gn9m7"/>
         <attribute name="sendtovendor" id="yearm"/>
@@ -185,7 +184,7 @@
     <!-- work/comm logs (child of poDetailds) -->
     <maximo-datasource id="poWorkLogds" relationship="worklog" depends-on="poDetailds">
       <schema id="n2pj8">
-        <attribute name="recordkey" id="mkb3a"/>
+        <attribute name="recordkey" id="mkb3a" unique-id="true"/>
         <attribute name="class" id="ybxdg"/>
         <attribute name="createby" id="b7_vw"/>
         <attribute name="createdate" id="x4mjm"/>
@@ -199,7 +198,7 @@
       <schema id="j5v6b">
         <attribute name="orgapp" id="wn25d"/>
         <!-- originating application -->
-        <attribute name="commlogid" id="bw76b"/>
+        <attribute name="commlogid" id="bw76b" unique-id="true"/>
         <!-- ID -->
         <attribute name="createby" id="eky89"/>
         <attribute name="sendto" id="qp64x"/>
@@ -252,6 +251,18 @@
       <attribute name="valueid" unique-id="true" id="apxmd"/>
     </schema>
   </maximo-datasource>
+  <maximo-datasource id="synonymdomainData" offline-immediate-download="true" lookup-data="true" object-structure="mxapisynonymdomain" saved-query="MOBILEDOMAIN" selection-mode="single">
+  <schema id="bn686">
+    <attribute name="value" searchable="true" id="xp2e9"/>
+    <attribute name="maxvalue" searchable="true" id="g58pj"/>
+    <attribute name="description" searchable="true" id="wwwzq"/>
+    <attribute name="domainid" searchable="true" id="m2ebr"/>
+    <attribute name="valueid" unique-id="true" searchable="true" id="aakrv"/>
+    <attribute name="siteid" searchable="true" id="r27qk"/>
+    <attribute name="orgid" searchable="true" id="wz5gx"/>
+    <attribute name="defaults" id="avz96"/>
+  </schema>
+</maximo-datasource>
   <dialogs id="p3gwn">
     <dialog id="confirmDialog" title="{app.state.confirmDialog.title}" primary-action-text="{app.state.confirmDialog.acceptButton}" primary-icon="{app.state.confirmDialog.acceptIcon}" on-primary-action="confirmDialogPrimaryClick" primary-kind="{app.state.confirmDialog.acceptKind}" on-secondary-action="confirmDialogSecondaryClick" secondary-action-text="{app.state.confirmDialog.rejectButton}" secondary-icon="{app.state.confirmDialog.rejectIcon}" on-close-action="confirmDialogCloseClick">
       <border-layout padding="false" fill-parent="true" id="qkg_2">
@@ -357,7 +368,7 @@
             </panel>
           </box>
           <button-group slot="header-button" align="end" id="d9k9w">
-            <button icon="carbon:checkmark--outline" kind="primary" disabled="{page.state.disableDoneButton}" loading="{page.state.loadingstatus===true}" on-click="rejectStatus" id="k3_xr"/>
+            <button icon="carbon:checkmark--outline" kind="primary" loading="{page.state.loadingstatus===true}" on-click="rejectStatus" id="k3_xr"/>
           </button-group>
         </sliding-drawer>
         <sliding-drawer id="poStatusChangeDialog" align="start" header-text="Change status" content-padding="false" controller="SharedResources/ChangeStatusController">
@@ -388,14 +399,14 @@
             </panel>
           </box>
           <button-group slot="header-button" align="end" id="changeStatusButton">
-            <button icon="carbon:checkmark--outline" kind="primary" disabled="{page.state.disableDoneButton}" loading="{page.state.loadingstatus===true}" on-click="changeStatus" id="xne_g"/>
+            <button icon="carbon:checkmark--outline" kind="primary" loading="{page.state.loadingstatus===true}" on-click="changeStatus" id="approvalsChangeStatusBtn"/>
           </button-group>
         </sliding-drawer>
         <!-- lookups -->
         <lookup id="logTypeLookup" show-search="false" lookup-heading="Select Log Type" show-count="false" datasource="synonymDomainData" on-item-click="setLogType" border="true" lookup-attributes="{['value', 'description']}" height="400" width="60"/>
       </dialogs>
     </page>
-    <!-- PO detail page -->
+    <!-- Purchase Order Detail View -->
     <page padding="true" id="poDetails" path="/poDetails" title="Purchase Order" controller="SharedResources/PurchaseOrderDetailsController">
       <states id="m6prr"/>
       <maximo-datasource id="poDetailResource" object-structure="mxapipo" where="ponum=&quot;{page.params.ponum}&quot; and siteid=&quot;{page.params.siteid}&quot;" controller="SharedResources/PurchaseOrderDataController" cache-expiry-ms="1" geometry-format="geojson">
@@ -448,12 +459,10 @@
           <attribute name="inspectionrequired" id="pq6p9"/>
           <!-- ship to -->
           <attribute name="shipto{description,address1,address2,address3,address4}" id="yg5zx"/>
-          <attribute name="shiptoattn" id="zrmbp">
-            <attribute name="displayname" id="ryjpx"/>
-          </attribute>
+          <attribute name="shiptoattn" id="zrmbp"/>
           <!-- bill to -->
           <attribute name="billto{description,address1,address2,address3,address4}" id="yp365"/>
-          <attribute name="billtoattn{displayname}" id="vvyg8"/>
+          <attribute name="billtoattn" id="vvyg8"/>
         </schema>
       </maximo-datasource>
       <maximo-datasource id="workLogTypeDomain" lookup-data="true" object-structure="mxapisynonymdomain" saved-query="MOBILEDOMAIN" selection-mode="single">
@@ -466,18 +475,6 @@
           <attribute name="siteid" searchable="true" id="d2gvz"/>
           <attribute name="orgid" searchable="true" id="jbaaw"/>
           <attribute name="defaults" id="eepwz"/>
-        </schema>
-      </maximo-datasource>
-      <maximo-datasource id="synonymdomainData" offline-immediate-download="true" lookup-data="true" object-structure="mxapisynonymdomain" saved-query="MOBILEDOMAIN" selection-mode="single">
-        <schema id="bn686">
-          <attribute name="value" searchable="true" id="xp2e9"/>
-          <attribute name="maxvalue" searchable="true" id="g58pj"/>
-          <attribute name="description" searchable="true" id="wwwzq"/>
-          <attribute name="domainid" searchable="true" id="m2ebr"/>
-          <attribute name="valueid" unique-id="true" searchable="true" id="aakrv"/>
-          <attribute name="siteid" searchable="true" id="r27qk"/>
-          <attribute name="orgid" searchable="true" id="wz5gx"/>
-          <attribute name="defaults" id="avz96"/>
         </schema>
       </maximo-datasource>
       <dialogs id="poDetailsDialogList">
@@ -509,7 +506,7 @@
           <border-layout fill-parent="true" padding="true" id="q6vjj">
             <middle vertical-align="center" id="exp96">
               <box padding-start="{app.state.screen.size === 'lg' || app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '.5'}" padding-bottom="{app.state.screen.size === 'lg' || app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '-.5' : '1.5'}" padding-top="{app.state.screen.size === 'lg' || app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '.5' : '1.5'}" id="wg26q">
-                <wrapped-text size="large" label="{poDetailResource.item.description}" sub-label="{woDetailResource.item.revisionnum}" truncation-type="end" id="nkra5"/>
+                <wrapped-text size="large" label="{poDetailResource.item.description}" sub-label="{poDetailResource.item.ponum}" truncation-type="end" id="nkra5"/>
               </box>
             </middle>
           </border-layout>
@@ -555,7 +552,7 @@
                             <box id="vbbr5">
                               <button-group id="nn5z5">
                                 <button icon="carbon:document" kind="secondary" loading="{page.state.chatLogLoading || page.state.loading}" on-click="openWorkLogDrawer" on-click-arg="{{'item':poDetailResource.item}}" disabled="{page.state.loading}" id="openWorkLogBtn"/>
-                                <button icon="carbon:list--numbered" on-click="navigateToLines" hidden="{!poLineDetailds.state.itemCount}" tag-type="dark-gray" tag-value="{app.state.lineCount}" on-click-arg="{poDetailResource.item}" kind="{page.state.firstLogin ? 'primary' : 'secondary'}" id="openPOLineDetailBtn"/>
+                                <button icon="carbon:list--numbered" on-click="navigateToLines" tag-type="dark-gray" tag-value="{app.state.lineCount}" on-click-arg="{poDetailResource.item}" kind="{page.state.firstLogin ? 'primary' : 'secondary'}" id="openPOLineDetailBtn"/>
                               </button-group>
                             </box>
                           </bottom>

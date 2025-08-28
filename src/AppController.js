@@ -69,9 +69,6 @@ class AppController {
     this.app.setCurrentPage({name: 'approvals'});
   }
 
-  /**
-   * Get workorder staus list for offline.
-   */
   async getOfflinePoStatusList(evt) {
     let statusArr = [];
     let defOrg = evt.item.orgid;
@@ -123,15 +120,10 @@ class AppController {
     return statusArr;
   }
 
-  /**
-   * Get external value on the basis of internal value.
-   */
   _getStatusExternalValue(statusArr, internalValue) {
     let externalValue;
-    // istanbul ignore else
     if (statusArr && statusArr.length && internalValue) {
       for (let i = 0; i < statusArr.length; i++) {
-        // istanbul ignore else
         if (statusArr[i].defaults && statusArr[i].maxvalue === internalValue) {
           externalValue = statusArr[i].value;
           break;
@@ -141,9 +133,6 @@ class AppController {
     return externalValue;
   }
 
-  /**
-   * Build workorder staus list from allowed state.
-   */
   _buildPoStatusSet(allowedStates) {
     let statusArr = [];
     if (allowedStates) {
@@ -165,7 +154,6 @@ class AppController {
     }
     return statusArr;
   }
-
   /**
     * @description update page title dynamically get value of worktype and ponum from url parameter
     * @param  {parameters} parameters parameters object contains object of page, label and labelValue
@@ -179,7 +167,6 @@ class AppController {
       );
     return pageTitle;
   }
-
   /*
    * This method checks status transition based on internal values.
    * @param from This the maxvalue (internal value) for current status.
@@ -220,9 +207,6 @@ class AppController {
     }
   }
 
-    /**
-   * Sets incoming context to navigate to workorder details page as per provided params
-   */
   setupIncomingContext() {
     const incomingContext = this.app && this.app.state && this.app.state.incomingContext;
 
@@ -230,32 +214,25 @@ class AppController {
       incomingContext.page  = 'poDetails';
     }
 
-    if (incomingContext && incomingContext.page && ((incomingContext.ponum && incomingContext.siteid) || (incomingContext.href && !incomingContext.itemId))) {
+    if (incomingContext && incomingContext.page && (incomingContext.ponum && incomingContext.siteid)) {
       this.app.setCurrentPage({name:"approvals"});
       this.app.setCurrentPage({
         name: incomingContext.page,
         resetScroll: true,
-        params: {ponum: incomingContext.ponum, siteid: incomingContext.siteid, href: incomingContext.href}
+        params: {ponum: incomingContext.ponum, siteid: incomingContext.siteid }
       });
-    } else if(incomingContext && incomingContext.page && incomingContext.href && incomingContext.itemId) {
+    } else if(incomingContext && incomingContext.page) {
       this.app.setCurrentPage({
         name: incomingContext.page,
-        resetScroll: true,
-        params: { href: incomingContext.href,itemhref: incomingContext.href }
+        resetScroll: true
       });
     }
   }
 
-
-  /**
-   * Get description on the basis of internal value.
-   */
   _getStatusDescription(statusArr, internalValue) {
     let description;
-    // istanbul ignore else
     if (statusArr && statusArr.length && internalValue) {
       for (let i = 0; i < statusArr.length; i++) {
-        // istanbul ignore else
         if (statusArr[i].defaults && statusArr[i].maxvalue === internalValue) {
             description = statusArr[i].description;
           break;
@@ -263,14 +240,6 @@ class AppController {
       }
     }
     return description;
-  }
-
-  completeLineItem(item){
-    this.app.findPage("lines").callController('completeLineItem', item);
-  }
-
-  openLineLongDesc(item){
-    this.app.findPage("lines").callController('openLineLongDesc', item);
   }
 
   loadApp(args = {}) {
@@ -287,80 +256,13 @@ class AppController {
     switcher.gotoApplication(appName, context, options);
   }
 
-  // TODO
-  async getWoActivity(page, app, poItem) {
-    let lineList = [...poItem.woactivity];
-    let poLineList = [];
-    let lineItems = [];
-
-    lineList.forEach(async (item) => {
-      let status = page.state.selectedStatus;
-      let maxValue = page.state.selectedStatusMaxValue;
-      let statusDescription = page.state.selectedStatusDescription;
-      status = item.status;
-      maxValue = item.status_maxvalue;
-      statusDescription = item.status_description;
-      lineItems.push({
-        ...item,
-        status: status,
-        status_maxvalue: maxValue,
-        status_description: statusDescription,
-      });
-    });
-    poLineList = lineItems;
-    return poLineList;
-  }
-
-  /**
-   * function return true/false whether all predessor task is complete or not.
-   * @param {tasklist} is an array of lines.
-   * @param {item} is single task item.
-   */
-  validatePredessor(tasklist, item) {
-    let lines = [];
-    if( item.status_maxvalue !== 'COMP' && item.predessorwos) {
-      let taskids;
-      if(item.predessorwos.includes('(')){
-        taskids = this.getPredssorWoTask(item);
-      }else{
-        taskids = item.predessorwos.split(',');
-      }
-      lines = tasklist.filter(item => item.taskid && taskids.includes(item.taskid.toString()) && item.status_maxvalue !== 'COMP');
-    } else {
-      return false;
-    }
-    return lines.length  ? false : true;
-  }
-
-  /**
-   * function return an array task ids.
-   * @param {item} is single task item.
-   */
-  getPredssorWoTask(item) {
-    const regex = /\d+(?=\))/g;
-    const str = item.predessorwos;
-    let m;
-    let predessorTask =[];
-    /* istanbul ignore else */
-    if ((m = regex.exec(str)) !== null) {
-        m.forEach((match) => {
-          predessorTask.push(match)
-        });
-    }
-    return predessorTask;
-  }
-
-
-  /**
-  * Function to resume previous method call
-  */
   async scanActions() {
     const params = this.app.state.scanParameter;
     switch(params.method) {
       case "changeStatus":
-        params.page.findDialog("woStatusChangeDialog").callController(params.method, {});
+        params.page.findDialog("poStatusChangeDialog").callController(params.method, {});
         break;
-      case "completeWorkorder":
+      case "completePurchaseorder":
         params.page.callController(params.method, params.evt);
         break;
       case "completeLineItem":
@@ -383,7 +285,6 @@ class AppController {
   confirmDialogCloseClick(app) {
     app.state.confirmDialog.onCloseClick();
   }
-
 
   resetSkipState() {
     this.app.state.skipSignature = false;

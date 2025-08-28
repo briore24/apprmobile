@@ -294,11 +294,6 @@ class LineController {
       this.app.state.canLoadWoDetailDS = true;
     }
 
-    this.page.state.doneButtonDisabled = true;
-    /* istanbul ignore else */
-    if(!app.state.lineCount) {
-      this.page.state.doneButtonDisabled = false;
-    }
     page.state.workorder = woDetailds.item;
 
     let lineDataSource = app.findDatasource('woPlanLineDetailds'); 

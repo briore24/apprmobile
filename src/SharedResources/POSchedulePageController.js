@@ -383,7 +383,6 @@ class POSchedulePageController {
     
     await podetails.load({
       noCache: true,
-      // itemUrl: event.item.href,
     });
     this.page.state.canloadpodetails = true;
     this.page.state.currentItem = event.item.ponum;
@@ -413,7 +412,7 @@ class POSchedulePageController {
     let podetails = this.app.findDatasource("podetails");
     //istanbul ignore else
     if (!podetails.items?.length || (podetails?.items?.[0]?.ponum !== event.item.ponum)) {
-      await podetails?.load({ noCache: true, itemUrl: event.item.href });
+      await podetails?.load({ noCache: true });
     }
     this.page.state.canloadpodetails = true;
     let statusLstDS = this.page.datasources["rejectList"];
@@ -469,19 +468,14 @@ class POSchedulePageController {
   //istanbul ignore next
   async openSignatureDialog(event) {
     await this.updateSignaturePrompt(event.item.status);
-    let purchaseorder = event.item;
     this.page.state.sigUploaded = false;
     const podetails = this.app.findDatasource("podetails");
-    if (!podetails?.href) {
-      this.page.state.canloadpodetails = false;
-    }
-    await podetails.load({ noCache: true, itemUrl: purchaseorder.href });
+    await podetails.load({ noCache: true });
     this.page.state.canloadpodetails = true;
     this.page.state.compDomainStatus = event.item.status + new Date().getTime();
     await this.app.userInteractionManager.openSignature(
       async imageData => {
         log.t(TAG, "base64 image" + imageData);
-
       }
       ,
       {
@@ -498,10 +492,6 @@ class POSchedulePageController {
       })
   }
 
-  /**
-* This method invokes complete work API once image is uploaded.
-*/
-  //istanbul ignore next
   async onUpload() {
     this.page.state.sigUploaded = true;
   }
@@ -509,7 +499,7 @@ class POSchedulePageController {
   async pageResumed(page) {
     this.trackUserLogin(page, this?.app?.client?.userInfo?.loginID);
     if (this.app.currentPage?.name === 'schedule' && this.app.lastPage?.name === 'purchaseOrderDetails') {
-      CommonUtil.sharedData.navigatedFromWOPage = true;
+      CommonUtil.sharedData.navigatedFromPOPage = true;
     }
     //On firstLogin the wolist should get synced with server
     if (page.state.firstLogin && this.app.state.networkConnected && this.app.state.refreshOnSubsequentLogin !== false) {
@@ -538,7 +528,6 @@ class POSchedulePageController {
     }
   }
 
-
   // Assisted by WCA@IBM
   // Latest GenAI contribution: ibm/granite-8b-code-instruct
   /**
@@ -564,9 +553,6 @@ class POSchedulePageController {
     this.app?.findPage("schedule")?.findDialog('poStatusChangeDialog')?.closeDialog();
   }
 
-  /*
-   * Method to store and load the user login detail
-   */
   trackUserLogin(page, loginID) {
     const storageKey = 'logindata_' + loginID;
     const firstLoginData = localStorage.getItem(storageKey);
@@ -582,7 +568,6 @@ class POSchedulePageController {
     await datasource.reset(datasource.baseQuery);
   }
 
-  // set default states
   setDefaults() {
     this.page.state.selectedSwitch = 0;
   }

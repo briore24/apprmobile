@@ -63,7 +63,7 @@ const getOfflineStatusList = async (app, orgId, siteId) => {
     
     if (!app.state.offlineStatusList?.length) {
       await synonymDomainsDS.initializeQbe();
-      synonymDomainsDS.setQBE('domainid', 'WOSTATUS')
+      synonymDomainsDS.setQBE('domainid', 'POSTATUS')
       synonymDomainsDS.setQBE('orgid', orgId);
       synonymDomainsDS.setQBE('siteid', siteId);
 
@@ -71,14 +71,14 @@ const getOfflineStatusList = async (app, orgId, siteId) => {
 
       // istanbul ignore next
       if (!app.state.offlineStatusList?.length && filteredDomainValues && filteredDomainValues.length < 1) {
-        synonymDomainsDS.setQBE('domainid', 'WOSTATUS');
+        synonymDomainsDS.setQBE('domainid', 'POSTATUS');
         synonymDomainsDS.setQBE('orgid', '=', orgId);
         synonymDomainsDS.setQBE('siteid', '=', 'null');
         filteredDomainValues = await synonymDomainsDS.searchQBE();
 
         // istanbul ignore next
         if (!app.state.offlineStatusList?.length && filteredDomainValues && filteredDomainValues.length < 1) {
-          synonymDomainsDS.setQBE('domainid', 'WOSTATUS');
+          synonymDomainsDS.setQBE('domainid', 'POSTATUS');
           synonymDomainsDS.setQBE('orgid', '=', 'null');
           synonymDomainsDS.setQBE('siteid', '=', 'null');
           filteredDomainValues = await synonymDomainsDS.searchQBE();
@@ -94,23 +94,11 @@ const getOfflineStatusList = async (app, orgId, siteId) => {
 
     
 }
-
-
-  /**
-   * Get systemproperties and store in a state.
-   */
-  const getTravelSystemProperties = async (app) => {   
-    if (app.client && typeof app.client.getSystemProperties === 'function'){
-      app.state.systemProp = await app.client.getSystemProperties('mxe.mobile.travel.prompt,mxe.mobile.travel.radius,mxe.mobile.travel.navigation,maximo.mobile.usetimer,maximo.mobile.statusforphysicalsignature,maximo.mobile.completestatus,mxe.mobile.navigation.windows,mxe.mobile.navigation.android,mxe.mobile.navigation.ios,maximo.mobile.allowmultipletimers,maximo.mobile.safetyplan.review,maximo.mobile.gotoreportwork');
-    }    
-  }
-
 /**
- * Return List of allowed status based on current status of work order
+ * Return List of allowed status based on current status
  * @param {statusList} statusList list of offline status
- * @param {event} event datasource event work order object
- * @param {flowControlled} flowControlled work order flow controlled flag
- */
+ * @param {event} event datasource event object
+*/
 const getOfflineAllowedStatusList = async (app, event) => {
     const statusList = await getOfflineStatusList(app, event.item.orgid, event.item.siteid);
     const statusArr = [];
@@ -129,22 +117,6 @@ const getOfflineAllowedStatusList = async (app, event) => {
     });
     return statusArr;
 }
-
-  /**
-   * In system properties we would get list of flag on which we have to ask for eSigCheck
-   * if current status matches in list we would pass esigCheck 1 and on based of it graphite component
-   * will handle to show prompt of esig
-   * @returns 1 or 0 (boolean numeric value)
-   */
-  const checkEsigRequired = (app, page, status) => {
-    const esigCheck = app.state?.systemProp?.["maximo.mobile.wostatusforesig"];
-    const allowedSignature = esigCheck? esigCheck
-      .split(',')
-      .map((status) => status.trim()): [];
-      const addEsig = allowedSignature.length > 0 &&
-      allowedSignature.indexOf(page.state.selectedStatus) > -1;
-    return (addEsig) ? true : false;
-  }
 
 /** 
  * This method checks status transition based on internal value.
@@ -169,41 +141,6 @@ const isAllowedStatus = (from, to) => {
     } else {
       return true;
     }
-}
-
-
-/**
- * Validate asset barcode
- * @param {string} selectedStatus - Status of the asset
- * @param {array} applicableStatus - Array of status that is applicable to the current operation
- * @returns {boolean} - True if the barcode is valid, otherwise false
- */
-const checkScanRequired = async(selectedStatus, applicableStatus = ['INPRG', 'COMP']) => {
-  // istanbul ignore else
-  if (applicableStatus.includes(selectedStatus)) {
-    return true;
-  }
-  return false;
-}
-
-/**
- * Returns true if the work order is not assigned or delivered
- * @param {Object} item The work order object
- * @returns {boolean} True if the work order is not assigned or delivered
- */
-const canInteractWorkOrder = (item, app) => {
-  const isAssignmentEnabled = app.checkSigOption(`${app.state.woOSName}.MANAGEASSIGNMENTSTATUS`);
-  if(!isAssignmentEnabled || !item?.assignment?.length) {
-    return true;
-  }
-  const assignment = item?.assignment?.filter(assignment => assignment?.laborcode === app.client?.userInfo?.labor?.laborcode && assignment?.assignmentid);
-  if(item?.status_maxvalue === 'COMP'|| (!item?.hasOwnProperty('assignment') || !assignment.length)) {
-    return true;
-  }
-  const acceptLabel = app.getLocalizedLabel('accepted', 'Accepted').toUpperCase();
-  const acceptableValues = [acceptLabel, 'WAITASGN', 'COMPLETE'];
-  const status = assignment?.[0]?.status?.toUpperCase();
-  return acceptableValues.includes(status);
 }
 
 /**
@@ -260,7 +197,7 @@ const markStatusAssigned = async (app,page,ds, listDS) => {
 const removeAssigned = async (app, page, ds, showToast = true) => {
   const rejectLabel = await app.getLocalizedLabel('rejected', 'Rejected');
 
-  const woDetailDs = app.findDatasource("wodetails");
+  const woDetailDs = app.findDatasource("podetails");
   if (!Device.get().isMaximoMobile || !woDetailDs.item) {
     await woDetailDs.forceReload();
   }
@@ -404,43 +341,6 @@ const filterMobileMaxvars = (varname, defDS) => {
   return MaxVar;
 }
 
-
-/**
- * Set throttled function to set Geo state
- * @param {Object} geolocationState object
- */
-// istanbul ignore next
-const setGeoState = _.throttle((geolocationState) => {
-  geolocationState.enabled = !(geolocationState && ((geolocationState.latitude === 0 && geolocationState.longitude === 0) || geolocationState.hasError));
-}, 500);
-
-/**
- * Set Enabled or Disabled state based on application geolocation
- * @param {app} app application object
- */
-// istanbul ignore next
-const setGeoLocationState = (app) => {
-  const geolocation = app.geolocation;
-  const travelPrompt = +getSystemProp(app, 'mxe.mobile.travel.prompt');
-  // istanbul ignore else
-  if (geolocation && travelPrompt) {
-    geolocation.on("geolocation-updated", () => setGeoState(geolocation.state));
-    geolocation.updateGeolocation({enableHighAccuracy: true});
-  }
-};
-
-// Assisted by WCA@IBM
-// Latest GenAI contribution: ibm/granite-20b-code-instruct-v2
-/**
- * This function takes in an app object and an event object as input, and sets the geolocation state based on the action property of the event object.
- * @param {Object} app - The app object represents the current state of the Alexa skill.
- * @param {Object} event - The event object represents the specific event that triggered the function.
- */
-const callGeoLocation = (app, action) => {
-  if(action === 'stop' || action === 'pause') {
-    setGeoLocationState(app);
-  }
-}
 /**
  * Common Function to open a sliding-drawer dialog to show Work Log for the Work Order at Schedule & WorkOrderDetails Page
  * @param {Application} app The application
@@ -457,15 +357,8 @@ const openWorkLogDrawer = async (app, page, event, workLogDS, drawerName) => {
   //istanbul ignore next
   if (page.name === "schedule") {
     page.state.currentItem = event.item.wonum;
-    const wodetails = page.datasources["wodetails"];
-    //istanbul ignore else
-    if (!event?.item?.href) {
-      page.state.canloadwodetails=false;
-		}
-    page.state.canLoadWoDetailsChilds = false;
-    await wodetails.load({ noCache: true, itemUrl: event.item.href });
-    page.state.canLoadWoDetailsChilds = true;
-    page.state.canloadwodetails=true;
+    const podetails = page.datasources["podetails"];
+    await podetails.load({ noCache: true });
   }
   workLogDS.clearState();
   workLogDS.resetState();
@@ -542,113 +435,6 @@ const openWorkLogDrawer = async (app, page, event, workLogDS, drawerName) => {
   page.showDialog(drawerName);
 }
 
-
-
-/**
- * @description Validate Data Sheet
- * @param {App} app - The app instance
- * @param {Page} page - The current page instance
- * @param {Object} workorder - The current workorder object
- * @param {Object} methodConfig - The method configuration object
- * @returns {Promise<boolean>} A promise that resolves to a boolean value indicating whether the validation was successful or not
- */
-const validateDataSheet = async(app, page, workorder, methodConfig = {}, showDialog = true) => {
-  const allowedDatasheetStatus = ['PASS', 'FAIL', 'ACTION', 'ADJREQD', 'ADJTOIMP', 'BROKEN', 'INSPECT', 'LIMITEDUSE', 'MISSING', 'OLIM', 'WARNING'];
-  app.state.disableToolWarning = false;
-  
-  const woDetailscalibration = app.findDatasource('woDetailCalibration');
-  const pluscWoDs = app.findDatasource("pluscWoDs");
-  
-  // istanbul ignore else
-  if (woDetailscalibration?.item?.wonum !== workorder?.wonum) {
-    // Clear and Load WorkOrder to CalibratiowoDetailCalibrationn Datasource
-    await woDetailscalibration?.clearState();
-    await woDetailscalibration?.load({noCache:true, itemUrl: workorder.href});
-  
-    // After load work order details, clear and load child datasheets too
-    await pluscWoDs?.clearState();
-    await pluscWoDs.load();
-  }
-
-  // Validate Incomplete Datasheet
-  let anyDataSheetSuccess = false;
-  const incompleteDatasheet = pluscWoDs?.items.filter((datasheet) => {
-    let allDynamicChecksEntered = true;
-    const { pluscwodsinstr = [] } = datasheet;
-    for (const instr of pluscwodsinstr) {
-      const { pluscwodspoint = [], caldynamic } = instr;
-      if (!caldynamic) {
-        continue
-      }
-      if (!allDynamicChecksEntered) {
-        break;
-      }
-      for (const point of pluscwodspoint) {
-        allDynamicChecksEntered = (!point.asfoundinput || !point.asleftinput) ? false : true;
-        if (!allDynamicChecksEntered) {
-          break;
-        }
-      }
-    }
-    // istanbul ignore else
-    if (datasheet?.required && (!datasheet?.asfoundcalstatus || !datasheet?.asleftcalstatus || !allDynamicChecksEntered)) {
-      return true;
-    } else {
-      if (datasheet?.required && allowedDatasheetStatus.includes(datasheet.asfoundcalstatus) && allowedDatasheetStatus.includes(datasheet.asleftcalstatus)) {
-        anyDataSheetSuccess = true;
-      }
-      return false;
-    }
-  });
-
-  app.state.disableToolWarning = !anyDataSheetSuccess;
-
-  // Open Warning if Datasheet Incomplete
-  // istanbul ignore next
-  if (incompleteDatasheet?.length) {
-    // Set Parameter for Calibration Operations
-    app.state.calibParameter = { app: app, page: page, workorder: workorder, ...methodConfig};
-    // Show Datasheet Warning Dialog
-    // istanbul ignore next
-    if (showDialog) {
-      app.showDialog('dataSheetWarnings');
-    }
-  return false;  
-  }
-  
-  return true;
-}
-
-
-/**
- * @description Validate actual tools availability
- * @param {object} app - The app object
- * @param {object} page - The current page object
- * @param {object} workorder - The current workorder object
- * @param {object} methodConfig - The method configuration object
- * @returns {boolean} - True if validation passes, false otherwise
-*/
-const validateActualTools = async(app, page, workorder, methodConfig = {}, showDialog = true) => {
-  // Validate Tools
-  // istanbul ignore else
-  if (workorder?.pluscvaltool === '0' || workorder?.actualtoolcount > 0) {
-    return true;  
-  }
-
-  // Set Parameter for Calibration Operations
-  app.state.calibParameter = { app: app, page: page, workorder: workorder, ...methodConfig};
-  // Show Tool Warning 
-  // istanbul ignore next
-  if (showDialog) {
-    if (workorder?.pluscvaltool === '1') {
-      app.showDialog('toolsWarnings');
-    } else {
-      app.showDialog('toolsError');
-    }  
-  }
-  return false;
-}
-
 // Assisted by watsonx Code Assistant 
 /**
  * Returns the confirm dialog label.
@@ -679,167 +465,12 @@ const clearSharedData = (propertyName) => {
   }
 }
 
-// Assisted by watsonx Code Assistant 
-/**
- * Get the spatial reference of the basemap.
- * @param {object} app - The application object.
- * @returns {string} The spatial reference of the basemap.
- */
-/* istanbul ignore next */
-const getBasemapSpatialReference = async (app) => {
-  const preloadAPI = new MapPreLoadAPI();
-
-  try {
-      // Load map configuration and layers
-      const mapConfiguration = await preloadAPI.loadMapConfiguration(app);
-      const layers = await preloadAPI.loadLayers(mapConfiguration, app);
-      // istanbul ignore else
-      if (!layers || layers.length === 0) {
-          return null;
-      }
-
-      // Enable token for the first layer and get base map info
-      const baseMapInfo = await preloadAPI.getBaseMapInfo(layers[0], app);
-      // istanbul ignore else
-      if (!baseMapInfo) {
-          return null;
-      }
-
-      // Determine the spatial reference
-      let basemapSpatialReference = baseMapInfo.spatialReference;
-      // istanbul ignore else
-      if (baseMapInfo.type === "indexedVector" && baseMapInfo.tileInfo?.spatialReference) {
-          basemapSpatialReference = baseMapInfo.tileInfo.spatialReference;
-      }
-
-      const { wkid, wkt, latestWkid } = basemapSpatialReference || {};
-
-      // Register and return spatial reference based on WKID
-      // istanbul ignore else
-      if (wkid) {
-          const { spatialReferences = [] } = mapConfiguration;
-          const spatialReference = spatialReferences.find(ref => ref.wkid === wkid);
-          // istanbul ignore else
-          if(spatialReference){
-            MapPreLoadAPI.registerSpatialReference(spatialReference);
-          }
-          return latestWkid ? `EPSG:${latestWkid}` : `EPSG:${wkid}`;
-      }
-
-      // Handle custom spatial reference (WKT-based)
-      // istanbul ignore else
-      if (wkt) {
-          const projCode = "EPSG:BASEMAP";
-          const baseMapCustomSR = {
-              wkid: projCode,
-              definition: wkt
-          };
-          MapPreLoadAPI.registerSpatialReference(baseMapCustomSR);
-          return projCode;
-      }
-
-      return null;
-
-  } catch (error) {
-      log.t('getBasemapSpatialReference: ', error);
-      return null;
-  }
-};
-
-// Assisted by watsonx Code Assistant 
-/**
- * Allow return button if owner of work order is labor only
- * @param {object} app - The application object.
- * @returns {Promise<void>} - A promise that resolves when the function is complete.
- */
-const showReturn = async(app, woDetailDs) => {
-  let canReturn = true;
-  const assignmentDS = woDetailDs.getChildDatasource('assignment',woDetailDs.item);
-  const records = await assignmentDS?.load();
-  const index = records?.findIndex(assignment => assignment?.laborcode === app.client?.userInfo?.labor?.laborcode);
-  const laborDsSingle = app.findDatasource('laborDsSingle');
-  await laborDsSingle.initializeQbe();
-  laborDsSingle.clearState();
-  if(index < 0) {
-    canReturn =  false;
-    laborDsSingle.clearQBE();
-    await laborDsSingle.searchQBE(undefined, true);
-  } else {
-    // if we foud assignment first get all labor records matching craft and skill
-    // need to do as we don't have data available in labor DS
-    const craftrateDs = app.findDatasource('craftrate');
-    await craftrateDs.initializeQbe();
-    craftrateDs.setQBE('craft', records[index].craft);
-    craftrateDs.setQBE('skillleveldata', records[index].skilllevel);
-    const filterdLabors = await craftrateDs.searchQBE();
-    const laborCodes = filterdLabors.map(item => item.laborcode);
-
-    // get all labor with QBE of matching labor records from above
-    laborDsSingle.setQBE('laborcode', 'in', laborCodes);
-    await laborDsSingle.searchQBE();
-  }
-  app.state.canReturn = canReturn;
-  return canReturn;
-}
-
-// Assisted by watsonx Code Assistant 
-/**
- * Check if a value is a valid latitude or longitude.
- * @param {number} value - The value to check.
- * @returns {boolean} - True if the value is a valid latitude or longitude, false otherwise.
- */
-const isLatOrLong = (coordinate) => {
-  const value = coordinate && Number(coordinate);
-  return typeof value === 'number' && ((value >= -90 && value <= 90) || (value >= -180 && value <= 180));
-}
-
 // use below variable to share data app wide, note it's const so you can push key name but don't redeclare it
 const sharedData = {
-  reassignDialogConfig : {
-      title: {
-        label: 'reassignDialogTitle',
-        value : 'Reassign or unassign'
-      },
-      confirmDialogLabel1: {
-        label: 'reassignDialogLabel',
-        value : 'The accepted assignment can be reassigned to other technician or Unassigned. Would you like to Unassign the assignment or reassign to other?'
-      },
-      confirmDialogAcceptButton: {
-        label: 'reassignDialogButton',
-        value : 'Reassign'
-      },
-      confirmDialogRejectButton: {
-        label: 'unassignDialogButton',
-        value : 'Unassign'
-      },
-      confirmDialogAcceptKind: 'primary',
-      confirmDialogAcceptIcon: 'maximo:reassign',
-      confirmDialogRejectIcon: 'carbon:study--previous',
-      //reassign button is primary button here
-      onPrimaryClick: async (app) => {
-        // different page have different code requirement due to loader
-        if (sharedData.allowReassignmentPage.name === "schedule" || sharedData.allowReassignmentPage.name === "approvals") {
-          sharedData.allowReassignmentPage.callController("openReassignmentDrawer", sharedData.event);
-        } else {
-          sharedData.allowReassignmentPage.callController("openReassignmentDrawer");
-        }
-      },
-      //unassign button is secondary button here
-      onSecondaryClick: () => {
-        sharedData.allowReassignmentPage.callController("unassignment",sharedData.event);
-      },
-       //unassign button is secondary button here
-       onCloseClick: () => {
-        sharedData.clickedUnassignment = false;
-        clearSharedData(sharedData?.allowReassignmentPage);
-        clearSharedData(sharedData?.event);
-      },
-  },
   isCardOpen: false,
   shouldReloadDatasource: false,
-  basemapSpatialReference: null,
   prop1: 'value1',
-  clickedWo: false
+  clickedPo: false
 }
 
 const functions = {
@@ -849,25 +480,13 @@ const functions = {
     getOfflineStatusList,
     getOfflineAllowedStatusList,
     isAllowedStatus,
-    checkEsigRequired,
-    getTravelSystemProperties,
-    checkScanRequired,
-    canInteractWorkOrder,
     markStatusAssigned,
     removeAssigned,
     _resetDataSource,
     filterMobileMaxvars,
-    setGeoLocationState,
     openWorkLogDrawer,
-    validateDataSheet,
-    validateActualTools,
-    callGeoLocation,
     getConfirmDialogLabel,
     clearSharedData,
-    getBasemapSpatialReference,
-    showReturn,
-    completeAssigned,
-    isLatOrLong,
     sharedData,
 };
   

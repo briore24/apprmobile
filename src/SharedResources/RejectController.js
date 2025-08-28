@@ -63,7 +63,6 @@ class RejectController {
   }
 
   selectStatus(item) {
-
     this.page.state.disableDoneButton = false;
     this.page.parent.state.disableDoneButton = false;
     this.page.state.selectedStatus = item;

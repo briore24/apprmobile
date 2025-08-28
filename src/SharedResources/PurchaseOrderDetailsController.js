@@ -67,12 +67,11 @@ class PurchaseOrderDetailsController {
     this.page.state.canloadpoDetailResource = true;
 
     const device = Device.get();
-    if (page.params.firstLogin) app.state.highlightStop = false;
 
     page.state.loadedLog = true;
     page.state.lineLoading = true;
     page.params.href = page.params.href || page.params.itemhref;
-    app.datasources['poLineDetailds']?.resetState();
+    // app.datasources['poLineDetailds']?.resetState();
 
     // offline mode sync
     if (this.page.state.disConnected && this.app.state.networkConnected && this.app.state.refreshOnSubsequentLogin !== false) {
@@ -88,12 +87,14 @@ class PurchaseOrderDetailsController {
     await poDetailds?.load({ noCache: true, itemUrl: page.params.href });
     this.app.state.canLoadPoDetailDS = true;
 
-    const poLineDetailds = app.datasources["poLineDetailds"];
+    // const poLineDetailds = app.datasources["poLineDetailds"];
 
+    /*
     if (poLineDetailds) {
       CommonUtil._resetDataSource(poLineDetailds);
       await poLineDetailds?.load({ noCache: true });
     }
+      */
     page.state.loading = false;
     const rejectLabel = app.getLocalizedLabel('rejected', 'Rejected').toUpperCase();
     const index = (poDetailResource?.item?.assignment?.length > 0) ? poDetailResource?.item?.assignment?.findIndex(assignment => assignment?.laborcode === this.app.client?.userInfo?.labor?.laborcode) : 0;
