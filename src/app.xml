@@ -20,7 +20,7 @@
   </states>
   <menu slot="navigation-items" id="ax__k">
     <menu-item label="PO Approvals" icon="maximo:work-orders-approve" page="approvals" id="xz3x6"/>
-  </menu>      
+  </menu>
   <maximo-datasource id="synonymdomainData" offline-immediate-download="true" lookup-data="true" object-structure="mxapisynonymdomain" saved-query="MOBILEDOMAIN" selection-mode="single">
     <schema id="bn686">
       <attribute name="value" searchable="true" id="xp2e9"/>
@@ -71,7 +71,7 @@
       <attribute name="description" searchable="true" id="mddw6"/>
       <attribute name="valueid" unique-id="true" id="apxmd"/>
     </schema>
-  </maximo-datasource>      
+  </maximo-datasource>
   <dialogs id="p3gwn">
     <dialog id="confirmDialog" title="{app.state.confirmDialog.title}" primary-action-text="{app.state.confirmDialog.acceptButton}" primary-icon="{app.state.confirmDialog.acceptIcon}" on-primary-action="confirmDialogPrimaryClick" primary-kind="{app.state.confirmDialog.acceptKind}" on-secondary-action="confirmDialogSecondaryClick" secondary-action-text="{app.state.confirmDialog.rejectButton}" secondary-icon="{app.state.confirmDialog.rejectIcon}" on-close-action="confirmDialogCloseClick">
       <border-layout padding="false" fill-parent="true" id="qkg_2">
@@ -86,89 +86,88 @@
   </dialogs>
   <pages id="pages">
     <page padding="true" id="approvals" path="/approvals" title="Approvals" icon="maximo:work-orders-approve" controller="SharedResources/POSchedulePageController">
-		<states id="vnybx">
-		<state name="selectedSwitch" value="0" type="number" id="xq4pe"/>
-		<state name="dialogLabel" value="" type="string" id="w73r5"/>
-		<state name="selectedDS" value="assignedpoDS" type="string" id="wvvma"/>
-		<state name="firstPO" value="" type="string" id="mkg6z"/>
-		<state name="firstLogin" value="false" type="boolean" id="nwpyg"/>
-		<state name="previousPage" type="string" value="" id="n8r2j"/>
-		<state name="compDomainStatus" value="" type="string" id="z35nd"/>
-		<state name="dataSourceIntializationCount" value="0" type="number" id="qwvyg"/>
-		<state name="checkForUpdateButton" value="false" type="boolean" id="zqzdk"/>
-		</states>
-		<maximo-datasource id="assignedpoDS" object-structure="mxapipo" saved-query="POWAPPR" mobile-qbe-filter="{{'status_maxvalue': '!=COMP,CAN,CLOSE,WAPPR'}}" offline-immediate-download="true" order-by="priority" pre-load="false" controller="SharedResources/POScheduleDataController" selection-mode="none" geometry-format="geojson" default="true" page-size="25">
-		<schema id="amk2z">
-		  <attribute name="ponum" sortable="false" searchable="true" id="r9w6v"/>
-		  <attribute name="description" searchable="true" id="d324b"/>
-		  <attribute name="priority" searchable="true" id="dg8jq"/>
-		  <attribute name="potype" searchable="true" id="vp5mb"/>
-		  <attribute name="status" sortable="true" searchable="true" id="ekmrx"/>
-		  <attribute name="status_description" sortable="false" id="za44g"/>
-		  <attribute name="status_maxvalue" sortable="false" index="true" id="qpyqk"/>
-		  <attribute name="siteid" sortable="false" searchable="true" id="ykgwp"/>
-		  <attribute name="orgid" sortable="false" id="a_vg5"/>
-		  <attribute name="np_statusmemo" id="zd69q"/>
-		  <attribute name="poid" sortable="false" unique-id="true" id="gzwj2"/>
-		  <attribute name="potype" sortable="true" id="wnpqk"/>
-		  <attribute name="orgid" sortable="false" id="mayz5"/>
-		</schema>
-		</maximo-datasource>
-		<maximo-datasource id="podetailsResource" object-structure="mxapipo">
-			<schema>
-			</schema>
-			<maximo-datasource id="signatureAttachment" attachment="true" relationship="doclinks" selection-mode="none" notify-when-parent-loads="true">
-				<schema>
-					<attribute name="*" unique-id="true"/>
-				</schema>
-			</maximo-datasource>
-			<maximo-datasource id="poWorkLogDs" selection-mode="none" order-by="createdate" relationship="worklog" object-name="worklog" controller="SharedResources/POScheduleDataController">
-				<schema>
-					<attribute name="createdate" unique-id="true"/>
-					<attribute name="description"/>
-					<attribute name="description_longdescription"/>
-					<attribute name="person.displayname--displayname"/>
-					<attribute name="createby--personid"/>
-					<attribute name="logtype"/>
-					<attribute name="anywherefid"/>
-				</schema>
-			</maximo-datasource>
-		</maximo-datasource>
-		<maximo-datasource id="poAttachmentDs" object-structure="mxapipo" item-url="{page.params.href}">
-		<schema id="nd6v9">
-		  <attribute name="poid" unique-id="true" id="wmkv_"/>
-		  <attribute name="ponum" id="mwjz6"/>
-		  <attribute name="siteid" id="gqb8q"/>
-		</schema>
-		</maximo-datasource>
-		<json-datasource id="rejectList" src="{[]}" items="statusItems" selection-mode="single" id-attribute="value">
-			<schema id="wvm59">
-			  <attribute name="value" id="zqdvj"/>
-			  <attribute name="description" id="j8bpj"/>
-			  <attribute name="valuid" id="pgy35"/>
-			  <!-- TODO: check if typo -->
-			  <attribute name="domainid" id="rkp_p"/>
-			</schema>
-		</json-datasource>
-		<json-datasource id="dsstatusDomainList" src="{[]}" items="statusItems" selection-mode="single" id-attribute="value">
-			<schema id="gr2dm">
-		  <attribute name="value" id="qyj26"/>
-		  <attribute name="description" id="jw9kr"/>
-		  <attribute name="maxvalue" id="qvn5b"/>
-		</schema>
-		</json-datasource>
-		<header-template hide-breadcrumb="true" title-column-width="{page.state.breadcrumbWidth ? page.state.breadcrumbWidth : app.state.screen.size === 'md' ? 50 : app.state.screen.size === 'lg' ? 30 : app.state.screen.size === 'xlg' ? 21 : 65}" id="zewd_">
-		<!-- dropdown items -->
-		<dropdown slot="dropdown" background-color="white" selected-item="{page.state.selectedDS}" on-change="loadPOListData" hide-unselected-placeholder="true" id="a7dap">
-		  <dropdown-item value="assignedpoDS" text="Purchase orders awaiting approval" id="vpdz8"/>
-		</dropdown>
-		</header-template>
-		<stacked-panel selected-index="{page.state.selectedSwitch}" id="qzfnm">
-		<panel id="listViewPanel">
-		  <include src="./po-card-group.xml" id="listViewPOCards"/>
-		</panel>
-		</stacked-panel>
-		<dialogs id="approvalsDialogs">
+      <states id="vnybx">
+        <state name="selectedSwitch" value="0" type="number" id="xq4pe"/>
+        <state name="dialogLabel" value="" type="string" id="w73r5"/>
+        <state name="selectedDS" value="assignedpoDS" type="string" id="wvvma"/>
+        <state name="firstPO" value="" type="string" id="mkg6z"/>
+        <state name="firstLogin" value="false" type="boolean" id="nwpyg"/>
+        <state name="previousPage" type="string" value="" id="n8r2j"/>
+        <state name="compDomainStatus" value="" type="string" id="z35nd"/>
+        <state name="dataSourceIntializationCount" value="0" type="number" id="qwvyg"/>
+        <state name="checkForUpdateButton" value="false" type="boolean" id="zqzdk"/>
+      </states>
+      <maximo-datasource id="assignedpoDS" object-structure="mxapipo" saved-query="POWAPPR" mobile-qbe-filter="{{'status_maxvalue': '!=COMP,CAN,CLOSE,WAPPR'}}" offline-immediate-download="true" order-by="priority" pre-load="false" controller="SharedResources/POScheduleDataController" selection-mode="none" geometry-format="geojson" default="true" page-size="25">
+        <schema id="amk2z">
+          <attribute name="ponum" sortable="false" searchable="true" id="r9w6v"/>
+          <attribute name="description" searchable="true" id="d324b"/>
+          <attribute name="priority" searchable="true" id="dg8jq"/>
+          <attribute name="potype" searchable="true" id="vp5mb"/>
+          <attribute name="status" sortable="true" searchable="true" id="ekmrx"/>
+          <attribute name="status_description" sortable="false" id="za44g"/>
+          <attribute name="status_maxvalue" sortable="false" index="true" id="qpyqk"/>
+          <attribute name="siteid" sortable="false" searchable="true" id="ykgwp"/>
+          <attribute name="orgid" sortable="false" id="a_vg5"/>
+          <attribute name="np_statusmemo" id="zd69q"/>
+          <attribute name="poid" sortable="false" unique-id="true" id="gzwj2"/>
+          <attribute name="potype" sortable="true" id="wnpqk"/>
+          <attribute name="orgid" sortable="false" id="mayz5"/>
+        </schema>
+      </maximo-datasource>
+      <maximo-datasource id="podetailDs" object-structure="mxapipo">
+        <schema id="mydvw"/>
+        <maximo-datasource id="signatureAttachment" attachment="true" relationship="doclinks" selection-mode="none" notify-when-parent-loads="true">
+          <schema id="a2y9p">
+            <attribute name="*" unique-id="true" id="vmxjj"/>
+          </schema>
+        </maximo-datasource>
+        <maximo-datasource id="poWorkLogDs" selection-mode="none" order-by="createdate" relationship="worklog" object-name="worklog" controller="SharedResources/POScheduleDataController">
+          <schema id="en3_7">
+            <attribute name="createdate" unique-id="true" id="bgjjy"/>
+            <attribute name="description" id="n5235"/>
+            <attribute name="description_longdescription" id="ym9jd"/>
+            <attribute name="person.displayname--displayname" id="dmgyp"/>
+            <attribute name="createby--personid" id="a7rv2"/>
+            <attribute name="logtype" id="zg_r7"/>
+            <attribute name="anywherefid" id="n3j8m"/>
+          </schema>
+        </maximo-datasource>
+      </maximo-datasource>
+      <maximo-datasource id="poAttachmentDs" object-structure="mxapipo" item-url="{page.params.href}">
+        <schema id="nd6v9">
+          <attribute name="poid" unique-id="true" id="wmkv_"/>
+          <attribute name="ponum" id="mwjz6"/>
+          <attribute name="siteid" id="gqb8q"/>
+        </schema>
+      </maximo-datasource>
+      <json-datasource id="rejectList" src="{[]}" items="statusItems" selection-mode="single" id-attribute="value">
+        <schema id="wvm59">
+          <attribute name="value" id="zqdvj"/>
+          <attribute name="description" id="j8bpj"/>
+          <attribute name="valuid" id="pgy35"/>
+          <!-- TODO: check if typo -->
+          <attribute name="domainid" id="rkp_p"/>
+        </schema>
+      </json-datasource>
+      <json-datasource id="dsstatusDomainList" src="{[]}" items="statusItems" selection-mode="single" id-attribute="value">
+        <schema id="gr2dm">
+          <attribute name="value" id="qyj26"/>
+          <attribute name="description" id="jw9kr"/>
+          <attribute name="maxvalue" id="qvn5b"/>
+        </schema>
+      </json-datasource>
+      <header-template hide-breadcrumb="true" title-column-width="{page.state.breadcrumbWidth ? page.state.breadcrumbWidth : app.state.screen.size === 'md' ? 50 : app.state.screen.size === 'lg' ? 30 : app.state.screen.size === 'xlg' ? 21 : 65}" id="zewd_">
+        <!-- dropdown items -->
+        <dropdown slot="dropdown" background-color="white" selected-item="{page.state.selectedDS}" on-change="loadPOListData" hide-unselected-placeholder="true" id="a7dap">
+          <dropdown-item value="assignedpoDS" text="Purchase orders awaiting approval" id="vpdz8"/>
+        </dropdown>
+      </header-template>
+      <stacked-panel selected-index="{page.state.selectedSwitch}" id="qzfnm">
+        <panel id="listViewPanel">
+          <include src="./po-card-group.xml" id="listViewPOCards"/>
+        </panel>
+      </stacked-panel>
+      <dialogs id="approvalsDialogs">
         <dialog id="saveDiscardWorkLog" title="Save or discard changes?" primary-action-text="Save" on-primary-action="saveWorkLogSaveDiscard" primary-kind="secondary" primary-button-disabled="{page.state.workLogData.sendDisable}" on-secondary-action="closeWorkLogSaveDiscard" secondary-action-text="Discard">
           <label wrap="true" label="To leave this page, you must first discard or save your changes." id="q93dp"/>
         </dialog>

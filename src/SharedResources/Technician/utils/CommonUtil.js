@@ -165,22 +165,22 @@ const markStatusAssigned = async (app,page,ds, listDS) => {
   }
   try {
     await assignmentDS.save();
-    const message = `Assignment ${ds.item.wonum} was assigned to you.`;
+    const message = `Assignment ${ds.item.ponum} was assigned to you.`;
     app.toast(
       app.getLocalizedLabel(
         'accepted_wo',
         message,
-        [ds.item.wonum]
+        [ds.item.ponum]
       ),
     'success');
   } catch (error) {
-    log.t("Assigned", "Failed assignment rejection : work order --> " + ds?.item?.wonum + "--> " + error);
-    const message = `Assignment ${ds?.item?.wonum} could not be assigned to you.`;
+    log.t("Assigned", "Failed assignment rejection : work order --> " + ds?.item?.ponum + "--> " + error);
+    const message = `Assignment ${ds?.item?.ponum} could not be assigned to you.`;
     app.toast(
       app.getLocalizedLabel(
         'accepted_wo_failure',
         message,
-        [ds.item?.wonum]
+        [ds.item?.ponum]
       ),
     'error');
   }
@@ -240,25 +240,25 @@ const removeAssigned = async (app, page, ds, showToast = true) => {
     await woDetailDs.save(dataToUpdate, option);
     /* istanbul ignore next */
     if (showToast) {
-      const message = `Assignment ${woDetailDs.item.wonum} was ${(sharedData.clickedUnassignment) ? 'returned' : 'rejected'} and returned to the dispatcher.`;
+      const message = `Assignment ${woDetailDs.item.ponum} was ${(sharedData.clickedUnassignment) ? 'returned' : 'rejected'} and returned to the dispatcher.`;
       app.toast(
         app.getLocalizedLabel(
           (sharedData.clickedUnassignment) ? 'unassigned_wo' : 'rejected_wo',
           message,
-          [woDetailDs.item.wonum]
+          [woDetailDs.item.ponum]
         ),
         'success');
     }
   } catch (error) {
-    log.t("Reject", "Failed assignment rejection : work order --> " + woDetailDs.item?.wonum + "--> " + error);
+    log.t("Reject", "Failed assignment rejection : work order --> " + woDetailDs.item?.ponum + "--> " + error);
     //istanbul ignore if
     if (showToast) {
-      const message = `Assignment ${woDetailDs.item?.wonum} could not be ${(sharedData.clickedUnassignment) ? 'returned' : 'rejected'}. Resync data and try again.`;
+      const message = `Assignment ${woDetailDs.item?.ponum} could not be ${(sharedData.clickedUnassignment) ? 'returned' : 'rejected'}. Resync data and try again.`;
       app.toast(
         app.getLocalizedLabel(
           (sharedData.clickedUnassignment) ? 'unassigned_wo_failure' : 'rejected_wo_failure',
           message,
-          [woDetailDs.item?.wonum]
+          [woDetailDs.item?.ponum]
         ),
         'error');
     }
@@ -308,7 +308,7 @@ const completeAssigned = async (app, woDetailDs, tempRecord, assignmentDS) => {
     await woDetailDs.save(dataToUpdate, option);
     return true;
   } catch (error) {
-    log.t("Reassigned", "Failed reassignement : work order --> " + woDetailDs.item?.wonum + "f--> " + error);
+    log.t("Reassigned", "Failed reassignement : work order --> " + woDetailDs.item?.ponum + "f--> " + error);
     return false;
   }
 }
@@ -356,8 +356,8 @@ const openWorkLogDrawer = async (app, page, event, workLogDS, drawerName) => {
   const siteId = app.client?.userInfo?.insertSite;
   //istanbul ignore next
   if (page.name === "schedule") {
-    page.state.currentItem = event.item.wonum;
-    const podetails = page.datasources["podetails"];
+    page.state.currentItem = event.item.ponum;
+    const podetails = page.datasources["podetailDs"];
     await podetails.load({ noCache: true });
   }
   workLogDS.clearState();
@@ -366,9 +366,8 @@ const openWorkLogDrawer = async (app, page, event, workLogDS, drawerName) => {
     page.state.chatLogGroupData = response;
   });
 
-  // istanbul ignore if
+  // get work log schema 
   if (Device.get().isMaximoMobile && workLogDS.options.query.relationship) {
-    //Get schema of childdatasource.
     workLogDS.schema =
       workLogDS.dependsOn.schema.properties[
         Object.entries(workLogDS.dependsOn.schema.properties)
