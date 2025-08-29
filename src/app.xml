@@ -404,6 +404,9 @@
         <sliding-drawer id="poWorkLogDrawer" validate="workLogValidate" align="start" header-text="Work Log" content-padding="false">
           <chat-log messages="{page.state.chatLogGroupData}" default-log-type="{page.state.initialDefaultLogType}" default-log-type-key="value" datasource="synonymdomainData" content-limit="{page.state.chatLogDescLength}" log-type-attribute="{['value', 'description']}" on-click="saveWorkLog" loading="{page.state.chatLogLoading}" is-config-btn="true" watch-changes="watchChatLogChanges" id="poDetailsWorkLog"/>
         </sliding-drawer>
+        <sliding-drawer id="poVendorDetailDrawer">
+          <label label="hello world"/>
+        </sliding-drawer>
         <!-- lookups -->
         <lookup id="logTypeLookupDetailsPage" show-search="false" lookup-heading="Select log type" show-count="false" datasource="workLogTypeDomain" on-item-click="setPODetailsLogType" border="true" lookup-attributes="{['value', 'description']}" height="400" width="60"/>
       </dialogs>
@@ -414,37 +417,60 @@
       <header-template hidden="{!page.state.loading}" id="w_dp5">
         <button slot="buttons" loading="true" kind="ghost" id="q9gjd"/>
       </header-template>
-      <adaptive-row id="jx8ea">
-        <adaptive-column xlarge-width="60" large-width="100" medium-width="100" small-width="100" id="dmj2r">
-          <border-layout fill-parent="true" padding="true" id="q6vjj">
-            <middle vertical-align="center" id="exp96">
-              <box padding-start="{app.state.screen.size === 'lg' || app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '.5'}" padding-bottom="{app.state.screen.size === 'lg' || app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '-.5' : '1.5'}" padding-top="{app.state.screen.size === 'lg' || app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '.5' : '1.5'}" id="wg26q">
-                <wrapped-text size="large" label="{poDetailResource.item.description}" sub-label="{poDetailResource.item.ponum}" truncation-type="end" id="nkra5"/>
-              </box>
-            </middle>
-          </border-layout>
-        </adaptive-column>
-        <adaptive-column xlarge-width="60" large-width="100" medium-width="100" small-width="100" id="dz642">
-          <box direction="column" background-color="field-01" padding="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? 0 : 0.5}" id="poDetailsBox">
+      <box id="poDetailsHeader">
+        <adaptive-row>
+          <adaptive-column xlarge-width="100" large-width="100" medium-width="100" small-width="100" id="poDetailsMainContentHeader">
+            <border-layout fill-parent="true" padding="true" id="q6vjj">
+              <middle vertical-align="center" id="exp96">
+                <box padding-start="{app.state.screen.size === 'lg' || app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '.5'}" padding-bottom="{app.state.screen.size === 'lg' || app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '-.5' : '1.5'}" padding-top="{app.state.screen.size === 'lg' || app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '.5' : '1.5'}" id="wg26q">
+                  <wrapped-text size="large" label="{poDetailResource.item.description}" sub-label="{poDetailResource.item.ponum}" truncation-type="end" id="nkra5"/>
+                  <field label="Revision" value="{poDetailResource.item.revisionnum}" empty-field-placeholder="0" label-placement="top"/>
+                </box>
+              </middle>
+            </border-layout>
+          </adaptive-column>
+        </adaptive-row>
+      </box>
+      <adaptive-row id="poDetailsMainContent">
+
+        <adaptive-column xlarge-width="100" large-width="100" medium-width="100" small-width="100" id="poDetailsMainContentBox">
+          <box direction="column" background-color="field-01" padding="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? 0 : 0.5}" fill-parent="true" id="poDetailsBox">
             <border-layout padding="true" fill-parent="true" top-border="true" id="zmk9x">
               <top id="knew6">
-                <label label="Details" theme="20-regular" id="kkm2j"/>
+                <start>
+                  <label label="Details" theme="20-regular" id="kkm2j"/>
+                </start>
+                <end>
+                  <box>
+                    <field label="Status" value="{poDetails.item.status}" id="poDetailsStatusField"/>
+                  </box>
+                </end>
               </top>
+              <start>
+                <label label="start"/>
+              </start>
               <middle vertical-align="center" id="qnq_5">
                 <border-layout fill-parent="true" top-border="true" id="zd22e">
-                  <top id="zb7xr">
+                  <start id="zb7xr">
                     <adaptive-row id="gyrey">
                       <adaptive-column small-width="100" medium-width="100" large-width="50" medium-horizontal-align="start" id="mjnwx">
                         <border-layout fill-parent="true" id="z2neq">
-                          <middle id="gg5rd">
-                            <button hidden="{!poDetailResource.item.description_longdescription}" padding="false" icon="carbon:maximize" kind="secondary" dialog="longDescDialog" id="nq5md"/>
-                            <box direction="row" fill-parent-horizontal="true" padding="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '.5' : '0'}" id="longDescBox">
-                              <rich-text-viewer content="{poDetailResource.item.description_longdescription}" padding="0.5" content-limit="256" stripped="false" id="wbak3"/>
-                            </box>
+                          <start id="gg5rd">
+                            <button hidden="{!poDetailResource.item.description_longdescription}" padding="false" icon="carbon:maximize" kind="secondary" dialog="longDescDialog" id="poDetailsLongDescBtn"/>
+                            <!--box direction="row" fill-parent-horizontal="true" padding="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '.5' : '0'}" id="poDetailslongDescBox">
+                              < rich-text-viewer content="{poDetailResource.item.description_longdescription}" padding="0.5" content-limit="256" stripped="false" id="poDetailsLongDescViewer"/>
+                            </box-->
+                          </start>
+                          <middle>
+                            <field label="Revision" label-placement="top" value="{poDetailResource.item.revisionnum}" empty-field-placeholder="0" id="poDetailsRevisionnumField"/>
                           </middle>
+                          <end>
+                            <wrapped-text label="Comments" sub-label="{item.revcomments}" hidden="{!item.revcomments}" id="poDetailsRevcommentsField"/>
+                            <button hidden="{!poDetailResource.item.revcomments_longdescription}" padding="false" icon="carbon:maximize" kind="secondary" dialog="revDetailsDialog" id="poDetailsRevLongDescBtn"/>
+                          </end>
                         </border-layout>
                       </adaptive-column>
-                      <adaptive-column small-width="100" medium-width="100" large-width="50" medium-horizontal-align="start" id="jm5vp">
+                      <adaptive-column small-width="100" medium-width="100" large-width="100" medium-horizontal-align="start" id="jm5vp">
                         <border-layout fill-parent="true" id="xnvnw">
                           <middle id="vendorInfo">
                             <box direction="row" id="zg47p">
@@ -454,7 +480,7 @@
                         </border-layout>
                       </adaptive-column>
                     </adaptive-row>
-                  </top>
+                  </start>
                   <middle id="q5p2w">
                     <box direction="row" background-color="ui-02" id="bkje5">
                       <field label="Type" label-placement="top" value="{poDetailResource.item.potype}" hidden="{!poDetailResource.item.potype}" id="poDetailsPotypeField"/>
@@ -464,6 +490,15 @@
                   </middle>
                 </border-layout>
               </middle>
+              <end>
+              </end>
+              <bottom>
+                <button-group>
+                  <button id="poDetailsWorkLogBtn" icon="carbon:result" sliding-drawer="poWorkLogDrawer" kind="secondary"/>
+                  <button id="poDetailsVendorBtn" icon="carbon:user" kind="secondary" sliding-drawer="poVendorDetailDrawer"/>
+                  <button id="poDetailsLineBtn" icon="carbon:list" kind="secondary" on-click="navigateToLine" on-click-arg="{{ 'item': poDetailResource.item }}"/>
+                </button-group>
+              </bottom>
             </border-layout>
           </box>
         </adaptive-column>
@@ -471,7 +506,7 @@
       <box direction="column" id="poDetailsNavigatorBox">
         <navigator width="100%" theme="ui-05" mode="list" fade-background-color="false" id="nn8nd">
           <navigator-tile tile-label="Attachments" pictogram="maximo:document--attachments" onclick-action="showAttachmentPage" onclick-action-arg="{{'item':poDetailResource.item}}" badge-value="{app.state.doclinksCount}" badge-type="dark-gray" id="poDetailsAttachmentsTile"/>
-          <navigator-tile tile-label="Revision History" onclick-action="openRevisionHistory" onclick-action-arg="{{'item': poDetailResource.item}}" id="rqj4g"/>
+          <navigator-tile tile-label="Revision History" onclick-action="openRevisionHistory" onclick-action-arg="{{'item': poDetailResource.item}}" id="poDetailsRevHistoryTile"/>
         </navigator>
       </box>
       <border-layout width="100%" padding="true" id="poDetailsPageFooter">

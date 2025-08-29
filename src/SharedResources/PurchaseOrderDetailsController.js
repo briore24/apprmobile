@@ -34,7 +34,13 @@ class PurchaseOrderDetailsController {
     await CommonUtil.openWorkLogDrawer(this.app, this.page, event, this.page.datasources["poDetailsWorklogDs"], "poWorkLogDrawer");
   }
 
+  openRevisionHistory(item) {
+    console.log('this is still under construction!');
+  }
+
   navigateToLine(item) {
+    console.log('this is still under construction!');
+    /*
     if (item?.ponum) {
       this.app.setCurrentPage({
         name: 'lines', 
@@ -42,6 +48,7 @@ class PurchaseOrderDetailsController {
       });
       this.page.state.navigateToLinePage = true;
     }
+      */
   }
 
   async pageResumed(page, app) {
