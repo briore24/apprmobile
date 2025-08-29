@@ -38,7 +38,7 @@ const getExternalStatusList = async (app, internalStatusList) => {
 
   let synonymDomainsDS = app.findDatasource('synonymdomainData');
   await synonymDomainsDS.initializeQbe();
-  synonymDomainsDS.setQBE('domainid', '=', 'WOSTATUS');
+  synonymDomainsDS.setQBE('domainid', '=', 'POSTATUS');
   synonymDomainsDS.setQBE('orgid', '=', defOrg);
   synonymDomainsDS.setQBE('siteid', '=', defSite);
 

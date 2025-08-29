@@ -130,7 +130,7 @@ let statusitem = {
               "domainid"
           ]
       },
-      "href": "http://localhost:9001/maximo/oslc/os/mxapidomain?lean=1&oslc.select=domainid&oslc.where=domainid=%22WOSTATUS%22&addschema=1",
+      "href": "http://localhost:9001/maximo/oslc/os/mxapidomain?lean=1&oslc.select=domainid&oslc.where=domainid=%22POSTATUS%22&addschema=1",
       "totalCount": 1
   }
 };

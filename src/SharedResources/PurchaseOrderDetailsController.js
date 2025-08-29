@@ -30,8 +30,8 @@ class PurchaseOrderDetailsController {
   }
 
   async openWorkLogDrawer(event) {
-    this.page.state.editPo = !['CAN'].includes(event?.item?.status_maxvalue);
-    await CommonUtil.openWorkLogDrawer(this.app, this.page, event, this.page.datasources["poDetailsWorklogDs"], "poWorkLogDrawer");
+    // this.page.state.editPo = !['CAN'].includes(event?.item?.status_maxvalue);
+    await CommonUtil.openWorkLogDrawer(this.app, this.page, event, this.page.datasources["poDetailWorkLogDs"], "poDetailWorkLogDrawer");
   }
 
   openRevisionHistory(item) {

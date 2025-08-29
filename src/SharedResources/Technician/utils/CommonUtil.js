@@ -284,7 +284,6 @@ const completeAssigned = async (app, woDetailDs, tempRecord, assignmentDS) => {
 
   const localPayload = {
     hidewo: 'HIDE',
-    href: woDetailDs.item.href,
     assignment: woDetailDs.item.assignment
   };
   const option = {
@@ -342,24 +341,19 @@ const filterMobileMaxvars = (varname, defDS) => {
 }
 
 /**
- * Common Function to open a sliding-drawer dialog to show Work Log for the Work Order at Schedule & WorkOrderDetails Page
+ * Common Function to open a sliding-drawer dialog to show Work Log for the purchase Order at Schedule & poDetails Page
  * @param {Application} app The application
  * @param {page} page - page name
  * @param {event} event - event containing information about current item
- * @param {workLogDS} is workLogDS - woDetailsWorklogDs from WorkOrderDetails Page & woWorklogDs from Schedule Page
- * @param {drawerName} is drawer names for WorkOrderDetails & Schedule Page
+ * @param {workLogDS} is workLogDS - poWorklogDs from poDetails Page & poWorklogDs from Schedule Page
+ * @param {drawerName} is drawer names for poDetails & Schedule Page
  */
 const openWorkLogDrawer = async (app, page, event, workLogDS, drawerName) => {
   // Initialized Loader on Button when Work Log Drawer Icon Clicked
   page.state.chatLogLoading = true;
   const orgId = app.client?.userInfo?.insertOrg;
   const siteId = app.client?.userInfo?.insertSite;
-  //istanbul ignore next
-  if (page.name === "schedule") {
-    page.state.currentItem = event.item.ponum;
-    const podetails = page.datasources["podetailDs"];
-    await podetails.load({ noCache: true });
-  }
+
   workLogDS.clearState();
   workLogDS.resetState();
   await workLogDS.load().then((response) => {
@@ -417,20 +411,15 @@ const openWorkLogDrawer = async (app, page, event, workLogDS, drawerName) => {
   const logItem = synonymDs.items.find((item) => {
     return item.maxvalue === logTypeValue && item.defaults;
   });
-
   const logValue = logItem ? `!${logItem.value}!` : schemaLogType.default;
-
   page.state.defaultLogType = page.state.initialDefaultLogType = logValue;
 
-  // istanbul ignore else
+  // set max length from schema info 
   if (schemaDescription) {
     page.state.chatLogDescLength = schemaDescription.maxLength;
   }
 
-  // Stop Loading of Chat Log Icon touchpoint once all data loaded
   page.state.chatLogLoading = false;
-
-  // Open Work Log Drawer once all Data Loaded
   page.showDialog(drawerName);
 }
 
@@ -480,6 +469,7 @@ const functions = {
     getOfflineAllowedStatusList,
     isAllowedStatus,
     markStatusAssigned,
+	completeAssigned,
     removeAssigned,
     _resetDataSource,
     filterMobileMaxvars,

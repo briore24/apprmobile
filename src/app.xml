@@ -96,6 +96,7 @@
         <state name="compDomainStatus" value="" type="string" id="z35nd"/>
         <state name="dataSourceIntializationCount" value="0" type="number" id="qwvyg"/>
         <state name="checkForUpdateButton" value="false" type="boolean" id="zqzdk"/>
+        <state name="isWorkLogEdit" value="true" type="boolean" id="bq3v_"/>
       </states>
       <maximo-datasource id="assignedpoDS" object-structure="mxapipo" saved-query="POWAPPR" mobile-qbe-filter="{{'status_maxvalue': '!=COMP,CAN,CLOSE,WAPPR'}}" offline-immediate-download="true" order-by="priority" pre-load="false" controller="SharedResources/POScheduleDataController" selection-mode="none" geometry-format="geojson" default="true" page-size="25">
         <schema id="amk2z">
@@ -115,7 +116,20 @@
         </schema>
       </maximo-datasource>
       <maximo-datasource id="podetailDs" object-structure="mxapipo">
-        <schema id="mydvw"/>
+        <schema id="mydvw">
+          <attribute name="poid" unique-id="true" id="ezvvx"/>
+          <attribute name="ponum" id="z4kev"/>
+          <attribute name="siteid" id="d_a7r"/>
+          <attribute name="description" id="m6_43"/>
+          <attribute name="description_longdescription" id="k5ex7"/>
+          <attribute name="status" id="zd72a"/>
+          <attribute name="revisionnum" id="dwqam"/>
+          <attribute name="revcomments" id="r57q_"/>
+          <attribute name="revcomments_longdescription" id="ka6n6"/>
+          <attribute name="vendor" id="j8892"/>
+          <attribute name="potype" id="z9_37"/>
+          <attribute name="totalcost" id="jyk5r"/>
+        </schema>
         <maximo-datasource id="signatureAttachment" attachment="true" relationship="doclinks" selection-mode="none" notify-when-parent-loads="true">
           <schema id="a2y9p">
             <attribute name="*" unique-id="true" id="vmxjj"/>
@@ -173,7 +187,7 @@
         </dialog>
         <!-- sliding drawers -->
         <sliding-drawer id="workLogDrawer" validate="workLogValidate" align="start" header-text="Work log" content-padding="false">
-          <chat-log messages="{page.state.chatLogGroupData}" default-log-type="{page.state.initialDefaultLogType}" default-log-type-key="value" datasource="synonymdomainData" content-limit="{page.state.chatLogDescLength}" log-type-attribute="{['value','description']}" id="g7wpp" on-click="saveWorkLog" loading="{page.state.chatLogLoading}" is-config-btn="true" watch-changes="watchChatLogChanges"/>
+          <chat-log messages="{page.state.chatLogGroupData}" default-log-type="{page.state.initialDefaultLogType}" default-log-type-key="value" datasource="synonymdomainData" content-limit="{page.state.chatLogDescLength}" log-type-attribute="{['value','description']}" id="approvalsWorkLog" on-click="saveWorkLog" loading="{page.state.chatLogLoading}" is-config-btn="true" watch-changes="watchChatLogChanges"/>
         </sliding-drawer>
         <sliding-drawer id="rejectPO" align="start" header-text="reject header" sub-title="reject subheader" content-padding="false" controller="SharedResources/RejectController">
           <box direction="column" id="dyyr5">
@@ -289,6 +303,17 @@
           <attribute name="billto{description,address1,address2,address3,address4}" id="yp365"/>
           <attribute name="billtoattn" id="vvyg8"/>
         </schema>
+        <maximo-datasource id="poDetailWorkLogDs" selection-mode="none" order-by="createdate" relationship="worklog" object-name="worklog" controller="SharedResources/POScheduleDataController">
+          <schema id="xbxwa">
+            <attribute name="createdate" unique-id="true" id="w7dgp"/>
+            <attribute name="description" id="q99gk"/>
+            <attribute name="description_longdescription" id="rjgbp"/>
+            <attribute name="person.displayname--displayname" id="pvnqz"/>
+            <attribute name="createby--personid" id="g99r3"/>
+            <attribute name="logtype" id="nvn68"/>
+            <attribute name="anywherefid" id="kqdbe"/>
+          </schema>
+        </maximo-datasource>
       </maximo-datasource>
       <maximo-datasource id="workLogTypeDomain" lookup-data="true" object-structure="mxapisynonymdomain" saved-query="MOBILEDOMAIN" selection-mode="single">
         <schema id="m6ad8">
@@ -313,7 +338,7 @@
           <label wrap="true" label="To leave this page, you must first discard or save your changes." id="kx5n_"/>
         </dialog>
         <!-- sliding drawers -->
-        <sliding-drawer id="poWorkLogDrawer" validate="workLogValidate" align="start" header-text="Work Log" content-padding="false">
+        <sliding-drawer id="poDetailWorkLogDrawer" validate="workLogValidate" align="start" header-text="Work Log" content-padding="false">
           <chat-log messages="{page.state.chatLogGroupData}" default-log-type="{page.state.initialDefaultLogType}" default-log-type-key="value" datasource="synonymdomainData" content-limit="{page.state.chatLogDescLength}" log-type-attribute="{['value', 'description']}" on-click="saveWorkLog" loading="{page.state.chatLogLoading}" is-config-btn="true" watch-changes="watchChatLogChanges" id="poDetailsWorkLog"/>
         </sliding-drawer>
         <sliding-drawer id="poVendorDetailDrawer">
@@ -363,7 +388,7 @@
           <end id="gw__w"/>
           <bottom id="brdd8">
             <button-group id="gq9yd">
-              <button id="poDetailsWorkLogBtn" icon="carbon:result" sliding-drawer="poWorkLogDrawer" kind="secondary"/>
+              <button id="poDetailsWorkLogBtn" icon="carbon:document" on-click="openWorkLogDrawer" on-click-arg="{{ 'item': poDetailResource.item }}" kind="secondary" disabled="{page.state.loading}"/>
               <button id="poDetailsVendorBtn" icon="carbon:user" kind="secondary" sliding-drawer="poVendorDetailDrawer"/>
               <button id="poDetailsLineBtn" icon="carbon:list" kind="secondary" on-click="navigateToLine" on-click-arg="{{ 'item': poDetailResource.item }}"/>
             </button-group>
