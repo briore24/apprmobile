@@ -350,11 +350,11 @@
         <!-- lookups -->
         <lookup id="logTypeLookupDetailsPage" show-search="false" lookup-heading="Select log type" show-count="false" datasource="workLogTypeDomain" on-item-click="setPODetailsLogType" border="true" lookup-attributes="{['value', 'description']}" height="400" width="60"/>
       </dialogs>
-      <header-template hidden="{page.state.loading}" title-column-width="{app.state.screen.size === 'lg' ? 45 : 60}" id="y7_4_">
+      <header-template hidden="{page.state.loading}" title-column-width="{app.state.screen.size === 'lg' ? 45 : 60}" id="poDetailsPageHeaderLoading">
         <button slot="buttons" label="Approve" icon="carbon:checkmark" loading="{page.state.workloading || page.state.transactionProgress}" kind="secondary" on-click="approvePO" on-click-arg="{{'item': poDetailResource.item, 'datasource': poDetailResource.datasource}}" id="poDetailApproveBtn"/>
         <button slot="buttons" label="Reject" icon="carbon:error" loading="{page.state.workloading || page.state.transactionProgress}" kind="secondary" on-click="rejectPO" on-click-arg="{{'item': poDetailResource.item, 'datasource': poDetailResource.datasource}}" id="poDetailRejectBtn"/>
       </header-template>
-      <header-template hidden="{!page.state.loading}" id="w_dp5">
+      <header-template hidden="{!page.state.loading}" id="poDetailsPageHeaderNotLoading">
         <button slot="buttons" loading="true" kind="ghost" id="q9gjd"/>
       </header-template>
       <box fill-parent-horizontal="true" id="poDetailsHeader">
@@ -440,6 +440,55 @@
         <attachment-list datasource="attachmentListDS" hide-when-empty="false" show-search="false" show-managed-header="true" is-editable="{(app.checkSigOption(`${app.state.poOSName}.ADDATTACHMENTS`) &amp;&amp; app.state.poStatus !== 'CLOSE' &amp;&amp; app.state.poStatus !== 'CAN')}" allow-naming="true" id="jpd9j"/>
       </panel>
     </page>
+	<page id="poLineDetails" path="/poLineDetails" title="Line Item" padding="true" controller="SharedResources/POLineDetailsPageController">
+		<states>
+			
+		</states>
+		<maximo-datasource id="poLineDs">
+			<schema>
+			
+			</schema>
+		</maximo-datasource>
+		<dialogs id="poLineDialogs">
+			
+		</dialogs>
+		<header-template id="poLineDetailsPageHeader">
+		</header-template>
+		<box id="poLineDetailsPageSubHeader" fill-parent-horizontal="true">
+			<border-layout fill-parent="true" padding="true">
+				<middle vertical-align="center">
+					<box padding-start="{app.state.screen.size === 'lg' || app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '.5'}" padding-bottom="{app.state.screen.size === 'lg' || app.state.screen.size === 'sm' ? '-.5' : '1.5'}" padding-top="{app.state.screen.size === 'lg' || app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '.5' : '1.5'}">
+						<wrapped-text size="large" label="{poLineDs.item.description}" sub-label="{poLineDs.item.itemnum}" truncation-type="end"/>
+					</box>
+				</middle>
+			</border-layout>
+		</box>
+		<box id="poLineDetailsPageContent" background-color="field-01" fill-parent-horizontal="true" direction="column" padding-start="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '0.5'}" padding-end="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '.5'}" padding-top="0" padding-bottom="0">
+			<border-layout padding="false" fill-parent="true" top-border="true">
+				<top>
+					<box padding-start="1" padding-end="1" padding-top=".75" padding-bottom=".75">
+						<label label="Details" theme="20-regular"/>
+					</box>
+				</top>
+				<start>
+					<box fill-parent-horizontal="true" border-bottom="{app.device.isMaximoMobile}" padding-start="1" padding-end="1" padding-top="1" padding-bottom="1" direction="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? 'column' : 'row'}">
+						<label label="Long Description" padding="top" color="text-02"/>
+						<rich-text-viewer content="{poLineDs.item.description_longdescription}" padding-start="0.5" padding-end="0.5" content-limit="256" stripped="true"/>
+					</box>
+					<button hidden="{!poLineDs.item.description_longdescription}" padding="false" icon="carbon:maximize" kind="secondary" on-click="openLongDescDialog" on-click-arg="{{'item' : poLineDs.item, 'page' : page}}"/>
+				</start>
+				<middle>
+				</middle>
+				<end>
+				</end>
+				<bottom>
+					<box direction="column" fill-parent-horizontal="true">
+						<field label="Requested by" value="{poLineDs.item.requestedby}" />
+					</box>
+				</bottom>
+			</border-layout>
+		</box>
+	</page>
   </pages>
   <messages id="n5_2r">
     <message id="unknown" text="Unknown"/>
