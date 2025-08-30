@@ -159,7 +159,7 @@ class PurchaseOrderDetailsController {
 
   async pagePaused() {
     this.page.state.isSafetyPlanReviewed = false;
-    this.page.findDialog('poWorkLogDrawer')?.closeDialog();
+    this.page.findDialog('poDetailWorkLogDrawer')?.closeDialog();
     this.page.findDialog('openChangeStatusDialog')?.closeDialog();
     this.app?.findPage("schedule")?.findDialog('poStatusChangeDialog')?.closeDialog();
     this.app?.findPage("schedule")?.findDialog('rejectPO')?.closeDialog();
@@ -187,7 +187,7 @@ class PurchaseOrderDetailsController {
   }
 
   // calls when discard button chosen on save discard prompt
-  closeWorkLogSaveDiscard() { this.page.findDialog('poWorkLogDrawer')?.closeDialog(); }
+  closeWorkLogSaveDiscard() { this.page.findDialog('poDetailWorkLogDrawer')?.closeDialog(); }
   /**
   * This method is called when any changes done on work log screen and return value as Object with all field value.
   * @param {value} value
@@ -288,7 +288,7 @@ class PurchaseOrderDetailsController {
     //If no error happen then re-open the drawer
     // istanbul ignore else
     if (this.saveDataSuccessful) {
-      this.page.showDialog('poWorkLogDrawer');
+      this.page.showDialog('poDetailWorkLogDrawer');
     }
 
   }

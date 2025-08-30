@@ -1597,7 +1597,7 @@
   </maxlabel>
   <maxlabel>
     <app>apprmobile</app>
-    <id>poWorkLogDrawer_header-text</id>
+    <id>poDetailsWorkLogDrawer_header-text</id>
     <property>label</property>
     <value>Work log</value>
   </maxlabel>

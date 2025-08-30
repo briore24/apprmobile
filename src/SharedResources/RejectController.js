@@ -11,7 +11,7 @@
  */
 
 import {log} from '@maximo/maximo-js-api';
-import CommonUtil from "./Technician/utils/CommonUtil";
+import CommonUtil from "./utils/CommonUtil";
 const TAG = 'RejectController';
 
 class RejectController {
