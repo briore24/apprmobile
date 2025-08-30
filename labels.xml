@@ -30,61 +30,61 @@
     <property>label</property>
     <value>Value {0} for field {1} exceeds max length allowed ({2})</value>
   </maxlabel>
-  <maxlabel>
+  <maxlabel> <!-- messages_save_failed -->
     <app>apprmobile</app>
     <id>messages_save_failed</id>
     <property>label</property>
     <value>Saving data has failed.</value>
   </maxlabel>
-  <maxlabel>
+  <maxlabel> <!-- messages_toast_error_on_page_label -->
     <app>apprmobile</app>
     <id>messages_toast_error_on_page_label</id>
     <property>label</property>
     <value>Errors on page</value>
   </maxlabel>
-  <maxlabel>
+  <maxlabel> <!-- messages_toast_errors_on_page_msg -->
     <app>apprmobile</app>
     <id>messages_toast_errors_on_page_msg</id>
     <property>label</property>
     <value>Correct the errors before saving.</value>
   </maxlabel>
-  <maxlabel>
+  <maxlabel> <!-- system_shared -->
     <app>apprmobile</app>
     <id>system_shared</id>
     <property>label</property>
     <value>shared</value>
   </maxlabel>
-  <maxlabel>
+  <maxlabel> <!-- system_private -->
     <app>apprmobile</app>
     <id>system_private</id>
     <property>label</property>
     <value>private</value>
   </maxlabel>
-  <maxlabel>
+  <maxlabel> <!-- system_invalidtime -->
     <app>apprmobile</app>
     <id>system_invalidtime</id>
     <property>label</property>
     <value>Invalid time</value>
   </maxlabel>
-  <maxlabel>
+  <maxlabel> <!-- system_invaliddate -->
     <app>apprmobile</app>
     <id>system_invaliddate</id>
     <property>label</property>
     <value>Invalid date</value>
   </maxlabel>
-  <maxlabel>
+  <maxlabel> <!-- system_invalidnumber -->
     <app>apprmobile</app>
     <id>system_invalidnumber</id>
     <property>label</property>
     <value>Invalid number</value>
   </maxlabel>
-  <maxlabel>
+  <maxlabel> <!-- system_invaliddatetime -->
     <app>apprmobile</app>
     <id>system_invaliddatetime</id>
     <property>label</property>
     <value>Invalid date and time</value>
   </maxlabel>
-  <maxlabel>
+  <maxlabel> <!-- system_invaliddatetime -->
     <app>apprmobile</app>
     <id>system_maximumlength</id>
     <property>label</property>
@@ -94,49 +94,49 @@
       Length={2}.</value
     >
   </maxlabel>
-  <maxlabel>
+  <maxlabel> <!--system_invalidduration-->
     <app>apprmobile</app>
     <id>system_invalidduration</id>
     <property>label</property>
     <value>Invalid duration</value>
   </maxlabel>
-  <maxlabel>
+  <maxlabel> <!--system_invalidyorn-->
     <app>apprmobile</app>
     <id>system_invalidyorn</id>
     <property>label</property>
     <value>Invalid Yes or No value</value>
   </maxlabel>
-  <maxlabel>
+  <maxlabel> <!--system_hours-->
     <app>apprmobile</app>
     <id>system_hours</id>
     <property>label</property>
     <value>hours</value>
   </maxlabel>
-  <maxlabel>
+  <maxlabel> <!--system_minutes-->
     <app>apprmobile</app>
     <id>system_minutes</id>
     <property>label</property>
     <value>minutes</value>
   </maxlabel>
-  <maxlabel>
+  <maxlabel> <!--system_hour-->
     <app>apprmobile</app>
     <id>system_hour</id>
     <property>label</property>
     <value>hour</value>
   </maxlabel>
-  <maxlabel>
+  <maxlabel> <!--system_minute-->
     <app>apprmobile</app>
     <id>system_minute</id>
     <property>label</property>
     <value>minute</value>
   </maxlabel>
-  <maxlabel>
+  <maxlabel> <!--userconfirmation_saveConfirmHeading-->
     <app>apprmobile</app>
     <id>userconfirmation_saveConfirmHeading</id>
     <property>label</property>
     <value>Save or discard changes?</value>
   </maxlabel>
-  <maxlabel>
+  <maxlabel> <!--userconfirmation_itemsChangedNotSaved-->
     <app>apprmobile</app>
     <id>userconfirmation_itemsChangedNotSaved</id>
     <property>label</property>
@@ -144,79 +144,79 @@
       >To leave this page, you must first discard or save your changes.</value
     >
   </maxlabel>
-  <maxlabel>
+  <maxlabel> <!--userconfirmation_primaryButtonText-->
     <app>apprmobile</app>
     <id>userconfirmation_primaryButtonText</id>
     <property>label</property>
     <value>Save</value>
   </maxlabel>
-  <maxlabel>
+  <maxlabel> <!--userconfirmation_secondaryButtonText-->
     <app>apprmobile</app>
     <id>userconfirmation_secondaryButtonText</id>
     <property>label</property>
     <value>Discard</value>
   </maxlabel>
-  <maxlabel>
+  <maxlabel> <!--userconfirmation_toastErrorsOnPage-->
     <app>apprmobile</app>
     <id>userconfirmation_toastErrorsOnPage</id>
     <property>label</property>
     <value>Errors on page</value>
   </maxlabel>
-  <maxlabel>
+  <maxlabel> <!--userconfirmation_toastErrorDescription-->
     <app>apprmobile</app>
     <id>userconfirmation_toastErrorDescription</id>
     <property>label</property>
     <value>Correct the errors before saving.</value>
   </maxlabel>
-  <maxlabel>
+  <maxlabel> <!--fieldhelp_fieldTitle-->
     <app>apprmobile</app>
     <id>fieldhelp_fieldTitle</id>
     <property>label</property>
     <value>Field</value>
   </maxlabel>
-  <maxlabel>
+  <maxlabel> <!--fieldhelp_tableColumn-->
     <app>apprmobile</app>
     <id>fieldhelp_tableColumn</id>
     <property>label</property>
     <value>Resource</value>
   </maxlabel>
-  <maxlabel>
+  <maxlabel> <!--fieldhelp_maxLength-->
     <app>apprmobile</app>
     <id>fieldhelp_maxLength</id>
     <property>label</property>
     <value>Max Length</value>
   </maxlabel>
-  <maxlabel>
+  <maxlabel> <!--pageheader_backLabel-->
     <app>apprmobile</app>
     <id>pageheader_backLabel</id>
     <property>label</property>
     <value>Back</value>
   </maxlabel>
-  <maxlabel>
+  <maxlabel> <!--tablisttemplate_actionsOverflow-->
     <app>apprmobile</app>
     <id>tablisttemplate_actionsOverflow</id>
     <property>label</property>
     <value>Actions</value>
   </maxlabel>
-  <maxlabel>
+  <maxlabel> <!--tablisttemplate_checkForUpdates-->
     <app>apprmobile</app>
     <id>tablisttemplate_checkForUpdates</id>
     <property>label</property>
     <value>Check for updates</value>
   </maxlabel>
-  <maxlabel>
+  <maxlabel> <!--pageheadertemplate_search-->
     <app>apprmobile</app>
     <id>pageheadertemplate_search</id>
     <property>label</property>
     <value>What are you looking for today?</value>
   </maxlabel>
-  <maxlabel>
+  <maxlabel> <!--pageheadertemplate_searchTouch-->
     <app>apprmobile</app>
     <id>pageheadertemplate_searchTouch</id>
     <property>label</property>
     <value>Search</value>
   </maxlabel>
-  <maxlabel>
+  <maxlabel> <!--splitview_back-->
     <app>apprmobile</app>
     <id>splitview_back</id>
     <property>label</property>
@@ -1139,7 +1139,7 @@
     <property>label</property>
     <value>Search</value>
   </maxlabel>
-  <maxlabel>
+  <maxlabel> <!--search_searchIcon-->
     <app>apprmobile</app>
     <id>search_searchIcon</id>
     <property>label</property>
@@ -1437,19 +1437,7 @@
     <app>apprmobile</app>
     <id>w8m82_title</id>
     <property>label</property>
-    <value>Work Order</value>
-  </maxlabel>
-  <maxlabel>
-    <app>apprmobile</app>
-    <id>njkmd_text</id>
-    <property>label</property>
-    <value>Work orders to review</value>
-  </maxlabel>
-  <maxlabel>
-    <app>apprmobile</app>
-    <id>rmk_6_text</id>
-    <property>label</property>
-    <value>Completed work orders</value>
+    <value>Purchase Order</value>
   </maxlabel>
   <maxlabel>
     <app>apprmobile</app>
@@ -1459,19 +1447,19 @@
   </maxlabel>
   <maxlabel>
     <app>apprmobile</app>
-    <id>woStatusChangeDialog_header-text</id>
+    <id>poStatusChangeDialog_header-text</id>
     <property>label</property>
     <value>Change status</value>
   </maxlabel>
   <maxlabel>
     <app>apprmobile</app>
-    <id>yqyzp_label</id>
+    <id>poStatusChangeDialog_label</id>
     <property>label</property>
     <value>Select a status</value>
   </maxlabel>
   <maxlabel>
     <app>apprmobile</app>
-    <id>statusMemo_placeholder</id>
+    <id>poStatusChangeDialog_placeholder</id>
     <property>label</property>
     <value>Add a comment about the status change</value>
   </maxlabel>
@@ -1561,9 +1549,9 @@
   </maxlabel>
   <maxlabel>
     <app>apprmobile</app>
-    <id>workOrderDetails_title</id>
+    <id>poDetails_title</id>
     <property>label</property>
-    <value>Work order</value>
+    <value>Purchase order</value>
   </maxlabel>
   <maxlabel>
     <app>apprmobile</app>
@@ -1651,21 +1639,9 @@
   </maxlabel>
   <maxlabel>
     <app>apprmobile</app>
-    <id>z3x_2_label</id>
-    <property>label</property>
-    <value>Mark complete</value>
-  </maxlabel>
-  <maxlabel>
-    <app>apprmobile</app>
     <id>y3zg3_label</id>
     <property>label</property>
     <value>Undo</value>
-  </maxlabel>
-  <maxlabel>
-    <app>apprmobile</app>
-    <id>z6pqr_label</id>
-    <property>label</property>
-    <value>Mark complete</value>
   </maxlabel>
   <maxlabel>
     <app>apprmobile</app>
@@ -1756,12 +1732,6 @@
     <id>vkw2j_empty-set-string</id>
     <property>label</property>
     <value>No related records.</value>
-  </maxlabel>
-  <maxlabel>
-    <app>apprmobile</app>
-    <id>kdr4w_empty-set-string</id>
-    <property>label</property>
-    <value>No work orders found</value>
   </maxlabel>
   <maxlabel>
     <app>apprmobile</app>
@@ -1888,18 +1858,6 @@
     <id>j8265_placeholder</id>
     <property>label</property>
     <value>Enter {0} to {1}</value>
-  </maxlabel>
-  <maxlabel>
-    <app>apprmobile</app>
-    <id>x8mbk_label</id>
-    <property>label</property>
-    <value>Work type</value>
-  </maxlabel>
-  <maxlabel>
-    <app>apprmobile</app>
-    <id>x8mbk_empty-field-placeholder</id>
-    <property>label</property>
-    <value>Select a type</value>
   </maxlabel>
   <maxlabel> <!-- unknown_text -->
     <app>apprmobile</app>

@@ -12,12 +12,12 @@
 
 import { log, Device, ShellCommunicator } from "@maximo/maximo-js-api";
 import "regenerator-runtime/runtime";
-import SynonymUtil from "./Technician/utils/SynonymUtil";
-import CommonUtil from "./Technician/utils/CommonUtil";
-const TAG = "POSchedulePageController";
+import SynonymUtil from "./utils/SynonymUtil";
+import CommonUtil from "./utils/CommonUtil";
+const TAG = "ApprovalsPageController";
 
 
-class POSchedulePageController {
+class ApprovalsPageController {
   pageInitialized(page, app) {
     log.t(TAG, "Page Initialized");
     this.app = app;
@@ -313,24 +313,17 @@ class POSchedulePageController {
   }
 
 onAfterLoadData(){
-	log.i(TAG, 'data loaded on schedule page!');
+	log.i(TAG, 'data loaded on approvals page!');
 }
 
   async approvePO(event) {
     this.page.state.loading = true;
-    const polistds = this.page.datasources[this.page.state.selectedDS];
-
-    this.page.state.currentItem = event.item.ponum;
-    let podetails = this.app.findDatasource("podetailDs");
-    
-    await podetails.load({
-      noCache: true,
-    });
-    this.page.state.canloadpodetails = true;
-    this.page.state.currentItem = event.item.ponum;
-    
-    await CommonUtil.markStatusAssigned(this.app, this.page, podetails, polistds);
-    this.app.state.showLoaderOnAllPO = this.page.state.loading = false;
+	// check limits
+	
+	// check contract 
+	
+	// change status
+	
   }
 
   async rejectPO(event) {
@@ -359,11 +352,11 @@ onAfterLoadData(){
         await statusLstDS.load({ src: [...dnewreadingDS.items], noCache: true });
       }
     }
-    this.page.state.assignmentHeader = this.app.getLocalizedLabel(
+    this.page.state.rejectHeader = this.app.getLocalizedLabel(
       "reject_header",
       "Reject Purchase Order"
     );
-    this.page.state.assignmentSubHeader = this.app.getLocalizedLabel(
+    this.page.state.rejectSubHeader = this.app.getLocalizedLabel(
       "reject_subheader",
       "Select the rejection code"
     );
@@ -501,4 +494,4 @@ onAfterLoadData(){
   }
 }
 
-export default POSchedulePageController;
+export default ApprovalsPageController;

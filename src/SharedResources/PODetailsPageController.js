@@ -11,10 +11,10 @@
  */
 
 import { log, Device, ShellCommunicator } from '@maximo/maximo-js-api';
-import CommonUtil from './Technician/utils/CommonUtil';
-const TAG = 'PurchaseOrderDetailsController';
+import CommonUtil from './utils/CommonUtil';
+const TAG = 'PODetailsPageController';
 
-class PurchaseOrderDetailsController {
+class PODetailsPageController {
   pageInitialized(page, app) {
     this.app = app;
     this.page = page;
@@ -30,8 +30,7 @@ class PurchaseOrderDetailsController {
   }
 
   async openWorkLogDrawer(event) {
-    // this.page.state.editPo = !['CAN'].includes(event?.item?.status_maxvalue);
-    await CommonUtil.openWorkLogDrawer(this.app, this.page, event, this.page.datasources["poDetailWorkLogDs"], "poDetailWorkLogDrawer");
+    await CommonUtil.openWorkLogDrawer(this.app, this.app.findPage("approvals"), event, this.app.findPage("approvals")?.findDatasource("poWorkLogDs"), "WorkLogDrawer");
   }
 
   openRevisionHistory(item) {
@@ -53,9 +52,7 @@ class PurchaseOrderDetailsController {
 
   async pageResumed(page, app) {
     CommonUtil.sharedData.newPageVisit = true;
-    page.state.editPo = page.state.editDetails = false;
     page.state.loading = true;
-    page.state.followupCount = '';
     page.state.historyDisable = false;
     page.state.isMobile = Device.get().isMaximoMobile;
     const poDetailResource = page.datasources['poDetailResource'];
@@ -77,10 +74,7 @@ class PurchaseOrderDetailsController {
     await poDetailds?.load({ noCache: true });
 
     page.state.loading = false;
-    const rejectLabel = app.getLocalizedLabel('rejected', 'Rejected').toUpperCase();
-    const index = (poDetailResource?.item?.assignment?.length > 0) ? poDetailResource?.item?.assignment?.findIndex(assignment => assignment?.laborcode === this.app.client?.userInfo?.labor?.laborcode) : 0;
-    const tempRecord = poDetailResource?.item?.assignment?.[index]?.status?.toUpperCase() === rejectLabel;
-    app.state.isRejected = tempRecord?.[index]?.status?.toUpperCase() === rejectLabel;
+    const index = 0;
 
     CommonUtil.sharedData.clickedPo = page.params.ponum;
     if (app.state.incomingContext && poDetailResource.items.length === 0) {
@@ -158,11 +152,11 @@ class PurchaseOrderDetailsController {
   }
 
   async pagePaused() {
-    this.page.state.isSafetyPlanReviewed = false;
-    this.page.findDialog('poDetailWorkLogDrawer')?.closeDialog();
-    this.page.findDialog('openChangeStatusDialog')?.closeDialog();
-    this.app?.findPage("schedule")?.findDialog('poStatusChangeDialog')?.closeDialog();
-    this.app?.findPage("schedule")?.findDialog('rejectPO')?.closeDialog();
+	this.page.findDialog('openChangeStatusDialog')?.closeDialog();
+	
+    this.app?.findPage("approvals")?.findDialog('workLogDrawer')?.closeDialog();
+    this.app?.findPage("approvals")?.findDialog('poStatusChangeDialog')?.closeDialog();
+    this.app?.findPage("approvals")?.findDialog('rejectPO')?.closeDialog();
   }
   /**
   * Validate before closing sliding drawer.
@@ -176,8 +170,6 @@ class PurchaseOrderDetailsController {
       validateEvent.failed = false;
     }
   }
-
-
   // calls when save button chosen on save discard prompt
   saveWorkLogSaveDiscard() {
     // Save Entered Data to chat Log
@@ -187,7 +179,10 @@ class PurchaseOrderDetailsController {
   }
 
   // calls when discard button chosen on save discard prompt
-  closeWorkLogSaveDiscard() { this.page.findDialog('poDetailWorkLogDrawer')?.closeDialog(); }
+  closeWorkLogSaveDiscard() { 
+	let approvals = this.app?.findPage("approvals")
+	approvals.findDialog('workLogDrawer')?.closeDialog(); 
+  }
   /**
   * This method is called when any changes done on work log screen and return value as Object with all field value.
   * @param {value} value
@@ -215,7 +210,9 @@ class PurchaseOrderDetailsController {
     let longDescription = value.longDescription;
     let summary = value.summary;
     let longType = value.logType?.value ? value.logType.value : this.page.state.defaultLogType;
-    let poDetailsWorkLogDs = this.page.datasources['poDetailsWorkLogDs'];
+	let approvals = this.app?.findPage("approvals")
+    let poWorkLogDs = approvals.datasources['poWorkLogDs'];
+
 
     let workLog = {
       createby: this.app.client.userInfo.personid,
@@ -247,12 +244,12 @@ class PurchaseOrderDetailsController {
     let response;
     // istanbul ignore if
     if (directSave) {
-      poDetailsWorkLogDs.on('update-data-failed', this.onUpdateDataFailed);
-      response = await poDetailsWorkLogDs.update(workLog, option);
+      poWorkLogDs.on('update-data-failed', this.onUpdateDataFailed);
+      response = await poWorkLogDs.update(workLog, option);
 
       // istanbul ignore if
       if (response) {
-        poDetailsWorkLogDs.off('update-data-failed', this.onUpdateDataFailed);
+        poWorkLogDs.off('update-data-failed', this.onUpdateDataFailed);
       }
 
       return;
@@ -262,15 +259,15 @@ class PurchaseOrderDetailsController {
       this.page.state.chatLogLoading = true;
       this.saveDataSuccessful = true;
 
-      poDetailsWorkLogDs.on('update-data-failed', this.onUpdateDataFailed);
-      response = await poDetailsWorkLogDs.update(workLog, option);
+      poWorkLogDs.on('update-data-failed', this.onUpdateDataFailed);
+      response = await poWorkLogDs.update(workLog, option);
       // istanbul ignore if
       if (response) {
-        poDetailsWorkLogDs.off('update-data-failed', this.onUpdateDataFailed);
+        poWorkLogDs.off('update-data-failed', this.onUpdateDataFailed);
       }
 
       this.page.state.chatLogGroupData = await this.page.datasources[
-        'poDetailsWorkLogDs'
+        'poWorkLogDs'
       ].forceReload();
     } catch {
     } finally {
@@ -278,7 +275,7 @@ class PurchaseOrderDetailsController {
       this.page.state.chatLogLoading = false;
       //Reset default Logtype
       let schemaLogType = this.page.datasources[
-        'poDetailsWorkLogDs'
+        'poWorkLogDs'
       ].getSchemaInfo('logtype');
       // istanbul ignore else
       if (schemaLogType) {
@@ -288,7 +285,7 @@ class PurchaseOrderDetailsController {
     //If no error happen then re-open the drawer
     // istanbul ignore else
     if (this.saveDataSuccessful) {
-      this.page.showDialog('poDetailWorkLogDrawer');
+      this.page.showDialog('workLogDrawer');
     }
 
   }
@@ -360,13 +357,30 @@ class PurchaseOrderDetailsController {
       event.item.ponum
     );
 
-    const schedPage = this.app.findPage('schedule') || this.app.findPage("approvals");
-    const polistds = this.app.findDatasource(schedPage.state.selectedDS);
-    await CommonUtil.markStatusAssigned(this.app, this.page, poDetailDs, polistds);
-    this.app.state.showLoaderOnAllPO = this.page.state.poloading = false;
-    // TODO: this.app.state.showAssignment = CommonUtil.canInteractWorkOrder(poDetailDs.item, this.app);
+    // check user limits
+	
+	// check contract reference
+	
+	// set status to APPR & return to approvals list page
   }
 
+
+async rejectPO(event) {
+	log.t(TAG,
+	'rejectPO : event --> ' + 
+	event.datasource + 
+	'ponum --> ' +
+	event.item.ponum
+	);
+	
+	// open rejection sliding drawer
+	
+	// check for comment save
+	
+	// change status & return to approvals list page
+	
+	
+}
   async openSignatureDialog(event) {
     await this.app.userInteractionManager.openSignature(
       async imageData => {
@@ -482,4 +496,4 @@ class PurchaseOrderDetailsController {
 
 }
 
-export default PurchaseOrderDetailsController;
+export default PODetailsPageController;

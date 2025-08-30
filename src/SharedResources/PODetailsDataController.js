@@ -9,7 +9,7 @@
  * disclosure restricted by GSA ADP Schedule Contract with
  * IBM Corp.
  */
-class PurchaseOrderDataController {
+class PODetailsDataController {
   onDatasourceInitialized(ds, owner, app) {
     this.datasource = ds;
     this.owner = owner;
@@ -25,4 +25,4 @@ class PurchaseOrderDataController {
   }
 }
 
-export default PurchaseOrderDataController;
+export default PODetailsDataController;
