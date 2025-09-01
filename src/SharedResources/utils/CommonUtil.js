@@ -356,6 +356,7 @@ const openWorkLogDrawer = async (app, page, event, workLogDS, drawerName) => {
 
   workLogDS.clearState();
   workLogDS.resetState();
+  
   await workLogDS.load().then((response) => {
     page.state.chatLogGroupData = response;
   });

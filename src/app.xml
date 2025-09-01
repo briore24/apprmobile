@@ -1,4 +1,4 @@
-<maximo-application navigator-tile-order="200" controller="AppController" theme="touch" product-name="Maximo" product-name-adaptive="Maximo" title="PO Approvals" id="apprmobile" mas-id="manage" version="9.1.0.0" default-log-level="error" user-menu-enabled="true" nav-initial-open-state="false" mas-enabled="false">
+<maximo-application navigator-tile-order="200" controller="AppController" theme="touch" product-name="Maximo" product-name-adaptive="Maximo" title="PO Approvals" id="apprmobile" mas-id="manage" version="9.1.0.0" default-log-level="debug" user-menu-enabled="true" nav-initial-open-state="false" mas-enabled="false">
   <properties id="n5nx9">
     <property name="maximo.mobile.statusforphysicalsignature" id="ee54n"/>
     <property name="maximo.mobile.completestatus" id="bdwkx"/>

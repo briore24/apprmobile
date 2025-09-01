@@ -56,11 +56,13 @@ class PODetailsPageController {
     page.state.historyDisable = false;
     page.state.isMobile = Device.get().isMaximoMobile;
     const poDetailResource = page.datasources['poDetailResource'];
+	
+	await poDetailResource?.load({ noCache: true, itemUrl: page.params.href });
 
     const device = Device.get();
 
     page.state.loadedLog = true;
-    page.state.lineLoading = true;
+    // page.state.lineLoading = true;
     // offline mode sync
     if (this.page.state.disConnected && this.app.state.networkConnected && this.app.state.refreshOnSubsequentLogin !== false) {
       await poDetailResource?.load({
@@ -69,9 +71,6 @@ class PODetailsPageController {
       });
       this.page.state.disConnected = false;
     } 
-
-    let poDetailds = app.datasources['poDetailds'];
-    await poDetailds?.load({ noCache: true });
 
     page.state.loading = false;
     const index = 0;
@@ -113,8 +112,7 @@ class PODetailsPageController {
       let poDetailResource = page.datasources['poDetailResource'];
       await poDetailResource.forceReload();
 
-      poDetailResource.item.relatedrecordcount =
-        poDetailResource.item.relatedwo?.length || poDetailResource.item.relatedrecordcount;
+      poDetailResource.item.relatedrecordcount = poDetailResource.item.relatedrecordcount;
 
       app.state.doclinksCountData[ponum] = poDetailResource.item.doclinks ?
         poDetailResource.item.doclinks?.member?.length
@@ -132,7 +130,7 @@ class PODetailsPageController {
     }
 
     this.updateSignaturePrompt();
-    page.state.lineLoading = false;
+    // page.state.lineLoading = false;
     this.app.state.purchaseOrderStatus = poDetailResource?.item?.status;
   }
 
@@ -381,25 +379,7 @@ async rejectPO(event) {
 	
 	
 }
-  async openSignatureDialog(event) {
-    await this.app.userInteractionManager.openSignature(
-      async imageData => {
-        log.t(TAG, "base64 image" + imageData);
-      }
-      ,
-      {
-        imageFormat: null,
-        primaryIcon: null,
-        secondaryIcon: null,
-        heading: null,
-        primaryButtonSaveText: null,
-        secondaryButtonDiscardText: null,
-        signatureLabel: null,
-        filename: this.page.state.compDomainStatus,
-        datasource: this.app.findDatasource("signatureAttachment"),
-        onUpload: this.onUpload.bind(this),
-      })
-  }
+
 
   /**
 * This method invokes complete work API once image is uploaded.
