@@ -2,15 +2,18 @@
   <filter-button slot="actions" kind="ghost" datasource="{page.state.selectedDS}" id="djzbd"/>
   <multi-sort-button slot="actions" kind="ghost" datasource="{page.state.selectedDS}" icon="Carbon:caret--sort" id="m2bpv"/>
   <approvals-card-template id="approvalscardtemplate" chevron-kind="{index === 0 ? 'ghost' : 'primary'}" slot="item" show-chevron="true" on-chevron-click="showPODetail" on-chevron-click-arg="{item}">
-    <wrapped-text slot="slot1" size="large" label="{item.description}" sub-label="{item.ponum}" id="pocardNumDesc"/>
-    <label slot="slot2" label="View Details" id="ggj_a"/>
-    <box slot="slot3" direction="column" id="dk8jz">
-      <field label="Type" value="{item.potype}" label-placement="top" hidden="{!item.potype}" id="pocardPOtype"/>
-      <field label="Site" value="{item.siteid}" label-placement="top" id="pocardSite"/>
+    <wrapped-text slot="slot1" size="large" max-length="100" label="{item.description}" sub-label="{item.ponum}" id="v9wqa"/>
+    <tag-group slot="slot2" wrap="true" max-tag-width="{app.state.screen.size !== 'sm' &amp;&amp; app.state.screen.size !== 'md' ? 300 : 200}" align="end" tags="{item.computedPOStatusPriority}" id="a7ra6"/>
+    <box slot="slot4" direction="column" flex-basis="50" id="dk8jz">
+      <wrapped-text size="large" label="{item.revisionnum ? item.revisionnum : '0'}" sub-label="{item.revcomments}" hidden="{!item.revisionnum}" id="w9a5q"/>
     </box>
-    <wrapped-text slot="slot7" size="large" label="{item.revisionnum}" sub-label="{item.revcomments}" hidden="{!item.revisionnum}" id="pocardRevisions"/>
-    <field slot="slot8" label="Vendor" value="{item.vendor}" hidden="{!item.vendor}" label-placement="top" id="pocardVendor"/>
-    <button slot="slot12" icon="carbon:error" on-click="rejectPO" on-click-arg="{item}" kind="secondary" id="pocardRejectBtn"/>
-    <button slot="slot13" icon="carbon:checkmark" on-click="approvePO" on-click-arg="{item}" id="pocardAcceptBtn" kind="primary"/>
+    <box slot="slot5" flex-basis="50" direction="column" id="ddqz3">
+      <field label="Total Cost" value="{item.totalcost}" label-placement="top" id="mkzm8"/>
+    </box>
+    <button-group slot="slot7" padding="false" align="end" id="d2maj">
+      <button label="Accept" icon="carbon:checkmark" kind="primary" on-click="acceptPO" on-click-arg="{item}" id="jn7vz"/>
+      <button label="Reject" icon="carbon:close" kind="secondary" on-click="rejectPO" on-click-arg="{item}" id="v7zy3"/>
+      <button label="View" icon="carbon:view" kind="{index === 0 ? page.state.firstLogin ? 'secondary' : 'primary' : 'secondary'}" on-click="showPODetail" on-click-arg="{item}" id="r8mrp"/>
+    </button-group>
   </approvals-card-template>
 </card-group>

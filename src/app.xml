@@ -14,7 +14,6 @@
     <!-- status/attribute checks -->
     <state name="poStatSigOptions" value="{&quot;APPR&quot; : &quot;APPR&quot;,&quot;INIT&quot; : &quot;INPRG&quot;,&quot;UNDOAPPR&quot; : &quot;WAPPR&quot;,&quot;WSCH&quot; : &quot;WSCH&quot;,&quot;CANCEL&quot; : &quot;CAN&quot;,&quot;CLOSE&quot; : &quot;CLOSE&quot;,&quot;COMP&quot; : &quot;COMP&quot;}" type="object" id="vv8pz"/>
     <state name="refreshOnSubsequentLogin" value="false" type="boolean" id="n8yd4"/>
-    <!-- state name="skipQualWarning" value="false" type="boolean" id="q3vpm"/-->
     <state name="skipSignature" value="false" type="boolean" id="xn6p6"/>
     <state name="poOSName" value="MXAPIPO" type="string" id="dxkem"/>
   </states>
@@ -85,7 +84,7 @@
     </dialog>
   </dialogs>
   <pages id="pages">
-    <page padding="true" id="approvals" path="/approvals" title="Approvals" icon="maximo:work-orders-approve" controller="SharedResources/ApprovalsPageController">
+    <page padding="true" id="approvals" path="/approvals" title="Approvals" icon="maximo:work-orders-approve" controller="ApprovalsPageController">
       <states id="vnybx">
         <state name="selectedSwitch" value="0" type="number" id="xq4pe"/>
         <state name="dialogLabel" value="" type="string" id="w73r5"/>
@@ -98,21 +97,20 @@
         <state name="checkForUpdateButton" value="false" type="boolean" id="zqzdk"/>
         <state name="isWorkLogEdit" value="true" type="boolean" id="bq3v_"/>
       </states>
-      <maximo-datasource id="assignedpoDS" object-structure="mxapipo" saved-query="POWAPPR" mobile-qbe-filter="{{'status_maxvalue': '!=COMP,CAN,CLOSE,WAPPR'}}" offline-immediate-download="true" order-by="priority" pre-load="false" controller="SharedResources/ApprovalsDataController" selection-mode="none" geometry-format="geojson" default="true" page-size="25">
+      <maximo-datasource id="assignedpoDS" object-structure="mxapipo" saved-query="POWAPPR" mobile-qbe-filter="{{'status_maxvalue': '!=COMP,CAN,CLOSE,WAPPR'}}" offline-immediate-download="true" order-by="priority" pre-load="false" controller="ApprovalsDataController" selection-mode="none" geometry-format="geojson" default="true" page-size="25">
         <schema id="amk2z">
           <attribute name="ponum" sortable="false" searchable="true" id="r9w6v"/>
           <attribute name="description" searchable="true" id="d324b"/>
           <attribute name="priority" searchable="true" id="dg8jq"/>
           <attribute name="potype" searchable="true" id="vp5mb"/>
           <attribute name="status" sortable="true" searchable="true" id="ekmrx"/>
+          <attribute name="computedPOStatusPriority" computed-function="computedPOStatusPriority" id="a65mp"/>
           <attribute name="status_description" sortable="false" id="za44g"/>
           <attribute name="status_maxvalue" sortable="false" index="true" id="qpyqk"/>
           <attribute name="siteid" sortable="false" searchable="true" id="ykgwp"/>
           <attribute name="orgid" sortable="false" id="a_vg5"/>
           <attribute name="np_statusmemo" id="zd69q"/>
           <attribute name="poid" sortable="false" unique-id="true" id="gzwj2"/>
-          <attribute name="potype" sortable="true" id="wnpqk"/>
-          <attribute name="orgid" sortable="false" id="mayz5"/>
         </schema>
       </maximo-datasource>
       <maximo-datasource id="podetailDs" object-structure="mxapipo">
@@ -135,13 +133,13 @@
             <attribute name="*" unique-id="true" id="vmxjj"/>
           </schema>
         </maximo-datasource>
-        <maximo-datasource id="poWorkLogDs" selection-mode="none" order-by="createdate" relationship="worklog" object-name="worklog" controller="SharedResources/ApprovalsDataController">
+        <maximo-datasource id="poWorkLogDs" selection-mode="none" order-by="createdate" relationship="worklog" object-name="worklog" controller="ApprovalsDataController">
           <schema id="en3_7">
             <attribute name="createdate" unique-id="true" id="bgjjy"/>
             <attribute name="description" id="n5235"/>
             <attribute name="description_longdescription" id="ym9jd"/>
             <attribute name="person.displayname--displayname" id="dmgyp"/>
-            <attribute name="createby--personid" id="a7rv2"/>
+            <attribute name="createby" id="a7rv2"/>
             <attribute name="logtype" id="zg_r7"/>
             <attribute name="anywherefid" id="n3j8m"/>
           </schema>
@@ -182,13 +180,13 @@
         </panel>
       </stacked-panel>
       <dialogs id="approvalsDialogs">
+        <sliding-drawer id="workLogDrawer" validate="workLogValidate" align="start" header-text="Work log" content-padding="false">
+          <chat-log messages="{app.state.chatLogGroupData}" default-log-type="{app.state.initialDefaultLogType}" default-log-type-key="value" datasource="synonymdomainData" content-limit="{app.state.chatLogDescLength}" log-type-attribute="{['value','description']}" id="approvalsWorkLog" on-click="saveWorkLog" loading="{app.state.chatLogLoading}" is-config-btn="true" watch-changes="watchChatLogChanges"/>
+        </sliding-drawer>
         <dialog id="saveDiscardWorkLog" title="Save or discard changes?" primary-action-text="Save" on-primary-action="saveWorkLogSaveDiscard" primary-kind="secondary" primary-button-disabled="{page.state.workLogData.sendDisable}" on-secondary-action="closeWorkLogSaveDiscard" secondary-action-text="Discard">
           <label wrap="true" label="To leave this page, you must first discard or save your changes." id="q93dp"/>
         </dialog>
         <!-- sliding drawers -->
-        <sliding-drawer id="workLogDrawer" validate="workLogValidate" align="start" header-text="Work log" content-padding="false">
-          <chat-log messages="{page.state.chatLogGroupData}" default-log-type="{page.state.initialDefaultLogType}" default-log-type-key="value" datasource="synonymdomainData" content-limit="{page.state.chatLogDescLength}" log-type-attribute="{['value','description']}" id="approvalsWorkLog" on-click="saveWorkLog" loading="{page.state.chatLogLoading}" is-config-btn="true" watch-changes="watchChatLogChanges"/>
-        </sliding-drawer>
         <sliding-drawer id="RejectDrawer" align="start" header-text="reject header" sub-title="reject subheader" content-padding="false" controller="SharedResources/RejectController">
           <box direction="column" id="dyyr5">
             <panel id="g_zay">
@@ -243,12 +241,12 @@
         <lookup id="logTypeLookup" show-search="false" lookup-heading="Select Log Type" show-count="false" datasource="synonymdomainData" on-item-click="setLogType" border="true" lookup-attributes="{['value', 'description']}" height="400" width="60"/>
       </dialogs>
     </page>
-    <page padding="true" id="poDetails" path="/poDetails" title="Purchase Order" controller="SharedResources/PODetailsPageController">
+    <page padding="true" id="poDetails" path="/poDetails" title="Purchase Order" controller="PODetailsPageController">
       <states id="m6prr">
         <state name="itemToOpen" value="" type="string" id="b4m94"/>
         <state name="isWorkLogEdit" value="true" type="boolean" id="a35v3"/>
       </states>
-      <maximo-datasource id="poDetailResource" object-structure="mxapipo" where="ponum=&quot;{page.params.ponum}&quot; and siteid=&quot;{page.params.siteid}&quot;" controller="SharedResources/PODetailsDataController" cache-expiry-ms="1" geometry-format="geojson">
+      <maximo-datasource id="poDetailResource" item-url="{page.params.href}" object-structure="mxapipo" where="ponum=&quot;{page.params.ponum}&quot; and siteid=&quot;{page.params.siteid}&quot;" controller="PODetailsDataController" cache-expiry-ms="1" geometry-format="geojson">
         <schema id="na2_d">
           <attribute name="ponum" unique-id="true" id="v6bq7"/>
           <attribute name="poid" id="yxyad"/>
@@ -269,6 +267,7 @@
           <attribute name="contracttype" id="kwrzz"/>
           <attribute name="contractrefrev" id="nz24y"/>
           <attribute name="contreleaseseq" id="zq6p7"/>
+          <attribute name="computedPOStatusPriority" computed-function="computedPOStatusPriority" id="qbqna"/>
           <!-- dates -->
           <attribute name="statusdate" id="d3w9d"/>
           <attribute name="orderdate" id="rrvgw"/>
@@ -282,7 +281,7 @@
           <attribute name="currencycode" id="v8p7m"/>
           <attribute name="totalbasecost" id="j8w_g"/>
           <!-- vendor -->
-          <attribute name="vendor{name,address1,address2,address3,address4,phone}" id="ba5wq"/>
+          <attribute name="vendor" id="ba5wq"/>
           <attribute name="contact" id="vn2gy"/>
           <attribute name="customernum" id="m65pr"/>
           <attribute name="internalchange" id="w9a2w"/>
@@ -297,21 +296,22 @@
           <attribute name="payonreceipt" id="mprz7"/>
           <attribute name="inspectionrequired" id="pq6p9"/>
           <!-- ship to -->
-          <attribute name="shipto{description,address1,address2,address3,address4}" id="yg5zx"/>
+          <attribute name="shipto" id="yg5zx"/>
           <attribute name="shiptoattn" id="zrmbp"/>
           <!-- bill to -->
-          <attribute name="billto{description,address1,address2,address3,address4}" id="yp365"/>
+          <attribute name="billto" id="yp365"/>
           <attribute name="billtoattn" id="vvyg8"/>
         </schema>
-        <maximo-datasource id="poDetailWorkLogDs" selection-mode="none" order-by="createdate" relationship="worklog" object-name="worklog" controller="SharedResources/ApprovalsDataController">
+        <maximo-datasource id="poDetailWorkLogDs" selection-mode="none" order-by="createdate" relationship="worklog" notify-when-parent-loads="true" cache-expiry-ms="1">
           <schema id="xbxwa">
             <attribute name="createdate" unique-id="true" id="w7dgp"/>
             <attribute name="description" id="q99gk"/>
             <attribute name="description_longdescription" id="rjgbp"/>
             <attribute name="person.displayname--displayname" id="pvnqz"/>
-            <attribute name="createby--personid" id="g99r3"/>
+            <attribute name="createby" id="g99r3"/>
             <attribute name="logtype" id="nvn68"/>
             <attribute name="anywherefid" id="kqdbe"/>
+            <attribute name="clientviewable" id="m7w3x"/>
           </schema>
         </maximo-datasource>
       </maximo-datasource>

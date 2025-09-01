@@ -1,6 +1,5 @@
 import _ from 'lodash';
 import { log, Device } from '@maximo/maximo-js-api';
-import MapPreLoadAPI from '@maximo/map-component/build/ejs/framework/loaders/MapPreLoadAPI';
 /*
  * Licensed Materials - Property of IBM
  *
@@ -143,179 +142,6 @@ const isAllowedStatus = (from, to) => {
     }
 }
 
-/**
- * Marks the status of a work order as "Accepted".
- * @param {Object} app The GlideApplication object
- * @param {Object} page The current page object
- * @param {Object} ds The datasource object
- */
-const markStatusAssigned = async (app,page,ds, listDS) => {
-  const assignmentDS = ds.getChildDatasource('assignment',ds.item);
-  const acceptLabel = await app.getLocalizedLabel('accepted', 'Accepted').toUpperCase();
-  const records = await assignmentDS.load();
-
-  const assignmentLength = records?.length;
-  const index = (assignmentLength) ? records?.findIndex(assignment => assignment?.laborcode === app.client?.userInfo?.labor?.laborcode && assignment?.assignmentid) : 0;
-  const tempRecord = records[index];
-  // istanbul ignore else
-  if (records.length > 0 && tempRecord) {
-    tempRecord.status=acceptLabel;
-    tempRecord.status_maxvalue=acceptLabel;
-    tempRecord.status_description=acceptLabel;
-  }
-  try {
-    await assignmentDS.save();
-    const message = `Assignment ${ds.item.ponum} was assigned to you.`;
-    app.toast(
-      app.getLocalizedLabel(
-        'accepted_wo',
-        message,
-        [ds.item.ponum]
-      ),
-    'success');
-  } catch (error) {
-    log.t("Assigned", "Failed assignment rejection : work order --> " + ds?.item?.ponum + "--> " + error);
-    const message = `Assignment ${ds?.item?.ponum} could not be assigned to you.`;
-    app.toast(
-      app.getLocalizedLabel(
-        'accepted_wo_failure',
-        message,
-        [ds.item?.ponum]
-      ),
-    'error');
-  }
-  await ds.forceReload();
-  await listDS.forceReload();
-}
-
-/**
- * Marks the status of a work order as "Accepted".
- * @param {Object} app The GlideApplication object
- * @param {Object} page The current page object
- * @param {Object} ds The datasource object
- */
-const removeAssigned = async (app, page, ds, showToast = true) => {
-  const rejectLabel = await app.getLocalizedLabel('rejected', 'Rejected');
-
-  const woDetailDs = app.findDatasource("podetails");
-  if (!Device.get().isMaximoMobile || !woDetailDs.item) {
-    await woDetailDs.forceReload();
-  }
-  const records = woDetailDs.item?.assignment ?? [];
-  const assignmentLength = records?.length;
-  const index = (assignmentLength) ? records?.findIndex(assignment => assignment?.laborcode === app.client?.userInfo?.labor?.laborcode) : 0;
-
-  let tempRecord = woDetailDs.item.assignment[index];
-  if (records.length > 0 && tempRecord) {
-    tempRecord.status = rejectLabel;
-    tempRecord.status_maxvalue = 'WAITASGN';
-    tempRecord.status_description = rejectLabel;
-    tempRecord.laborcode = null;
-    tempRecord.splanreviewdate = null;
-  }
-
-  const localPayload = {
-    hidewo: 'HIDE',
-    href: woDetailDs.item.href,
-    assignment: woDetailDs.item.assignment
-  };
-  const option = {
-    responseProperties: "assignment,href",
-    localPayload: localPayload,
-    // have to add manual action event as in quick work order it's creating new instead 
-    // later on more time can be spend to find solution for this but most possibly issue lies at graphite or platform end
-    _action: "change"
-  };
-  const dataToUpdate = {
-    assignment: woDetailDs.item.assignment,
-    href: woDetailDs.item.href,
-    hidewo: 'HIDE',
-    // below properties should not be part of original request but found limitation in graphite for bulk put case
-    // where it's spreading of payload of child with change and ignoring options
-    responseProperties: "assignment,href",
-    localPayload: localPayload,
-    _action: "change"
-  };
-  try {
-    await woDetailDs.save(dataToUpdate, option);
-    /* istanbul ignore next */
-    if (showToast) {
-      const message = `Assignment ${woDetailDs.item.ponum} was ${(sharedData.clickedUnassignment) ? 'returned' : 'rejected'} and returned to the dispatcher.`;
-      app.toast(
-        app.getLocalizedLabel(
-          (sharedData.clickedUnassignment) ? 'unassigned_wo' : 'rejected_wo',
-          message,
-          [woDetailDs.item.ponum]
-        ),
-        'success');
-    }
-  } catch (error) {
-    log.t("Reject", "Failed assignment rejection : work order --> " + woDetailDs.item?.ponum + "--> " + error);
-    //istanbul ignore if
-    if (showToast) {
-      const message = `Assignment ${woDetailDs.item?.ponum} could not be ${(sharedData.clickedUnassignment) ? 'returned' : 'rejected'}. Resync data and try again.`;
-      app.toast(
-        app.getLocalizedLabel(
-          (sharedData.clickedUnassignment) ? 'unassigned_wo_failure' : 'rejected_wo_failure',
-          message,
-          [woDetailDs.item?.ponum]
-        ),
-        'error');
-    }
-  }
-}
-
-// Assisted by watsonx Code Assistant 
-/**
- * Complete assigned work order.
- * @param {object} app - The application object.
- * @param {object} woDetailDs - The work order detail dataset.
- * @param {object} tempRecord - The temporary record object.
- * @param {object} assignmentDS - The assignment dataset.
- * @returns {Promise<void>} A promise that resolves when the work order is completed.
- */
-const completeAssigned = async (app, woDetailDs, tempRecord, assignmentDS) => {
-  const compValue = assignmentDS?.items?.find(assignment => assignment.maxvalue === 'COMPLETE' && assignment.defaults);
-
-  tempRecord.status = compValue?.value;
-  tempRecord.status_maxvalue = compValue?.maxvalue;
-  tempRecord.status_description = compValue?.description;
-  tempRecord.finishdate = app.dataFormatter.convertDatetoISO(new Date());//app.dataFormatter.dateWithoutTimeZone(app.dataFormatter.convertDatetoISO(new Date()));
-
-  const localPayload = {
-    hidewo: 'HIDE',
-    assignment: woDetailDs.item.assignment
-  };
-  const option = {
-    responseProperties: "assignment,href",
-    localPayload: localPayload,
-    // have to add manual action event as in quick work order it's creating new instead 
-    // later on more time can be spend to find solution for this but most possibly issue lies at graphite or platform end
-    _action: "change"
-  };
-  const dataToUpdate = {
-    assignment: woDetailDs.item.assignment,
-    href: woDetailDs.item.href,
-    hidewo: 'HIDE',
-    // below properties should not be part of original request but found limitation in graphite for bulk put case
-    // where it's spreading of payload of child with change and ignoring options
-    responseProperties: "assignment,href",
-    localPayload: localPayload,
-    _action: "change"
-  };
-  try {
-    await woDetailDs.save(dataToUpdate, option);
-    return true;
-  } catch (error) {
-    log.t("Reassigned", "Failed reassignement : work order --> " + woDetailDs.item?.ponum + "f--> " + error);
-    return false;
-  }
-}
-
- // Generated by WCA for GP
-/**
- * Reset state of Datasource
- */
 const _resetDataSource = (ds) =>{
   ds.clearState();
   ds.resetState();
@@ -350,10 +176,10 @@ const filterMobileMaxvars = (varname, defDS) => {
  */
 const openWorkLogDrawer = async (app, page, event, workLogDS, drawerName) => {
   // Initialized Loader on Button when Work Log Drawer Icon Clicked
-  page.state.chatLogLoading = true;
+  app.state.chatLogLoading = true;
   const orgId = app.client?.userInfo?.insertOrg;
   const siteId = app.client?.userInfo?.insertSite;
-
+  
   workLogDS.clearState();
   workLogDS.resetState();
   
@@ -384,7 +210,7 @@ const openWorkLogDrawer = async (app, page, event, workLogDS, drawerName) => {
     logTypeValue = schemaLogType.default?.replace(/!/g, "");
   }
   // Filter Logtype data from synonydomain Datasource which passed in Chat-log Component
-  const synonymDs = app.datasources["synonymdomainData"];
+  const synonymDs = app.findDatasource("synonymdomainData")
   let filteredLogTypeList;
   // Initalized QBE with Org and Site
   synonymDs.clearState();
@@ -421,9 +247,37 @@ const openWorkLogDrawer = async (app, page, event, workLogDS, drawerName) => {
   }
 
   page.state.chatLogLoading = false;
-  page.showDialog(drawerName);
+  page.showDialog(drawerName)
 }
 
+const saveWorkLog = async (app, page, dsName, drawer, value) => {
+	let logType = value.logType?.value ? value.logType.value : page.state.defaultLogType;
+	let response;
+
+	app.userInteractionManager.drawerBusy(true);
+	page.state.chatLogLoading = true;
+	page.saveDataSuccessful = true;
+	
+	let ds = page.findDatasource(dsName);
+	
+	let newLog = await ds.addNew();
+	// newLog.createby = value.createby;
+	newLog.createdate = new Date();
+	newLog.logtype = logType;
+	newLog.description = value.summary;
+	newLog.description_longdescription = value.longDescription;
+	newLog.anywherefid = new Date().getTime();
+	
+	await ds.save();
+	
+	page.state.chatLogGroupData = await ds.forceReload();
+
+	app.userInteractionManager.drawerBusy(false);
+	page.state.chatLogLoading = false;
+
+	page.showDialog(drawerName);
+
+}
 // Assisted by watsonx Code Assistant 
 /**
  * Returns the confirm dialog label.
@@ -454,6 +308,26 @@ const clearSharedData = (propertyName) => {
   }
 }
 
+const approvePO = async (app, page, item) => {
+	// check user security groups
+	
+	// check po limits
+	
+	// check lines
+	
+	// approve record 
+	
+	// return to approvals page
+}
+
+const rejectPO = async (app, page, item) => {
+	// open rejection drawer & wait for comment
+	
+	// confirm comment save & reject record
+	
+	// return to approvals page 
+}
+
 // use below variable to share data app wide, note it's const so you can push key name but don't redeclare it
 const sharedData = {
   isCardOpen: false,
@@ -475,6 +349,7 @@ const functions = {
     _resetDataSource,
     filterMobileMaxvars,
     openWorkLogDrawer,
+	saveWorkLog,
     getConfirmDialogLabel,
     clearSharedData,
     sharedData,
