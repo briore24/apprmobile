@@ -41,5 +41,6 @@ class ApprovalsDataController {
       }
     }
   }
+}
 
 export default ApprovalsDataController;

@@ -30,7 +30,7 @@ class PODetailsPageController {
   }
 
   async openWorkLogDrawer(event) {
-    await CommonUtil.openWorkLogDrawer(this.app, this.app.findPage("approvals"), event, this.app.findPage("approvals")?.findDatasource("poWorkLogDs"), "WorkLogDrawer");
+    await CommonUtil.openWorkLogDrawer(this.app, this.app.findPage("approvals"), event, this.app.findPage("approvals")?.findDatasource("poWorkLogDs"), "workLogDrawer");
   }
 
   openRevisionHistory(item) {

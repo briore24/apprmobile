@@ -328,9 +328,9 @@
         </schema>
       </maximo-datasource>
       <dialogs id="poDetailsDialogList">
-		<dialog id="underConstructionDialog" title="Under Construction!" passive="true" size="lg">
-			<label label="This link is under construction! Check back in later." wrap="true"/>
-		</dialog>
+        <dialog id="underConstructionDialog" title="Under Construction!" passive="true" size="lg">
+          <label label="This link is under construction! Check back in later." wrap="true" id="z2r8w"/>
+        </dialog>
         <dialog id="longDescDialog" title="Long Description" passive="true" size="lg">
           <rich-text-viewer content="{poDetailResource.item.description_longdescription}" stripped="true" id="rd_4m"/>
         </dialog>

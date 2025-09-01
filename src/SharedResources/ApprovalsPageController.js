@@ -50,7 +50,7 @@ class ApprovalsPageController {
 
   async openWorkLogDrawer(event) {
     this.page.state.editPo = !['CAN'].includes(event?.item?.status_maxvalue);
-    await CommonUtil.openWorkLogDrawer(this.app, this.page, event, this.page.datasources["poWorklogDs"], "workLogDrawer");
+    await CommonUtil.openWorkLogDrawer(this.app, this.page, event, this.page.datasources["poWorkLogDs"], "workLogDrawer");
   }
 
   workLogValidate(validateEvent) {
@@ -96,7 +96,7 @@ class ApprovalsPageController {
   async saveWorkLog(value, directSave = false) {
     let longDescription = value.longDescription;
     let summary = value.summary;
-    let poWorklogDs = this.page.datasources["poWorklogDs"];
+    let poWorklogDs = this.page.datasources["poWorkLogDs"];
     await poWorklogDs.load();
     let longType = value.logType?.value || this.page.state.defaultLogType || poWorklogDs.getSchemaInfo("logtype")?.default;
     // istanbul ignore else
@@ -153,14 +153,14 @@ class ApprovalsPageController {
       }
 
       this.page.state.chatLogGroupData = await this.page.datasources[
-        "poWorklogDs"
+        "poWorkLogDs"
       ].forceReload();
     } catch {
     } finally {
       this.app.userInteractionManager.drawerBusy(false);
       this.page.state.chatLogLoading = false;
       //Reset default Logtype
-      let schemaLogType = this.page.datasources["poWorklogDs"].getSchemaInfo(
+      let schemaLogType = this.page.datasources["poWorkLogDs"].getSchemaInfo(
         "logtype"
       );
       // istanbul ignore else
