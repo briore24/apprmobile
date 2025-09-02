@@ -133,7 +133,7 @@
             <attribute name="*" unique-id="true" id="vmxjj"/>
           </schema>
         </maximo-datasource>
-        <maximo-datasource id="poWorkLogDs" selection-mode="none" order-by="createdate" relationship="worklog" object-name="worklog" controller="ApprovalsDataController">
+        <maximo-datasource id="poWorkLogDs" selection-mode="none" order-by="createdate" relationship="worklog" object-name="worklog" controller="ApprovalsDataController" item-url="{page.params.href}">
           <schema id="en3_7">
             <attribute name="createdate" id="bgjjy"/>
             <attribute name="description" id="n5235"/>
