@@ -11,7 +11,7 @@
  */
 
 import { log, Device, ShellCommunicator } from '@maximo/maximo-js-api';
-import CommonUtil from './utils/CommonUtil';
+import CommonUtil from './SharedResources/utils/CommonUtil';
 const TAG = 'PODetailsPageController';
 
 class PODetailsPageController {
@@ -30,7 +30,7 @@ class PODetailsPageController {
   }
 
   async openWorkLogDrawer(event) {
-    await CommonUtil.openWorkLogDrawer(this.app, this.app.findPage("approvals"), event, this.app.findPage("approvals")?.findDatasource("poWorkLogDs"), "WorkLogDrawer");
+    await CommonUtil.openWorkLogDrawer(this.app, this.page, event, this.page.findDatasource("poDetailWorkLogDs"), "poDetailWorkLogDrawer");
   }
 
   openRevisionHistory(item) {
@@ -56,11 +56,13 @@ class PODetailsPageController {
     page.state.historyDisable = false;
     page.state.isMobile = Device.get().isMaximoMobile;
     const poDetailResource = page.datasources['poDetailResource'];
+	
+	await poDetailResource?.load({ noCache: true, itemUrl: page.params.href });
 
     const device = Device.get();
 
     page.state.loadedLog = true;
-    page.state.lineLoading = true;
+    // page.state.lineLoading = true;
     // offline mode sync
     if (this.page.state.disConnected && this.app.state.networkConnected && this.app.state.refreshOnSubsequentLogin !== false) {
       await poDetailResource?.load({
@@ -69,9 +71,6 @@ class PODetailsPageController {
       });
       this.page.state.disConnected = false;
     } 
-
-    let poDetailds = app.datasources['poDetailds'];
-    await poDetailds?.load({ noCache: true });
 
     page.state.loading = false;
     const index = 0;
@@ -113,8 +112,7 @@ class PODetailsPageController {
       let poDetailResource = page.datasources['poDetailResource'];
       await poDetailResource.forceReload();
 
-      poDetailResource.item.relatedrecordcount =
-        poDetailResource.item.relatedwo?.length || poDetailResource.item.relatedrecordcount;
+      poDetailResource.item.relatedrecordcount = poDetailResource.item.relatedrecordcount;
 
       app.state.doclinksCountData[ponum] = poDetailResource.item.doclinks ?
         poDetailResource.item.doclinks?.member?.length
@@ -132,7 +130,7 @@ class PODetailsPageController {
     }
 
     this.updateSignaturePrompt();
-    page.state.lineLoading = false;
+    // page.state.lineLoading = false;
     this.app.state.purchaseOrderStatus = poDetailResource?.item?.status;
   }
 
@@ -153,8 +151,8 @@ class PODetailsPageController {
 
   async pagePaused() {
 	this.page.findDialog('openChangeStatusDialog')?.closeDialog();
+    this.page.findDialog('poDetailWorkLogDrawer')?.closeDialog();
 	
-    this.app?.findPage("approvals")?.findDialog('workLogDrawer')?.closeDialog();
     this.app?.findPage("approvals")?.findDialog('poStatusChangeDialog')?.closeDialog();
     this.app?.findPage("approvals")?.findDialog('rejectPO')?.closeDialog();
   }
@@ -180,8 +178,7 @@ class PODetailsPageController {
 
   // calls when discard button chosen on save discard prompt
   closeWorkLogSaveDiscard() { 
-	let approvals = this.app?.findPage("approvals")
-	approvals.findDialog('workLogDrawer')?.closeDialog(); 
+	this.page.findDialog('poDetailWorkLogDrawer')?.closeDialog(); 
   }
   /**
   * This method is called when any changes done on work log screen and return value as Object with all field value.
@@ -207,87 +204,7 @@ class PODetailsPageController {
   }
 
   async saveWorkLog(value, directSave = false) {
-    let longDescription = value.longDescription;
-    let summary = value.summary;
-    let longType = value.logType?.value ? value.logType.value : this.page.state.defaultLogType;
-	let approvals = this.app?.findPage("approvals")
-    let poWorkLogDs = approvals.datasources['poWorkLogDs'];
-
-
-    let workLog = {
-      createby: this.app.client.userInfo.personid,
-      createdate: new Date(),
-      logtype: longType,
-      description: summary,
-      anywhererefid: new Date().getTime(),
-      description_longdescription: longDescription,
-      clientviewable: value.visibility
-    };
-
-    let option = {
-      responseProperties:
-        'anywhererefid,createdate,description,description_longdescription,person.displayname--displayname,createby--personid,logtype',
-      localPayload: {
-        createby:
-          this.app.client.userInfo.displayName ||
-          this.app.client.userInfo.personid,
-        personid:
-          this.app.client.userInfo.displayName ||
-          this.app.client.userInfo.personid,
-        createdate: new Date(),
-        description: summary,
-        logtype: longType,
-        anywhererefid: workLog.anywhererefid,
-        description_longdescription: longDescription,
-      },
-    };
-    let response;
-    // istanbul ignore if
-    if (directSave) {
-      poWorkLogDs.on('update-data-failed', this.onUpdateDataFailed);
-      response = await poWorkLogDs.update(workLog, option);
-
-      // istanbul ignore if
-      if (response) {
-        poWorkLogDs.off('update-data-failed', this.onUpdateDataFailed);
-      }
-
-      return;
-    }
-    try {
-      this.app.userInteractionManager.drawerBusy(true);
-      this.page.state.chatLogLoading = true;
-      this.saveDataSuccessful = true;
-
-      poWorkLogDs.on('update-data-failed', this.onUpdateDataFailed);
-      response = await poWorkLogDs.update(workLog, option);
-      // istanbul ignore if
-      if (response) {
-        poWorkLogDs.off('update-data-failed', this.onUpdateDataFailed);
-      }
-
-      this.page.state.chatLogGroupData = await this.page.datasources[
-        'poWorkLogDs'
-      ].forceReload();
-    } catch {
-    } finally {
-      this.app.userInteractionManager.drawerBusy(false);
-      this.page.state.chatLogLoading = false;
-      //Reset default Logtype
-      let schemaLogType = this.page.datasources[
-        'poWorkLogDs'
-      ].getSchemaInfo('logtype');
-      // istanbul ignore else
-      if (schemaLogType) {
-        this.page.state.defaultLogType = schemaLogType.default;
-      }
-    }
-    //If no error happen then re-open the drawer
-    // istanbul ignore else
-    if (this.saveDataSuccessful) {
-      this.page.showDialog('workLogDrawer');
-    }
-
+    await CommonUtil.saveWorkLog(this.app, this.page, this.page.findDatasource('poDetailWorkLogDs'), 'poDetailWorkLogDrawer', value);
   }
 
   /*
@@ -307,7 +224,7 @@ class PODetailsPageController {
 
     let schedulePage = this.app.pages.find((element) => {
       // istanbul ignore else
-      if (element.name === 'schedule' || element.name === 'approval') {
+      if (element.name === 'approval') {
         return element;
       } else {
         return '';
@@ -335,7 +252,7 @@ class PODetailsPageController {
 
     let schedulePage = this.app.pages.find((element) => {
       // istanbul ignore else
-      if (element.name === 'schedule' || element.name === 'approval') {
+      if (element.name === 'approval') {
         return element;
       } else {
         return '';
@@ -381,25 +298,7 @@ async rejectPO(event) {
 	
 	
 }
-  async openSignatureDialog(event) {
-    await this.app.userInteractionManager.openSignature(
-      async imageData => {
-        log.t(TAG, "base64 image" + imageData);
-      }
-      ,
-      {
-        imageFormat: null,
-        primaryIcon: null,
-        secondaryIcon: null,
-        heading: null,
-        primaryButtonSaveText: null,
-        secondaryButtonDiscardText: null,
-        signatureLabel: null,
-        filename: this.page.state.compDomainStatus,
-        datasource: this.app.findDatasource("signatureAttachment"),
-        onUpload: this.onUpload.bind(this),
-      })
-  }
+
 
   /**
 * This method invokes complete work API once image is uploaded.
@@ -474,7 +373,7 @@ async rejectPO(event) {
         /* istanbul ignore else */
         if (!records || records.length === 0) {
           this._closeAllDialogs(this.page);
-          const schPage = (this.app.findPage("schedule")) ? 'schedule' : 'approvals';
+          const schPage = 'approvals';
           this.app.setCurrentPage({ name: schPage, resetScroll: true });
         }
       } else if (
@@ -486,7 +385,7 @@ async rejectPO(event) {
           .load({ noCache: true, itemUrl: event.href });
       }
 
-      let schedPage = this.app.findPage('schedule') || this.app.findPage("approvals");
+      let schedPage = this.app.findPage("approvals");
       // istanbul ignore if
       if (schedPage) {
         await this.app.findDatasource(schedPage.state.selectedDS).forceReload();

@@ -7,7 +7,6 @@
   "windowsInstall": true,
   "winShell": false,
   "dependencies": {
-    "@maximo/map-component": "3.1.70",
     "@maximo/maximo-js-api": "3.1.517",
     "@maximo/react-components": "3.1.517",
     "@maximo/maximo-library": "3.1.517",
@@ -61,10 +60,8 @@
       }
     },
     "coveragePathIgnorePatterns": [
-      "src/SharedResources/Technician/",
       "src/SharedResources/maximo/",
-      "src/scripts/",
-      "submodule/"
+      "src/scripts/"
     ],
     "transformIgnorePatterns": [
       "/node_modules/(?!(ol|ol-mapbox-style|geotiff|quick-lru))"

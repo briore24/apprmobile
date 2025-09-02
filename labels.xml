@@ -1477,24 +1477,6 @@
   </maxlabel>
   <maxlabel>
     <app>apprmobile</app>
-    <id>qm3eb_label</id>
-    <property>label</property>
-    <value>My Schedule</value>
-  </maxlabel>
-  <maxlabel>
-    <app>apprmobile</app>
-    <id>d9j6q_label</id>
-    <property>label</property>
-    <value>Work History</value>
-  </maxlabel>
-  <maxlabel>
-    <app>apprmobile</app>
-    <id>em5qk_label</id>
-    <property>label</property>
-    <value>Asset and Digital Twin</value>
-  </maxlabel>
-  <maxlabel>
-    <app>apprmobile</app>
     <id>gdpnr_label</id>
     <property>label</property>
     <value>My Calendar</value>
@@ -1510,12 +1492,6 @@
     <id>eb6q__label</id>
     <property>label</property>
     <value>Settings</value>
-  </maxlabel>
-  <maxlabel>
-    <app>apprmobile</app>
-    <id>tasks_title</id>
-    <property>label</property>
-    <value>Tasks</value>
   </maxlabel>
   <maxlabel>
     <app>apprmobile</app>

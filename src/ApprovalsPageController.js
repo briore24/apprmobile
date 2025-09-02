@@ -12,8 +12,8 @@
 
 import { log, Device, ShellCommunicator } from "@maximo/maximo-js-api";
 import "regenerator-runtime/runtime";
-import SynonymUtil from "./utils/SynonymUtil";
-import CommonUtil from "./utils/CommonUtil";
+import SynonymUtil from "./SharedResources/utils/SynonymUtil";
+import CommonUtil from "./SharedResources/utils/CommonUtil";
 const TAG = "ApprovalsPageController";
 
 
@@ -50,7 +50,7 @@ class ApprovalsPageController {
 
   async openWorkLogDrawer(event) {
     this.page.state.editPo = !['CAN'].includes(event?.item?.status_maxvalue);
-    await CommonUtil.openWorkLogDrawer(this.app, this.page, event, this.page.datasources["poWorklogDs"], "workLogDrawer");
+    await CommonUtil.openWorkLogDrawer(this.app, this.page, event, this.page.findDatasource("poWorkLogDs"), "workLogDrawer");
   }
 
   workLogValidate(validateEvent) {
@@ -94,85 +94,7 @@ class ApprovalsPageController {
   }
 
   async saveWorkLog(value, directSave = false) {
-    let longDescription = value.longDescription;
-    let summary = value.summary;
-    let poWorklogDs = this.page.datasources["poWorklogDs"];
-    await poWorklogDs.load();
-    let longType = value.logType?.value || this.page.state.defaultLogType || poWorklogDs.getSchemaInfo("logtype")?.default;
-    // istanbul ignore else
-    let workLog = {
-      createby: this.app.client.userInfo.personid,
-      createdate: new Date(),
-      logtype: longType,
-      description: summary,
-      anywhererefid: new Date().getTime(),
-      description_longdescription: longDescription,
-      clientviewable: value.visibility
-    };
-    let option = {
-      responseProperties:
-        "anywhererefid,createdate,description,description_longdescription,person.displayname--displayname,createby--personid,logtype",
-      localPayload: {
-        createby:
-          this.app.client.userInfo.displayName ||
-          this.app.client.userInfo.personid,
-        personid: 
-          this.app.client.userInfo.displayName ||
-          this.app.client.userInfo.personid,  
-        createdate: new Date(),
-        description: summary,
-        logtype: longType,
-        anywhererefid: workLog.anywhererefid,
-        description_longdescription: longDescription,
-      }
-    };
-    let response;
-    // Direct Save Flag used to save work log without using work log UX
-    if (directSave) {
-      poWorklogDs.on("update-data-failed", this.onUpdateDataFailed);
-      response = await poWorklogDs.update(workLog, option);
-
-      // istanbul ignore if
-      if (response) {
-        poWorklogDs.off("update-data-failed", this.onUpdateDataFailed);
-      }
-
-      return;
-    }
-    try {
-      this.app.userInteractionManager.drawerBusy(true);
-      this.page.state.chatLogLoading = true;
-      this.saveDataSuccessful = true;
-
-      poWorklogDs.on("update-data-failed", this.onUpdateDataFailed);
-      response = await poWorklogDs.update(workLog, option);
-
-      // istanbul ignore if
-      if (response) {
-        poWorklogDs.off("update-data-failed", this.onUpdateDataFailed);
-      }
-
-      this.page.state.chatLogGroupData = await this.page.datasources[
-        "poWorklogDs"
-      ].forceReload();
-    } catch {
-    } finally {
-      this.app.userInteractionManager.drawerBusy(false);
-      this.page.state.chatLogLoading = false;
-      //Reset default Logtype
-      let schemaLogType = this.page.datasources["poWorklogDs"].getSchemaInfo(
-        "logtype"
-      );
-      // istanbul ignore else
-      if (schemaLogType) {
-        this.page.state.defaultLogType = schemaLogType.default;
-      }
-    }
-    //If no error happen then re-open the drawer
-    // istanbul ignore else
-    if (this.saveDataSuccessful) {
-      this.page.showDialog("workLogDrawer");
-    }
+    await CommonUtil.saveWorkLog(this.app, this.page, this.page.findDatasource('poWorkLogDs'), this.page.findDialog('workLogDrawer'), value);
   }
 
   async openChangeStatusDialog(event) {
@@ -229,7 +151,7 @@ class ApprovalsPageController {
             filterValues = [...filterValues, 'WMATL', 'WAPPR', 'COMP'];
             // istanbul ignore next
             if (event?.item?.flowcontrolled) {
-              const pods = this.app.findDatasource("poDetailds");
+              const pods = this.app.findDatasource("podetailDs");
               await pods.load({
                 noCache: true,
                 itemUrl: event.item.href,
@@ -318,11 +240,8 @@ onAfterLoadData(){
 
   async approvePO(event) {
     this.page.state.loading = true;
-	// check limits
 	
-	// check contract 
-	
-	// change status
+	await CommonUtil.approvePO()
 	
   }
 
@@ -336,7 +255,7 @@ onAfterLoadData(){
     this.page.state.currentItem = event.item.ponum;
     this.page.state.statusDialog = "rejectPO";
 
-    let podetails = this.app.findDatasource("podetailDs");
+    let podetails = this.app.findDatasource("poDetailds");
     let statusLstDS = this.page.datasources["rejectList"];
     statusLstDS?.clearSelections();
 
@@ -428,8 +347,7 @@ onAfterLoadData(){
   async pagePaused() {
     this.page.findDialog('workLogDrawer')?.closeDialog();
     this.page.findDialog('poStatusChangeDialog')?.closeDialog(); 
-    this.app?.findPage("approvals")?.findDialog('poStatusChangeDialog')?.closeDialog();
-  }
+	}
 
   trackUserLogin(page, loginID) {
     const storageKey = 'logindata_' + loginID;
@@ -458,7 +376,7 @@ onAfterLoadData(){
     this.saveDataSuccessful = false;
   }
   
-   async changePOStatus(inputData) {
+  async changePOStatus(inputData) {
 
     this.page.state.loading = true;
     this.page.state.currentItem = inputData.item.ponum;

@@ -10,7 +10,7 @@
  * IBM Corp.
  */
 
-import CommonUtil from './utils/CommonUtil';
+import CommonUtil from './SharedResources/utils/CommonUtil';
 
 class ApprovalsDataController {
 
@@ -27,6 +27,36 @@ class ApprovalsDataController {
     }
     return computedPOTitle;
   }
+  
+  computedPOStatusPriority(item) {
+	let valueDisable = this.app.checkSigOption(`${this.app.state.poOSName}.STATUS`) ? false : true ;
+	let self = this;
+	let poStatus = {
+		label: item.status_description || item.status,
+		type: 'cool-gray',
+		action: true,
+		disabled: valueDisable,
+		onClick: () => {
+			this.app.findPage("approvals").callController('openChangeStatusDialog', {
+				item: item,
+				datasource: this.app.findPage("approvals").state.selectedDS,
+				referencePage: this.app.findPage("approvals"),
+				selectedDatasource: referencePage.state.selectedDS
+			});
+		}
+	};
+	
+	if (item.priority !== null && item.priority !== "" && item.priority > 0) {
+		return [poStatus,
+		{
+			label: this.app.getLocalizedLabel('priority_label', `Priority ${item.priority}`, [item.priority]),
+			type: 'dark-gray',
+			disabled: valueDisable,
+		}];
+	} else {
+		return [poStatus];
+	}
+  }
 
   async onAfterLoadData(dataSource, items) {
     let page = this.app.findPage("approvals");
@@ -41,5 +71,6 @@ class ApprovalsDataController {
       }
     }
   }
+}
 
 export default ApprovalsDataController;

@@ -12,14 +12,9 @@
 
 /* eslint-disable no-console */
 import {log, Device, AppSwitcher} from '@maximo/maximo-js-api';
-import StorageManager from "@maximo/map-component/build/ejs/framework/storage/StorageManager";
-import LocalStorageManager from "@maximo/map-component/build/ejs/framework/storage/LocalStorageManager";
-import FileSystemStorageManager from "@maximo/map-component/build/ejs/framework/storage/FileSystemStorageManager";
-import appResolver from './SharedResources/Technician/utils/AppResolver';
+import appResolver from './SharedResources/utils/AppResolver';
 
 const TAG = 'ApprovalsApp';
-
-const isHumaiDebugMode=localStorage.getItem("humai_debug")==="true"
 
 class AppController {
   applicationInitialized(app) {
@@ -47,15 +42,6 @@ class AppController {
         nextPage.callController('setDefaults');
       }
     });
-
-    if(isHumaiDebugMode){
-      const switcher = AppSwitcher.get();
-      switcher.registerApplication(
-          'humai',
-          'humai',
-          'http://localhost:3000/#/'
-      );
-    }
     // Set application reference to be used globally
     appResolver.setApplication(app);
   }
@@ -199,6 +185,7 @@ class AppController {
     }
   }
 
+// open poDetails page & set incoming context
   setupIncomingContext() {
     const incomingContext = this.app && this.app.state && this.app.state.incomingContext;
 
@@ -211,12 +198,13 @@ class AppController {
       this.app.setCurrentPage({
         name: incomingContext.page,
         resetScroll: true,
-        params: {ponum: incomingContext.ponum, siteid: incomingContext.siteid }
+        params: {ponum: incomingContext.ponum, siteid: incomingContext.siteid, href: incomingContext.href }
       });
     } else if(incomingContext && incomingContext.page) {
       this.app.setCurrentPage({
         name: incomingContext.page,
-        resetScroll: true
+        resetScroll: true,
+		params: { href: incomingContext.href, itemhref: incomingContext.href }
       });
     }
   }
@@ -265,6 +253,8 @@ class AppController {
     }
     this.app.state.scanParameter = {};
   }
+
+
 
   resetSkipState() {
     this.app.state.skipSignature = false;
