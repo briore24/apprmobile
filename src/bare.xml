@@ -31,17 +31,81 @@
 					<attribute name="orgid" sortable="false"/>
 				</schema>
 			</maximo-datasource>
+			<json-datasource id="statusDomainDs" src="{[]}" items="statusItems" selection-mode="single" id-attribute="value">
+				<schema>
+					<attribute name="value"/>
+					<attribute name="description"/>
+					<attribute name="maxvalue"/>
+				</schema>
+			</json-datasource>
+			<!-- GUI start -->
+			<dialogs>
+				<sliding-drawer id="changeStatusDialog" align="start" header-text="Change Status" content-padding="false" controller="ChangeStatusController">
+					<box direction="column">
+						<panel>
+							<box vertical-align="center" padding-start="1" padding-top="0.5" padding-bottom="0.5">
+								<label label="Select a status" theme="20-regular" padding="default"/>
+							</box>
+							<data-list datasource="statusDomainDs" show-single-select-icon="true" on-item-click="selectStatus" selected-icon="carbon:checkmark--filled" unselected-icon="carbon:radio-button" show-search="false">
+								<list-item>
+									<border-layout fill-parent="true" padding="false">
+										<middle>
+											<label label="{item.description}" theme="16-regular" padding="none"/>
+											<label label="{item.value}" theme="16-regular" padding="none"/>
+										</middle>
+									</border-layout>
+								</list-item>
+							</data-list>
+						</panel>
+						<panel>
+							<box vertical-align="center" fill-parent="true" padding-top="1" background-color="field-01">
+								<border-layout padding="true" fill-parent="true">
+									<start>
+										<text-area id="statusMemo" value="{page.state.statusMemo}" on-change="setStatusMemo" placeholder="Add a comment about the status change" max-length="{page.state.memoMaxLength}" label="Add a comment"/>
+									</start>
+								</border-layout>
+							</box>
+						</panel>
+					</box>
+					<button-group slot="header-button" align="end" id="changeStatusBtnGrp">
+						<button icon="carbon:checkmark--outline" kind="primary" loading="{page.state.loadingstatus===true}" on-click="changeStatus" id="changeStatusBtn"/>
+					</button-group>
+				</sliding-drawer>
+			</dialogs>
 		</page>
-		<page id="podetails">
+		<page id="podetails" controller="PODetailsPageController">
 			<states>
 			</states>
-			<maximo-datasource id="po" object-structure="mxapipo" item-id="ponum">
+			<maximo-datasource id="poDs" object-structure="mxapipo" item-id="ponum" controller="PODetailsDataController">
 				<schema>
 					<attribute name="ponum" unique-id="true"/>
+					<attribute name="description"/>
+					<attribute name="description_longdescription"/>
+					<attribute name="status"/>
+					<attribute name="revisionnum"/>
+					<attribute name="revcomments"/>
+					<attribute name="revcomments_longdescription"/>
 				</schema>
-				<maximo-datasource id="poline" relationship="poline" depends-on="po" item-id="polinenum" notify-when-parent-loads="true">
+				<maximo-datasource id="polineDs" relationship="poline" depends-on="po" item-id="polinenum" notify-when-parent-loads="true">
 					<schema>
+						<!-- list attrs -->
 						<attribute name="polinenum" unique-id="true"/>
+						<attribute name="itemnum"/>
+						<attribute name="description"/>
+						<attribute name="linecost"/>
+						<attribute name="quantity"/>
+						<attribute name="linetype"/>
+						<attribute name="orderunit"/>
+						<attribute name="unitcost"/>
+						<attribute name="tax1"/>
+						<attribute name="isdistributed"/>
+						<!-- table defaults -->
+						 <attribute name="requestedby"/>
+						 <attribute name="wonum"/>
+						 <attribute name="assetnum"/>
+						 <attribute name="location"/>
+						 <attribute name="storeloc"/>
+						 <attribute name="gldebitacct"/>
 					</schema>
 				</maximo-datasource>
 				<maximo-datasource id="doclinksDs" attachment="true" relationship="doclinks" notify-when-parent-loads="true">
@@ -49,11 +113,138 @@
 						<attribute name="*" unique-id="true"/>
 					</schema>
 				</maximo-datasource>
-				<maximo-datasource id="workLogDs" relationship="worklog" notify-when-parent-loads="true">
+				<maximo-datasource id="workLogDs" relationship="worklog" notify-when-parent-loads="true" selection-mode="none" cache-expiry-ms="1">
 					<schema>
+						<attribute name="createdate"/>
+						<attribute name="description"/>
+						<attribute name="description_longdescription"/>
+						<attribute name="createby"/>
+						<attribute name="logtype"/>
+						<attribute name="anywherefid"/>
+						<attribute name="clientviewable"/>
+					</schema>
+				</maximo-datasource>
+				<maximo-datasource id="commLogDs" relationship="commlog" notify-when-parent-loads="true" selection-mode="none" cache-expiry-ms="1">
+					<schema>
+
 					</schema>
 				</maximo-datasource>
 			</maximo-datasource>
+			<maximo-datasource id="workLogTypeDs" lookup-data="true" object-structure="mxapisynonymdomain" saved-query="MOBILEDOMAIN" selection-mode="single">
+				<schema>
+					<attribute name="valueid" unique-id="true" searchable="true"/>
+					<attribute name="value" searchable="true"/>
+					<attribute name="maxvalue" searchable="true"/>
+					<attribute name="description" searchable="true"/>
+					<attribute name="domainid" searchable="true"/>
+					<attribute name="siteid" searchable="true"/>
+					<attribute name="orgid" searchable="true"/>
+					<attribute name="defaults"/>
+				</schema>
+			</maximo-datasource>
+			<!-- GUI START -->
+			<header-template hidden="{page.state.loading}">
+				<button slot="buttons" label="Approve" icon="carbon:checkmark" kind="secondary" on-click="approvePO" on-click-arg="{{'item': poDs.item, 'datasource': poDs}}" id="podetailsApproveBtn"/>
+				<button slot="buttons" label="Reject" icon="carbon:error" kind="secondary" on-click="rejectPO" on-click-arg="{{'item': poDs.item, 'datasource': poDs}}" id="podetailsRejectBtn"/>
+			</header-template>
+			<header-template hidden="{!page.state.loading}">
+				<button slot="buttons" loading="true" kind="ghost"/>
+			</header-template>
+			<box fill-parent-horizontal="true">
+				<border-layout fill-parent="true" padding="true">
+					<middle vertical-align="center">
+						<box padding-start="" padding-bottom="" padding-top="">
+							<wrapped-text size="large" label="{poDs.item.description}" sub-label="{poDs.item.ponum}" truncation-type="end"/>
+						</box>
+					</middle>
+				</border-layout>
+			</box>
+			<box background-color="field-01" fill-parent-horizontal="true" direction="column" padding-start="" padding-end="" padding-top="" padding-bottom="">
+				<border-layout>
+					<top>
+						<box>
+							<label label="Details" theme="20-regular"/>
+						</box>
+					</top>
+					<middle>
+
+					</middle>
+				</border-layout>
+			</box>
+			<box id="polineListBox" background-color="field-01" fill-parent-horizontal="true" direction="column">
+				<border-layout>
+					<top>
+						<box>
+							<label label="Default Line Data" theme="20-regular"/>
+						</box>
+					</top>
+					<middle>
+						<box>
+							<field label="Work Order" value="{polineDs.item.wonum}"/>
+							<field label="Asset" value="{polineDs.item.assetnum}"/>
+							<field label="Requested By" value="{polineDs.item.requestedby}"/>
+						</box>
+						<box>
+							<field label="Location" value="{polineDs.item.location}"/>
+							<field label="Storeroom" value="{polineDs.item.storeloc}"/>
+							<field label="GL Debit Account" value="{polineDs.item.gldebitacct}"/>
+						</box>
+					</middle>
+				</border-layout>
+				<border-layout>
+					<top>
+						<box>
+							<label label="PO Lines" theme="20-regular"/>
+						</box>
+					</top>
+					<middle>
+						<data-list datasource="polineDs" width="100" show-search="false" show-count="true" selected-background-color="ui-01" on-item-click="openLinePage" on-item-click-arg="{{ 'item': polineDs.item }}" select-all-label="Select all lines" sub-label="No lines" title="PO Lines" >
+							<list-item>
+								<border-layout>
+									<middle>
+										<field label="Line" value="{item.polinenum}" theme="16-regular" />
+										<field label="Item" value="{item.itemnum}"/>
+										<field label="Description" value="{item.description}"/>
+										<field label="Quantity" value="{item.quantity}"/>
+										<field label="Order Unit" value="{item.orderunit}"/>
+										<field label="Unit Cost" value="{item.unitcost}"/>
+										<field label="Line Cost" value="{item.linecost}"/>
+										<field label="Tax" value="{item.tax1}"/>
+										<field label="Distributed?" value="{item.isdistributed}"/>
+									</middle>
+								</border-layout>
+							</list-item>
+						</data-list>
+					</middle>
+				</border-layout>
+			</box>
+			<box direction="column" id="podetailsNavigatorBox">
+				<navigator width="100%" theme="ui-05" mode="list" fade-background-color="false">
+					<navigator-tile tile-label="Attachments" pictogram="maximo:document--attachments" onclick-action="showAttachmentPage" onclick-action-arg="{{'item': poDs.item }}" bade-value="{app.state.doclinksCount}" badge-type="dark-gray"/>
+				</navigator>
+			</box>
+			<!-- GUI END -->
+			<dialogs>
+				<lookup id="workLogTypeLookup" show-search="false" lookup-heading="Select Log Type" show-count="false" datasource="synonymdomainData" on-item-click="setLogType" border="true" lookup-attributes="{['value','description']}" height="400" width="60"/>
+				<dialog id="poLongDescDialog" title="Long Description" passive="true" size="lg">
+					<rich-text-viewer content="{poDs.item.description_longdescription}" stripped="true"/>
+				</dialog>
+				<dialog id="revcommentsLongDescDialog" title="Long Description" passive="true" size="lg">
+					<rich-text-viewer content="{poDs.item.revcomments_longdescription}" stripped="true"/>
+				</dialog>
+				<dialog id="saveDiscardWorkLog" title="Save or Discard Changes?" sm-auto-height="true" size="sm" primary-action-text="Save" on-primary-action="saveWorkLog" primary-kind="secondary" primary-button-disabled="{page.state.workLogData.sendDisable}" on-secondary-action="discardWorkLog" secondary-action-text="Discard">
+					<label wrap="true" label="To leave this page, you must first save or discard your changes"/>
+				</dialog>
+				<sliding-drawer id="workLogDrawer" align="start" header-text="Work Log" content-padding="false">
+					<chat-log messages="{page.state.chatLogGroupData}" default-log-type="{page.state.initialDefaultLogType}" default-log-type-key="value" datasource="synonymdomainData" content-limit="{page.state.chatLogDescLength}" log-type-attribute="{['value','description']}" on-click="saveWorkLog" loading="{page.state.chatLogLoading}" is-config-btn="true" watch-changes="watchChatLogChanges" id="workLog"/>
+				</sliding-drawer>
+				<sliding-drawer id="commLogDrawer" align="start" header-text="Comm Log" content-padding="false">
+					<chat-log/>
+				</sliding-drawer>
+			</dialogs>
+		</page>
+		<page id="attachments">
+			
 		</page>
 	</pages>
 	<messages>
