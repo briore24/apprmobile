@@ -250,34 +250,58 @@ const openWorkLogDrawer = async (app, page, event, workLogDS, drawerName) => {
   page.showDialog(drawerName)
 }
 
-const saveWorkLog = async (app, page, dsName, drawer, value) => {
-	let logType = value.logType?.value ? value.logType.value : page.state.defaultLogType;
-	let response;
-
+const saveWorkLog = async (app, page, datasource, drawer, value) => {
+	let summary = value.summary;
+	let longDesc = value.longDescription;
+	let personId = app.client.userInfo.personid;
+	let logType = value.logType?.value || this.page.state.defaultLogType || datasource.getSchemaInfo("logtype")?.default;
+	let saveDate = new Date();
+	let refid = new Date().getTime();
+	
+	await datasource.load();
+	
+	let workLog = {
+		description: summary,
+		description_longdescription: longDesc,
+		createdate: saveDate,
+		createby: personId,
+		logtype: logType,
+		anywherefid: refid,
+		clientviewable: value.visibility,
+		href: refid
+	}
+	
+	let options = {
+		responseProperties: "anywherefid,createdate,description,description_longdescription,createby,logtype",
+		localPayload: {
+			createby: personId,
+			createdate: saveDate,
+			description: summary,
+			description_longdescription: longDesc,
+			logtype: logType,
+			anywherefid: workLog.anywherefid,
+		}
+	};
+	
 	app.userInteractionManager.drawerBusy(true);
 	page.state.chatLogLoading = true;
-	page.saveDataSuccessful = true;
 	
-	let ds = page.findDatasource(dsName);
+	// datasource.on("update-data-failed", console.log("update data failed"));
+	let response = await datasource.update(workLog, options);
+	if (response) {
+		//datasource.off("update-data-failed", console.log("update data failed"));
+		console.log(response);
+	}
 	
-	let newLog = await ds.addNew();
-	// newLog.createby = value.createby;
-	newLog.createdate = new Date();
-	newLog.logtype = logType;
-	newLog.description = value.summary;
-	newLog.description_longdescription = value.longDescription;
-	newLog.anywherefid = new Date().getTime();
-	
-	await ds.save();
-	
-	page.state.chatLogGroupData = await ds.forceReload();
+	page.state.chatLogGroupData = await datasource.forceReload();
 
 	app.userInteractionManager.drawerBusy(false);
 	page.state.chatLogLoading = false;
 
-	page.showDialog(drawerName);
+	page.showDialog(drawer);
 
 }
+
 // Assisted by watsonx Code Assistant 
 /**
  * Returns the confirm dialog label.
@@ -343,9 +367,6 @@ const functions = {
     getOfflineStatusList,
     getOfflineAllowedStatusList,
     isAllowedStatus,
-    markStatusAssigned,
-	completeAssigned,
-    removeAssigned,
     _resetDataSource,
     filterMobileMaxvars,
     openWorkLogDrawer,

@@ -135,13 +135,13 @@
         </maximo-datasource>
         <maximo-datasource id="poWorkLogDs" selection-mode="none" order-by="createdate" relationship="worklog" object-name="worklog" controller="ApprovalsDataController">
           <schema id="en3_7">
-            <attribute name="createdate" unique-id="true" id="bgjjy"/>
+            <attribute name="createdate" id="bgjjy"/>
             <attribute name="description" id="n5235"/>
             <attribute name="description_longdescription" id="ym9jd"/>
             <attribute name="person.displayname--displayname" id="dmgyp"/>
             <attribute name="createby" id="a7rv2"/>
             <attribute name="logtype" id="zg_r7"/>
-            <attribute name="anywherefid" id="n3j8m"/>
+            <attribute name="anywherefid" unique-id="true" id="n3j8m"/>
           </schema>
         </maximo-datasource>
       </maximo-datasource>
