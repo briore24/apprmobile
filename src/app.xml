@@ -246,7 +246,7 @@
         <state name="itemToOpen" value="" type="string" id="b4m94"/>
         <state name="isWorkLogEdit" value="true" type="boolean" id="a35v3"/>
       </states>
-      <maximo-datasource id="poDetailResource" item-url="{page.params.href}" object-structure="mxapipo" where="ponum=&quot;{page.params.ponum}&quot; and siteid=&quot;{page.params.siteid}&quot;" controller="PODetailsDataController" cache-expiry-ms="1">
+      <maximo-datasource id="poDetailResource" object-structure="mxapipo" where="ponum=&quot;{page.params.ponum}&quot; and siteid=&quot;{page.params.siteid}&quot;" controller="PODetailsDataController" item-url="{page.params.poid}" cache-expiry-ms="1">
         <schema id="na2_d">
           <attribute name="ponum" unique-id="true" id="v6bq7"/>
           <attribute name="poid" id="yxyad"/>
@@ -302,7 +302,7 @@
           <attribute name="billto" id="yp365"/>
           <attribute name="billtoattn" id="vvyg8"/>
         </schema>
-        <maximo-datasource id="poDetailLineDs" selection-mode="none" order-by="polinenum" relationship="poline" notify-when-parent-loads="true" cache-expiry-ms="1">
+        <maximo-datasource id="poDetailLineDs" selection-mode="none" order-by="polinenum" relationship="poline" item-url="{page.params.poid}" notify-when-parent-loads="true" cache-expiry-ms="1">
 			<schema>
 				<attribute name="polineid" unique-id="true"/>
 				<attribute name="polinenum"/>
@@ -312,7 +312,7 @@
 				<attribute name="supervisor"/>
 			</schema>
 		</maximo-datasource>
-		<maximo-datasource id="poDetailWorkLogDs" selection-mode="none" order-by="createdate" relationship="worklog" notify-when-parent-loads="true" cache-expiry-ms="1">
+		<maximo-datasource id="poDetailWorkLogDs" selection-mode="none" order-by="createdate" relationship="worklog" notify-when-parent-loads="true" item-url="{page.params.poid}" cache-expiry-ms="1">
           <schema id="xbxwa">
             <attribute name="createdate" unique-id="true" id="w7dgp"/>
             <attribute name="description" id="q99gk"/>
@@ -416,7 +416,7 @@
 				</box>
 			</top>
 			<middle>
-				<data-list datasource="poDetailLineDs" width="100" show-search="false" show-count="true" selected-background-color="ui-01" on-item-click="openLineDetails" on-item-click-arg="{'item': item }" select-all-label="Select all lines" sub-label="No lines" title="PO Lines">
+				<data-list datasource="poDetailLineDs" width="100" show-search="false" show-count="true" selected-background-color="ui-01" on-item-click="openLineDetails" on-item-click-arg="{{'item': item }}" select-all-label="Select all lines" sub-label="No lines" title="PO Lines">
 					<box slot="item">
 						<field value="item.polinenum"/>
 						<field value="item.description"/>
@@ -474,7 +474,7 @@
 		<states>
 			<state name="selectedLine"/>
 		</states>
-		<maximo-datasource id="poLineDs" object-structure="mxapipo" relationship="poline" cache-expiry-ms="1">
+		<maximo-datasource id="poLineDs" object-structure="mxapipo" item-url="{page.params.poid}" relationship="poline" cache-expiry-ms="1">
 			<schema>
 				<attribute name="polineid" unique-id="true"/>
 				<attribute name="polinenum"/>

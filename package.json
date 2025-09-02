@@ -18,7 +18,7 @@
   },
   "scripts": {
     "start": "cd build/app && set NODE_OPTIONS=\"--max_old_space_size=30000\" && react-scripts start",
-    "build": "npx --no-install maxdev-cli build --in ./src/app.xml --out ./build/app/src/ --update-ids --copy",
+    "build": "npx --no-install maxdev-cli build --in ./src/app.xml --out ./build/app/src/ --update-ids --copy --verbose",
     "lint": "npm run lint:eslint",
     "lint:eslint": "eslint ./src/",
     "build:production": "yarn build && yarn labels && cd build/app && react-scripts build",

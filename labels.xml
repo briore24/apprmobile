@@ -1715,12 +1715,7 @@
     <property>label</property>
     <value>Updated</value>
   </maxlabel>
-  <maxlabel>
-    <app>apprmobile</app>
-    <id>d_vkm_empty-set-string</id>
-    <property>label</property>
-    <value>No work orders found</value>
-  </maxlabel>
+
   <maxlabel>
     <app>apprmobile</app>
     <id>zznqv_label</id>
@@ -1733,18 +1728,7 @@
     <property>label</property>
     <value>Save</value>
   </maxlabel>
-  <maxlabel>
-    <app>apprmobile</app>
-    <id>woDetailsEditDialog_title</id>
-    <property>label</property>
-    <value>Long description</value>
-  </maxlabel>
-  <maxlabel>
-    <app>apprmobile</app>
-    <id>workTypeLookup_lookup-heading</id>
-    <property>label</property>
-    <value>Worktype</value>
-  </maxlabel>
+
   <maxlabel>
     <app>apprmobile</app>
     <id>r4xdr_label</id>
@@ -1799,12 +1783,7 @@
     <property>label</property>
     <value>Long description</value>
   </maxlabel>
-  <maxlabel>
-    <app>apprmobile</app>
-    <id>workTyLookup_lookup-heading</id>
-    <property>label</property>
-    <value>Worktype</value>
-  </maxlabel>
+
   <maxlabel>
     <app>apprmobile</app>
     <id>d2pqj_label</id>
