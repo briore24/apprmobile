@@ -41,7 +41,7 @@ class ApprovalsDataController {
 				item: item,
 				datasource: this.app.findPage("approvals").state.selectedDS,
 				referencePage: this.app.findPage("approvals"),
-				selectedDatasource: referencePage.state.selectedDS
+				selectedDatasource: this.app.findPage("approvals").state.selectedDS
 			});
 		}
 	};

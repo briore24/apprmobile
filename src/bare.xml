@@ -1,0 +1,61 @@
+
+<application>
+	<states>
+	</states>
+	<menu slot="navigation-items">
+	</menu>
+	<maximo-datasource id="synonymdomainData" object-structure="mxapisynonymdomain" saved-query="MOBILEDOMAIN" selection-mode="single" lookup-data="true" offline-immediate-download="true">
+		<schema>
+		</schema>
+	</maximo-datasource>
+	<dialogs>
+	</dialogs>
+	<pages>
+		<page id="polist">
+			<states>
+				<state name="selectedSwitch" value="0" type="number"/>
+				<state name="selectedDS" value="powapprDs" type="string"/>
+				<state name="firstPO" value="" type="string"/>
+				<state name="firstLogin" value="false" type="boolean"/>
+				<state name="previousPage" value="" type="string"/>
+				<state name="checkForUpdateButton" value="false" type="boolean"/>
+			</states>
+			<maximo-datasource id="powapprDs" object-structure="mxapipo" saved-query="POWAPPR" controller="poDataController">
+				<schema>
+					<attribute name="ponum" sortable="false" searchable="true"/>
+					<attribute name="potype" searchable="true"/>
+					<attribute name="description" searchable="true"/>
+					<attribute name="priority" searchable="true"/>
+					<attribute name="status" sortable="true" searchable="true"/>
+					<attribute name="siteid" sortable="false" searchable="true"/>
+					<attribute name="orgid" sortable="false"/>
+				</schema>
+			</maximo-datasource>
+		</page>
+		<page id="podetails">
+			<states>
+			</states>
+			<maximo-datasource id="po" object-structure="mxapipo" item-id="ponum">
+				<schema>
+					<attribute name="ponum" unique-id="true"/>
+				</schema>
+				<maximo-datasource id="poline" relationship="poline" depends-on="po" item-id="polinenum" notify-when-parent-loads="true">
+					<schema>
+						<attribute name="polinenum" unique-id="true"/>
+					</schema>
+				</maximo-datasource>
+				<maximo-datasource id="doclinksDs" attachment="true" relationship="doclinks" notify-when-parent-loads="true">
+					<schema>
+						<attribute name="*" unique-id="true"/>
+					</schema>
+				</maximo-datasource>
+				<maximo-datasource id="workLogDs" relationship="worklog" notify-when-parent-loads="true">
+					<schema>
+					</schema>
+				</maximo-datasource>
+			</maximo-datasource>
+		</page>
+	</pages>
+	<messages>
+	</messages>
+</application>

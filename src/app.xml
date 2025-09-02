@@ -246,7 +246,7 @@
         <state name="itemToOpen" value="" type="string" id="b4m94"/>
         <state name="isWorkLogEdit" value="true" type="boolean" id="a35v3"/>
       </states>
-      <maximo-datasource id="poDetailResource" object-structure="mxapipo" where="ponum=&quot;{page.params.ponum}&quot; and siteid=&quot;{page.params.siteid}&quot;" controller="PODetailsDataController" item-url="{page.params.poid}" cache-expiry-ms="1">
+      <maximo-datasource id="poDetailResource" default="true" object-structure="mxapipo" where="ponum=&quot;{page.params.ponum}&quot; and siteid=&quot;{page.params.siteid}&quot;" controller="PODetailsDataController" item-url="{page.params.ponum}" cache-expiry-ms="1">
         <schema id="na2_d">
           <attribute name="ponum" unique-id="true" id="v6bq7"/>
           <attribute name="poid" id="yxyad"/>
@@ -302,25 +302,35 @@
           <attribute name="billto" id="yp365"/>
           <attribute name="billtoattn" id="vvyg8"/>
         </schema>
-        <maximo-datasource id="poDetailLineDs" selection-mode="none" order-by="polinenum" relationship="poline" item-url="{page.params.poid}" notify-when-parent-loads="true" cache-expiry-ms="1">
-			<schema>
-				<attribute name="polineid" unique-id="true"/>
-				<attribute name="polinenum"/>
-				<attribute name="description"/>
-				<attribute name="requestedby"/>
-				<attribute name="linecost"/>
-				<attribute name="supervisor"/>
-			</schema>
-		</maximo-datasource>
-		<maximo-datasource id="poDetailWorkLogDs" selection-mode="none" order-by="createdate" relationship="worklog" notify-when-parent-loads="true" item-url="{page.params.poid}" cache-expiry-ms="1">
+        <maximo-datasource id="poDetailLineDs" selection-mode="none" relationship="poline" item-url="{page.params.href}" notify-when-parent-loads="true" cache-expiry-ms="1">
+          <schema id="wxjx8">
+            <attribute name="polinenum" unique-id="true" id="x74rz"/>
+            <attribute name="itemnum" id="z8_pj"/>
+            <attribute name="description" id="gydq6"/>
+            <attribute name="requestedby" id="y24g8"/>
+            <attribute name="linecost" id="eq25_"/>
+            <attribute name="quantity" id="q2pb4"/>
+            <attribute name="linetype" id="bberg"/>
+            <attribute name="orderunit" id="j5r8x"/>
+            <attribute name="unitcost" id="ekme5"/>
+            <attribute name="tax1" id="x9pae"/>
+            <attribute name="isdistributed" id="b9982"/>
+            <attribute name="wonum" id="m848j"/>
+            <attribute name="assetnum" id="q9m_8"/>
+            <attribute name="location" id="rgdbk"/>
+            <attribute name="storeloc" id="x8ex7"/>
+            <attribute name="gldebitacct" id="vvngd"/>
+          </schema>
+        </maximo-datasource>
+        <maximo-datasource id="poDetailWorkLogDs" selection-mode="none" relationship="worklog" notify-when-parent-loads="true" cache-expiry-ms="1" item-url="{page.params.href}">
           <schema id="xbxwa">
-            <attribute name="createdate" unique-id="true" id="w7dgp"/>
+            <attribute name="createdate" id="w7dgp"/>
             <attribute name="description" id="q99gk"/>
             <attribute name="description_longdescription" id="rjgbp"/>
             <attribute name="person.displayname--displayname" id="pvnqz"/>
             <attribute name="createby" id="g99r3"/>
             <attribute name="logtype" id="nvn68"/>
-            <attribute name="anywherefid" id="kqdbe"/>
+            <attribute name="anywherefid" id="kqdbe" unique-id="true"/>
             <attribute name="clientviewable" id="m7w3x"/>
           </schema>
         </maximo-datasource>
@@ -408,26 +418,49 @@
           </bottom>
         </border-layout>
       </box>
-	  <box direction="column" id="poDetailsLineBox" background-color="field-01" fill-parent-horizontal="true">
-		<border-layout padding="false" fill-parent="true" top-border="true">
-			<top>
-				<box padding-start="1" padding-end="1" padding-top=".75" padding-bottom=".75">
-					<label label="Line Items" theme="20-regular"/>
-				</box>
-			</top>
-			<middle>
-				<data-list datasource="poDetailLineDs" width="100" show-search="false" show-count="true" selected-background-color="ui-01" on-item-click="openLineDetails" on-item-click-arg="{{'item': item }}" select-all-label="Select all lines" sub-label="No lines" title="PO Lines">
-					<box slot="item">
-						<field value="item.polinenum"/>
-						<field value="item.description"/>
-						<field value="item.linetype"/>
-						<field value="item.requestedby"/>
-						<field value="item.linecost"/>
-					</box>
-				</data-list>
-			</middle>
-		</border-layout>
-	  </box>
+      <box direction="column" id="poDetailsLineBox" background-color="field-01" fill-parent-horizontal="true">
+        <border-layout padding="false" fill-parent="true" top-border="true" id="vrdym">
+          <top id="n5k5b">
+            <box padding-start="1" padding-end="1" padding-top=".75" padding-bottom=".75" id="w5mp_">
+              <label label="Line Items" theme="20-regular" id="g2kr5"/>
+            </box>
+            <border-layout id="xb8j8">
+              <top id="qj4_4">
+                <box id="gg64j">
+                  <label label="Default Table Data" id="gg239"/>
+                </box>
+              </top>
+              <middle id="kv6zm">
+                <box id="m285_">
+                  <field label="Work Order" value="{poDetailLineDs.item.wonum}" id="e63bn"/>
+                  <field label="Asset" value="{poDetailLineDs.item.assetnum}" id="nq26p"/>
+                  <field label="Requested By" value="{poDetailLineDs.item.requestedby}" id="dxpx_"/>
+                </box>
+                <box id="jpmgd">
+                  <field label="Location" value="{poDetailLineDs.item.location}" id="g5nx8"/>
+                  <field label="Storeroom" value="{poDetailLineDs.item.storeloc}" id="bnqwe"/>
+                  <field label="GL Debit Account" value="{poDetailLineDs.item.gldebitacct}" id="epnxd"/>
+                </box>
+              </middle>
+            </border-layout>
+          </top>
+          <middle id="rr7q5">
+            <data-list datasource="poDetailLineDs" width="100" show-search="false" show-count="true" selected-background-color="ui-01" on-item-click="openLineDetails" on-item-click-arg="{{'item': item }}" select-all-label="Select all lines" sub-label="No lines" title="PO Lines" id="g2wnv">
+              <box slot="item" id="nwe49">
+                <field label="Line" value="{item.polinenum}" id="dnrgg"/>
+                <field label="Item" value="{item.itemnum}" id="e63ez"/>
+                <field label="Description" value="{item.description}" id="dz9g9"/>
+                <field label="Quantity" value="{item.quantity}" id="gk3kv"/>
+                <field label="Order Unit" value="{item.orderunit}" id="y4mdy"/>
+                <field label="Unit Cost" value="{item.unitcost}" id="jd7r2"/>
+                <field label="Line Cost" value="{item.linecost}" id="mk5x5"/>
+                <field label="Tax" value="{item.tax1}" id="pgy94"/>
+                <field label="Distributed?" value="{item.isdistributed}" id="ex2a4"/>
+              </box>
+            </data-list>
+          </middle>
+        </border-layout>
+      </box>
       <box direction="column" id="poDetailsNavigatorBox">
         <navigator width="100%" theme="ui-05" mode="list" fade-background-color="false" id="nn8nd">
           <navigator-tile tile-label="Attachments" pictogram="maximo:document--attachments" onclick-action="showAttachmentPage" onclick-action-arg="{{'item':poDetailResource.item}}" badge-value="{app.state.doclinksCount}" badge-type="dark-gray" id="poDetailsAttachmentsTile"/>
@@ -470,78 +503,72 @@
         <attachment-list datasource="attachmentListDS" hide-when-empty="false" show-search="false" show-managed-header="true" is-editable="{(app.checkSigOption(`${app.state.poOSName}.ADDATTACHMENTS`) &amp;&amp; app.state.poStatus !== 'CLOSE' &amp;&amp; app.state.poStatus !== 'CAN')}" allow-naming="true" id="jpd9j"/>
       </panel>
     </page>
-	<page id="poLineDetails" path="/poLineDetails" title="Line Item" padding="true" controller="POLineDetailsPageController">
-		<states>
-			<state name="selectedLine"/>
-		</states>
-		<maximo-datasource id="poLineDs" object-structure="mxapipo" item-url="{page.params.poid}" relationship="poline" cache-expiry-ms="1">
-			<schema>
-				<attribute name="polineid" unique-id="true"/>
-				<attribute name="polinenum"/>
-				<attribute name="description"/>
-				<attribute name="description_longdescription"/>
-				<attribute name="inspectionrequired"/>
-				<attribute name="requestedby"/>
-				<attribute name="scheduleid"/>
-				<attribute name="supervisor"/>
-				<attribute name="linecost"/>
-				<attribute name="itemnum"/>
-				<attribute name="orderqty"/>
-				<attribute name="orderunit"/>
-				<attribute name="linetype"/>
-				<attribute name="unitcost"/>
-				<attribute name="vendeliverydate"/>
-				<attribute name="vendorpackcode"/>
-				<attribute name="vendorpackquantity"/>
-				<attribute name="vendorwarehouse"/>
-				<attribute name="wonum"/>
-				<attribute name="taskid"/>
-				<attribute name="refwo"/>
-				<attribute name="prnum"/>
-				<attribute name="prlinenum"/>
-				<attribute name="issue"/>
-			</schema>
-		</maximo-datasource>
-		<dialogs id="poLineDialogs">
-			
-		</dialogs>
-		<header-template id="poLineDetailsPageHeader">
-		</header-template>
-		<box id="poLineDetailsPageSubHeader" fill-parent-horizontal="true">
-			<border-layout fill-parent="true" padding="true">
-				<middle vertical-align="center">
-					<box padding-start="{app.state.screen.size === 'lg' || app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '.5'}" padding-bottom="{app.state.screen.size === 'lg' || app.state.screen.size === 'sm' ? '-.5' : '1.5'}" padding-top="{app.state.screen.size === 'lg' || app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '.5' : '1.5'}">
-						<wrapped-text size="large" label="{poLineDs.item.description}" sub-label="{poLineDs.item.itemnum}" truncation-type="end"/>
-					</box>
-				</middle>
-			</border-layout>
-		</box>
-		<box id="poLineDetailsPageContent" background-color="field-01" fill-parent-horizontal="true" direction="column" padding-start="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '0.5'}" padding-end="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '.5'}" padding-top="0" padding-bottom="0">
-			<border-layout padding="false" fill-parent="true" top-border="true">
-				<top>
-					<box padding-start="1" padding-end="1" padding-top=".75" padding-bottom=".75">
-						<label label="Details" theme="20-regular"/>
-					</box>
-				</top>
-				<start>
-					<box fill-parent-horizontal="true" border-bottom="{app.device.isMaximoMobile}" padding-start="1" padding-end="1" padding-top="1" padding-bottom="1" direction="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? 'column' : 'row'}">
-						<label label="Long Description" padding="top" color="text-02"/>
-						<rich-text-viewer content="{poLineDs.item.description_longdescription}" padding-start="0.5" padding-end="0.5" content-limit="256" stripped="true"/>
-					</box>
-					<button hidden="{!poLineDs.item.description_longdescription}" padding="false" icon="carbon:maximize" kind="secondary" on-click="openLongDescDialog" on-click-arg="{{'item' : poLineDs.item, 'page' : page}}"/>
-				</start>
-				<middle>
-				</middle>
-				<end>
-				</end>
-				<bottom>
-					<box direction="column" fill-parent-horizontal="true">
-						<field label="Requested by" value="{poLineDs.item.requestedby}" />
-					</box>
-				</bottom>
-			</border-layout>
-		</box>
-	</page>
+    <page id="poLineDetails" path="/poLineDetails" title="Line Item" padding="true" controller="POLineDetailsPageController">
+      <states id="vnm85">
+        <state name="selectedLine" type="string" value="" id="d2yy5"/>
+      </states>
+      <maximo-datasource id="poLineDs" object-structure="mxapipo" item-url="{page.params.href}" relationship="poline" cache-expiry-ms="1">
+        <schema id="xgy7_">
+          <attribute name="polinenum" unique-id="true" id="e3q6d"/>
+          <attribute name="description" id="mxg4y"/>
+          <attribute name="description_longdescription" id="xbv8e"/>
+          <attribute name="inspectionrequired" id="g2_x7"/>
+          <attribute name="requestedby" id="bngm3"/>
+          <attribute name="scheduleid" id="qdevq"/>
+          <attribute name="supervisor" id="a66p7"/>
+          <attribute name="linecost" id="y53ak"/>
+          <attribute name="itemnum" id="ankde"/>
+          <attribute name="orderqty" id="z6g2b"/>
+          <attribute name="orderunit" id="re52x"/>
+          <attribute name="linetype" id="gdwby"/>
+          <attribute name="unitcost" id="zd4kv"/>
+          <attribute name="vendeliverydate" id="bkdxb"/>
+          <attribute name="vendorpackcode" id="y3eqb"/>
+          <attribute name="vendorpackquantity" id="vme6k"/>
+          <attribute name="vendorwarehouse" id="eyeeq"/>
+          <attribute name="wonum" id="d9w35"/>
+          <attribute name="taskid" id="a63vb"/>
+          <attribute name="refwo" id="kznyx"/>
+          <attribute name="prnum" id="a3aj9"/>
+          <attribute name="prlinenum" id="jqk3e"/>
+          <attribute name="issue" id="xrny3"/>
+        </schema>
+      </maximo-datasource>
+      <dialogs id="poLineDialogs"/>
+      <header-template id="poLineDetailsPageHeader"/>
+      <box id="poLineDetailsPageSubHeader" fill-parent-horizontal="true">
+        <border-layout fill-parent="true" padding="true" id="eq__d">
+          <middle vertical-align="center" id="gxn7x">
+            <box padding-start="{app.state.screen.size === 'lg' || app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '.5'}" padding-bottom="{app.state.screen.size === 'lg' || app.state.screen.size === 'sm' ? '-.5' : '1.5'}" padding-top="{app.state.screen.size === 'lg' || app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '.5' : '1.5'}" id="pmg4v">
+              <wrapped-text size="large" label="{poLineDs.item.description}" sub-label="{poLineDs.item.itemnum}" truncation-type="end" id="mkkqy"/>
+            </box>
+          </middle>
+        </border-layout>
+      </box>
+      <box id="poLineDetailsPageContent" background-color="field-01" fill-parent-horizontal="true" direction="column" padding-start="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '0.5'}" padding-end="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '.5'}" padding-top="0" padding-bottom="0">
+        <border-layout padding="false" fill-parent="true" top-border="true" id="y44yq">
+          <top id="rmdnz">
+            <box padding-start="1" padding-end="1" padding-top=".75" padding-bottom=".75" id="pm5nr">
+              <label label="Details" theme="20-regular" id="xkqz6"/>
+            </box>
+          </top>
+          <start id="pnm8n">
+            <box fill-parent-horizontal="true" border-bottom="{app.device.isMaximoMobile}" padding-start="1" padding-end="1" padding-top="1" padding-bottom="1" direction="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? 'column' : 'row'}" id="qe_p4">
+              <label label="Long Description" padding="top" color="text-02" id="q37pe"/>
+              <rich-text-viewer content="{poLineDs.item.description_longdescription}" padding-start="0.5" padding-end="0.5" content-limit="256" stripped="true" id="dk2gv"/>
+            </box>
+            <button hidden="{!poLineDs.item.description_longdescription}" padding="false" icon="carbon:maximize" kind="secondary" on-click="openLongDescDialog" on-click-arg="{{'item' : poLineDs.item, 'page' : page}}" id="bn6gn"/>
+          </start>
+          <middle id="dbykn"/>
+          <end id="my2br"/>
+          <bottom id="kmare">
+            <box direction="column" fill-parent-horizontal="true" id="nmp4p">
+              <field label="Requested by" value="{poLineDs.item.requestedby}" id="e9zbv"/>
+            </box>
+          </bottom>
+        </border-layout>
+      </box>
+    </page>
   </pages>
   <messages id="n5_2r">
     <message id="unknown" text="Unknown"/>

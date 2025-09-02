@@ -200,7 +200,7 @@ class PODetailsPageController {
   }
 
   async saveWorkLog(value, directSave = false) {
-    await CommonUtil.saveWorkLog(this.app, this.page, this.page.findDatasource('poDetailWorkLogDs'), 'poDetailWorkLogDrawer', value);
+    await CommonUtil.saveWorkLog(this.app, this.page, this.page.findDatasource('poDetailWorkLogDs'), 'poDetailWorkLogDrawer', value, directSave);
   }
 
   /*

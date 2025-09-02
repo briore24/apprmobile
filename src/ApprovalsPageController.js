@@ -112,79 +112,13 @@ class ApprovalsPageController {
     let statusLstDS = this.page.datasources["dsstatusDomainList"];
     statusLstDS.clearSelections();
 
-    // istanbul ignore else
-    if(event.item.flowcontrolled) {
-      let filterValues= []
-      
-      let poTypeStartMaxVal = poType?.length && poType[0].startstatus ? poType[0].startstatus_maxvalue : '';
-      let poTypeEndMaxVal = poType?.length && poType[0].completestatus ? poType[0].completestatus_maxvalue : '';
-      if(!event.item.potype || !poTypeStartMaxVal) {
-        // istanbul ignore if
-        if(maxVal !== 'COMP') {
-          filterValues = ['CLOSE', 'COMP']; 
-        }
-        
-        if(maxVal === 'INPRG') {
-          filterValues = ['CLOSE', 'COMP', 'WMATL', 'WAPPR']; 
-        }
-        
-      } else if(event.item.potype && event.item.flowcontrolled && poType?.length) {
-        // istanbul ignore else
-        if(poTypeEndMaxVal === 'COMP') {
-          filterValues = ['CLOSE'];
-        } else if(poTypeEndMaxVal === 'CLOSE') {
-          filterValues = ['CLOSE'];
-        } else if(poTypeEndMaxVal === 'INPRG') {
-          filterValues = ['CLOSE','COMP', 'INPRG'];
-        }
-        // istanbul ignore next
-        if(poTypeStartMaxVal) {
-          if(poTypeStartMaxVal === 'APPR' || poTypeStartMaxVal === 'WMATL' || poTypeStartMaxVal === 'WSCH') {
-            if (maxVal !== 'COMP') {
-              filterValues = [...filterValues, 'WAPPR', 'COMP'];
-            } else {
-              filterValues = ['WAPPR'];
-            }
-          }
-          // istanbul ignore if
-          if(poTypeStartMaxVal === 'INPRG' &&  maxVal === 'INPRG') {
-            filterValues = [...filterValues, 'WMATL', 'WAPPR', 'COMP'];
-            // istanbul ignore next
-            if (event?.item?.flowcontrolled) {
-              const pods = this.app.findDatasource("podetailDs");
-              await pods.load({
-                noCache: true,
-                itemUrl: event.item.href,
-              });
-              if (this.app.state.taskCount === 0) {
-                filterValues = [...filterValues, 'WMATL', 'WAPPR'];
-              }
-            }
-          }
-        }
-      }
-
-      // istanbul ignore else
-      if(maxVal === 'COMP' && longitudex && latitudey) {
-        filterValues = ['WAPPR', 'CLOSE'];
-      }
-
-      // istanbul ignore else
-      if(filterValues?.length) {
-        statusArr = statusArr.filter(item => filterValues.indexOf(item.maxvalue) === -1);
-      }
-    } // istanbul ignore else
-     else if(longitudex && latitudey && lastLabTransData?.timerstatus_maxvalue === 'ACTIVE') {
-        statusArr = statusArr.filter(item => ['CLOSE'].indexOf(item.maxvalue) === -1);
-    }
-
     await statusLstDS.load({ src: statusArr, noCache: true });
 
     // set maximum length of comment text-area in changestatus through checking datasource schema
     const selectedDS = event.selectedDatasource;
     //istanbul ignore else
     if (selectedDS) {
-      const commentsMaxLength = event.selectedDatasource.getFieldSize(
+      const commentsMaxLength = selectedDS.getFieldSize(
         "np_statusmemo"
       );
       //istanbul ignore else

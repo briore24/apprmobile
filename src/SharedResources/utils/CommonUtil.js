@@ -250,15 +250,15 @@ const openWorkLogDrawer = async (app, page, event, workLogDS, drawerName) => {
   page.showDialog(drawerName)
 }
 
-const saveWorkLog = async (app, page, datasource, drawer, value) => {
+const saveWorkLog = async (app, page, datasource, drawer, value, directSave) => {
 	let summary = value.summary;
 	let longDesc = value.longDescription;
 	let personId = app.client.userInfo.personid;
-	let logType = value.logType?.value || this.page.state.defaultLogType || datasource.getSchemaInfo("logtype")?.default;
+	let logType = value.logType?.value || page.state.defaultLogType || datasource.getSchemaInfo("logtype")?.default;
 	let saveDate = new Date();
 	let refid = new Date().getTime();
 	
-	await datasource.load();
+	let workLogDS = datasource;
 	
 	let workLog = {
 		description: summary,
@@ -267,9 +267,8 @@ const saveWorkLog = async (app, page, datasource, drawer, value) => {
 		createby: personId,
 		logtype: logType,
 		anywherefid: refid,
-		clientviewable: value.visibility,
-		href: refid
-	}
+		clientviewable: value.visibility
+	};
 	
 	let options = {
 		responseProperties: "anywherefid,createdate,description,description_longdescription,createby,logtype",
@@ -279,27 +278,48 @@ const saveWorkLog = async (app, page, datasource, drawer, value) => {
 			description: summary,
 			description_longdescription: longDesc,
 			logtype: logType,
-			anywherefid: workLog.anywherefid,
+			anywherefid: workLog.anywherefid
 		}
 	};
-	
-	app.userInteractionManager.drawerBusy(true);
-	page.state.chatLogLoading = true;
-	
-	// datasource.on("update-data-failed", console.log("update data failed"));
-	let response = await datasource.update(workLog, options);
-	if (response) {
-		//datasource.off("update-data-failed", console.log("update data failed"));
-		console.log(response);
-	}
-	
-	page.state.chatLogGroupData = await datasource.forceReload();
+	let response;
 
-	app.userInteractionManager.drawerBusy(false);
-	page.state.chatLogLoading = false;
+  if (directSave) {
+    workLogDS.on('update-data-failed', page.onUpdateDataFailed);
+    response = await workLogDS.update(workLog, option);	
+    if (response) {
+		  datasource.off("update-data-failed", page.onUpdateDataFailed);
+		  console.log(response);
+	  }
+    return;
+  }
+  try {
+    app.userInteractionManager.drawerBusy(true);
+    page.state.chatLogLoading = true;
+    page.saveDataSuccessful = true;
 
-	page.showDialog(drawer);
+    workLogDS.on('update-data-failed', page.onUpdateDataFailed);
+    response = await workLogDS.update(workLog, option);
 
+    if (response) {
+      workLogDS.off('update-data-failed', page.onUpdateDataFailed);
+    }
+    
+    page.state.chatLogGroupData = await workLogDS.forceReload();
+  } catch {
+
+  } finally {
+    app.userInteractionManager.drawerBusy(false);
+    page.state.chatLogLoading = false;
+
+    let schemaLogType = datasource.getSchemaInfo('logtype');
+    if (schemaLogType) {
+      page.state.defaultLogType = schemaLogType.default;
+    }
+  }
+
+  if (page.saveDataSuccessful) {
+    page.showDialog(drawer);
+  }
 }
 
 // Assisted by watsonx Code Assistant 
