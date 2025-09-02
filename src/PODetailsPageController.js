@@ -18,10 +18,6 @@ class PODetailsPageController {
   pageInitialized(page, app) {
     this.app = app;
     this.page = page;
-    ShellCommunicator.get().on(
-      'TRANSACTION_UNDONE',
-      this.handleDeleteTransaction.bind(this)
-    );
   }
   constructor() {
     this.onUpdateDataFailed = this.onUpdateDataFailed.bind(this);
@@ -296,9 +292,11 @@ async rejectPO(event) {
 	
 	// change status & return to approvals list page
 	
-	
 }
 
+  async openLineDetails(item) {
+	  
+  };
 
   /**
 * This method invokes complete work API once image is uploaded.
