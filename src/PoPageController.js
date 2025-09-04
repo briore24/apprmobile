@@ -12,9 +12,9 @@
 
 import { log, Device } from '@maximo/maximo-js-api';
 import CommonUtil from './SharedResources/utils/CommonUtil';
-const TAG = 'PODetailsPageController';
+const TAG = 'PoPageController';
 
-class PODetailsPageController {
+class PoPageController {
   pageInitialized(page, app) {
     this.app = app;
     this.page = page;
@@ -30,20 +30,15 @@ class PODetailsPageController {
     let drawer = event.drawer;
     let groupData; 
 
-    let logDS = this.page.findDatasource(event.datasource);
+    let logDS = event.datasource;
 
     logDS.clearState();
     logDS.resetState();
     const synonymDs = this.app.findDatasource("synonymdomainData");
     await logDS.load().then((response) => {
-      switch(drawer) {
-        case 'commLogDrawer':
-          groupData = this.page.state.commLogGroupData;
-        case 'workLogDrawer':
-          groupData = this.page.state.workLogGroupData;
-      }
       groupData = response;
     });
+
     if (Device.get().isMaximoMobile && logDS.options.query.relationship) {
       logDS.schema = logDS.dependsOn.schema.properties[
         Object.entries(logDS.dependsOn.schema.properties).filter(
@@ -54,8 +49,14 @@ class PODetailsPageController {
     }
     switch(drawer) {
       case 'commLogDrawer':
+        this.page.state.commLogGroupData = groupData;
+        let subj = logDS.getSchemaInfo("subject");
+        if (subj) {
+          this.page.state.commLogDescLength = subj.maxLength;
+        }
         break;
       case 'workLogDrawer':
+        this.page.state.workLogGroupData = groupData;
         let schemaLogType = logDS.getSchemaInfo("logtype");
         let schemaDesc = logDS.getSchemaInfo("description");        
         let orgID = this.app.client?.userInfo?.insertOrg;
@@ -95,18 +96,13 @@ class PODetailsPageController {
     this.page.showDialog(drawer);
   }
 
-  onAfterLoadData(){
-    log.i(TAG, 'data loaded on details page!');
-  }
-
-
   async pageResumed(page, app) {
     CommonUtil.sharedData.newPageVisit = true;
     page.state.loading = true;
     page.state.historyDisable = false;
     page.state.isMobile = Device.get().isMaximoMobile;
-    const poDetailResource = page.datasources['poDetailResource'];
-	  await poDetailResource?.load({ noCache: true, itemUrl: page.params.href });
+    const poDs = page.datasources['poDs'];
+	  await poDs?.load({ noCache: true, itemUrl: page.params.href });
     const device = Device.get();
 
     page.state.loadedLog = true;
@@ -114,7 +110,7 @@ class PODetailsPageController {
     // page.state.lineLoading = true;
     // offline mode sync
     if (this.page.state.disConnected && this.app.state.networkConnected && this.app.state.refreshOnSubsequentLogin !== false) {
-      await poDetailResource?.load({
+      await poDs?.load({
         noCache: true,
         forceSync: true,
         itemURL: page.params.href
@@ -126,7 +122,7 @@ class PODetailsPageController {
     const index = 0;
 
     CommonUtil.sharedData.clickedPo = page.params.ponum;
-    if (app.state.incomingContext && poDetailResource.items.length === 0) {
+    if (app.state.incomingContext && poDs.items.length === 0) {
       const loadParams = {
         noCache: true,
         itemUrl: page.params.href,
@@ -134,8 +130,8 @@ class PODetailsPageController {
       if (this.app.state.refreshOnSubsequentLogin !== false) {
         loadParams['forceSync'] = true;
       }
-      await poDetailResource.load(loadParams);
-      if (poDetailResource.items.length === 0) {
+      await poDs.load(loadParams);
+      if (poDs.items.length === 0) {
         let errorMessage =
           'This record is not on your device. Try again or wait until you are online.';
         page.error(
@@ -144,25 +140,25 @@ class PODetailsPageController {
       }
     }
 
-    let ponum = this.page.datasources['poDetailResource']?.item.ponum;
-    page.state.editDetails = !['CAN', 'CLOSE'].includes(this.page.datasources['poDetailResource']?.item?.status_maxvalue);
+    let ponum = this.page.datasources['poDs']?.item.ponum;
+    page.state.editDetails = !['CAN', 'CLOSE'].includes(this.page.datasources['poDs']?.item?.status_maxvalue);
 
     if (!app.state.doclinksCountData) {
       app.state.doclinksCountData = {};
     }
     if (!app.state.doclinksCountData[ponum]) {
       app.state.doclinksCountData[ponum] = device.isMaximoMobile
-        ? poDetailResource.item?.doclinks?.member?.length
-        : poDetailResource?.item.doclinkscount;
+        ? poDs.item?.doclinks?.member?.length
+        : poDs?.item.doclinkscount;
     }
     //Reload the attachment list
     if (device.isMaximoMobile) {
-      let poDetailResource = page.datasources['poDetailResource'];
-      await poDetailResource.forceReload();
+      let poDs = page.datasources['poDs'];
+      await poDs.forceReload();
 
-      app.state.doclinksCountData[ponum] = poDetailResource.item.doclinks ?
-        poDetailResource.item.doclinks?.member?.length
-        : poDetailResource?.item.doclinkscount;
+      app.state.doclinksCountData[ponum] = poDs.item.doclinks ?
+        poDs.item.doclinks?.member?.length
+        : poDs?.item.doclinkscount;
     }
     app.state.doclinksCount = app.state.doclinksCountData[ponum]
       ? app.state.doclinksCountData[ponum]
@@ -177,7 +173,7 @@ class PODetailsPageController {
 
     this.updateSignaturePrompt();
     // page.state.lineLoading = false;
-    this.app.state.purchaseOrderStatus = poDetailResource?.item?.status;
+    this.app.state.purchaseOrderStatus = poDs?.item?.status;
   }
 
   updateSignaturePrompt() {
@@ -337,7 +333,7 @@ class PODetailsPageController {
       return;
     }
     //During Start work it will not wait for the API response
-    let poDetailResourceDS = this.app.findDatasource("poDetailResource");
+    let poDetailResourceDS = this.app.findDatasource("poDs");
     //istanbul ignore else
     if (poDetailResourceDS) {
       this.app.state.doclinksCountData[poDetailResourceDS.item.ponum] = Device.get().isMaximoMobile ? poDetailResourceDS.item?.doclinks?.member?.length : poDetailResourceDS.item?.doclinkscount;
@@ -358,22 +354,26 @@ class PODetailsPageController {
   }
 
   async setLocaleTime(date_value) {
-    const poDetailResource = this.page.datasources['poDetailResource'];
+    const poDs = this.page.datasources['poDs'];
 
     const localeString = new Date(
-      `${poDetailResource.item[date_value]}`
+      `${poDs.item[date_value]}`
     ).toString();
 
     const new_date_value = this.app.dataFormatter.convertDatetoISO(
       localeString
     );
 
-    poDetailResource.item[date_value] = new_date_value;
+    poDs.item[date_value] = new_date_value;
   }
 
   async setPODetailsLogType(event) { this.page.state.defaultLogType = event.value; }
 
   onUpdateDataFailed() { this.saveDataSuccessful = false; }
+
+  onAfterLoadData() {
+    log.i(TAG, "afterLoadData");
+  }
 
   _closeAllDialogs(page) {
     if (page?.dialogs?.length) {
@@ -383,4 +383,4 @@ class PODetailsPageController {
 
 }
 
-export default PODetailsPageController;
+export default PoPageController;

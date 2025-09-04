@@ -13,21 +13,13 @@
 /* eslint-disable no-console */
 import {log, Device, AppSwitcher} from '@maximo/maximo-js-api';
 import appResolver from './SharedResources/utils/AppResolver';
+import commonUtil from './SharedResources/utils/CommonUtil';
 
 const TAG = 'ApprovalsApp';
 
 class AppController {
   applicationInitialized(app) {
     this.app = app;
-    // Variable to hide features which are not required for supervisor release.
-    this.app.state.hideFeature = true;
-    if (Device.get().isMaximoMobile) {
-			//Update the Default Storage Manager
-			StorageManager.setImplementation(FileSystemStorageManager);
-		} else {
-			//Update the Default Storage Manager
-			StorageManager.setImplementation(LocalStorageManager);
-    }
        
     this.setupIncomingContext();    
     // Going back to list page from detail page
@@ -42,19 +34,19 @@ class AppController {
         nextPage.callController('setDefaults');
       }
     });
+    if (!Device.get().isMaximoMobile) {
+      commonUtil.getOfflineStatusList(this.app, this.app.client?.userInfo?.insertOrg, this.app.client?.userInfo?.insertSite);
+    }
     // Set application reference to be used globally
     appResolver.setApplication(app);
   }
-
   onContextReceived() {
     this.setupIncomingContext()
   }
-
   navigationItemClicked(item) {
     log.t(TAG, 'Clicked item', item);
     this.app.setCurrentPage({name: 'approvals'});
   }
-
   async getOfflinePoStatusList(evt) {
     let statusArr = [];
     let defOrg = evt.item.orgid;
@@ -105,7 +97,6 @@ class AppController {
 
     return statusArr;
   }
-
   _getStatusExternalValue(statusArr, internalValue) {
     let externalValue;
     if (statusArr && statusArr.length && internalValue) {
@@ -118,7 +109,6 @@ class AppController {
     }
     return externalValue;
   }
-
   _buildPoStatusSet(allowedStates) {
     let statusArr = [];
     if (allowedStates) {
@@ -140,7 +130,6 @@ class AppController {
     }
     return statusArr;
   }
-
   updatePageTitle (parameters) {
     const ponum = parameters.page.params.ponum || "";
     let pageTitle = this.app.getLocalizedLabel(
@@ -150,7 +139,6 @@ class AppController {
       );
     return pageTitle;
   }
-
   _isValidTransitionMaxVal(from, to) {
     log.t(TAG, 'isValidTransition : from --> ' + from + ' to --> ' + to);
     let transitionMatrix = {
@@ -183,10 +171,9 @@ class AppController {
       return true;
     }
   }
-
 // open poDetails page & set incoming context
   setupIncomingContext() {
-    const incomingContext = this.app && this.app.state && this.app.state.incomingContext;
+    const incomingContext = this.app?.state?.incomingContext;
 
     if (incomingContext?.page && (incomingContext?.ponum && incomingContext?.siteid) || (incomingContext?.href && !incomingContext?.itemId)) {
       this.app.setCurrentPage({name:"approvals"});

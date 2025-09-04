@@ -9,7 +9,10 @@
  * disclosure restricted by GSA ADP Schedule Contract with
  * IBM Corp.
  */
-class PODetailsDataController {
+import { log, Device } from '@maximo/maximo-js-api';
+const TAG = 'PoDataController'
+
+class PoDataController {
   onDatasourceInitialized(ds, owner, app) {
     this.datasource = ds;
     this.owner = owner;
@@ -23,6 +26,10 @@ class PODetailsDataController {
     //istanbul ignore else
    return  !((!item.description_longdescription) || (item.description_longdescription) || (!item.description_longdescription));
   }
+
+  async onAfterLoadData() {
+    log.i(TAG, "details data loaded!");
+  }
 }
 
-export default PODetailsDataController;
+export default PoDataController;

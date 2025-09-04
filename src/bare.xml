@@ -93,10 +93,10 @@
 				</sliding-drawer>
 			</dialogs>
 		</page>
-		<page id="podetails" controller="PODetailsPageController">
+		<page id="podetails" controller="PoPageController">
 			<states>
 			</states>
-			<maximo-datasource id="poDs" object-structure="mxapipo" item-id="ponum" controller="PODetailsDataController" where="ponum=&quot;{page.params.ponum}&quot; and siteid=&quot;{page.params.siteid}&quot;" cache-expiry-ms="1">
+			<maximo-datasource id="poDs" object-structure="mxapipo" item-id="ponum" controller="PoDataController" where="ponum=&quot;{page.params.ponum}&quot; and siteid=&quot;{page.params.siteid}&quot;" cache-expiry-ms="1">
 				<schema>
 					<attribute name="ponum" unique-id="true"/>
 					<attribute name="description"/>

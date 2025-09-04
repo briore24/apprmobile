@@ -168,7 +168,7 @@ class ChangeStatusController {
   async onSignatureUpload() {
     this.app.state.skipSignature = true;
     await this.changeStatus();
-    let poDetailResourceDS = this.app.findDatasource('poDetailResource');
+    let poDetailResourceDS = this.app.findDatasource('poDs');
     
     //istanbul ignore else
     if (poDetailResourceDS) {

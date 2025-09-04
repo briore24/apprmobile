@@ -163,15 +163,15 @@
         </sliding-drawer>
       </dialogs>
     </page>
-    <page padding="true" id="poDetails" path="/poDetails" title="Purchase Order" controller="PODetailsPageController">
+    <page padding="true" id="poDetails" path="/poDetails" title="Purchase Order" controller="PoPageController">
       <states id="m6prr">
         <state name="itemToOpen" value="" type="string" id="b4m94"/>
         <state name="isWorkLogEdit" value="false" type="boolean" id="a35v3"/>
         <state name="chatLogLoading" value="false" type="boolean" id="vwqww"/>
-        <state name="workLogGroupData" value="object"/>
-        <state name="commLogGroupData" value="object"/>
+        <state name="workLogGroupData" type="object" id="n8zk3"/>
+        <state name="commLogGroupData" type="object" id="v_d3x"/>
       </states>
-      <maximo-datasource id="poDetailResource" default="true" object-structure="mxapipo" controller="PODetailsDataController" where="ponum=&quot;{page.params.ponum}&quot;" cache-expiry-ms="1" item-url="{page.params.href}">
+      <maximo-datasource id="poDs" default="true" object-structure="mxapipo" controller="PoDataController" where="ponum=&quot;{page.params.ponum}&quot;" cache-expiry-ms="1" item-url="{page.params.href}">
         <schema id="na2_d">
           <attribute name="ponum" unique-id="true" id="v6bq7"/>
           <attribute name="poid" id="yxyad"/>
@@ -227,14 +227,14 @@
           <attribute name="billto" id="yp365"/>
           <attribute name="billtoattn" id="vvyg8"/>
         </schema>
-        <maximo-datasource id="poDetailLineDs" selection-mode="none" relationship="poline" notify-when-parent-loads="true" depends-on="poDetailResource" cache-expiry-ms="1">
+        <maximo-datasource id="poLineDs" selection-mode="none" relationship="poline" notify-when-parent-loads="true" cache-expiry-ms="1">
           <schema id="wxjx8">
             <attribute name="polinenum" unique-id="true" id="x74rz"/>
             <attribute name="itemnum" id="z8_pj"/>
             <attribute name="description" id="gydq6"/>
             <attribute name="requestedby" id="y24g8"/>
             <attribute name="linecost" id="eq25_"/>
-            <attribute name="quantity" id="q2pb4"/>
+            <attribute name="orderqty" id="q2pb4"/>
             <attribute name="linetype" id="bberg"/>
             <attribute name="orderunit" id="j5r8x"/>
             <attribute name="unitcost" id="ekme5"/>
@@ -247,10 +247,11 @@
             <attribute name="gldebitacct" id="vvngd"/>
           </schema>
         </maximo-datasource>
-        <maximo-datasource id="workLogDs" selection-mode="none" order-by="createdate" relationship="worklog" where="recordkey=&quot;{page.params.ponum}&quot; and siteid=&quot;{page.params.siteid}&quot;" notify-when-parent-loads="true" cache-expiry-ms="1">
+        <maximo-datasource id="workLogDs" selection-mode="none" order-by="createdate" relationship="worklog" object-structure="worklog" where="recordkey=&quot;{page.params.ponum}&quot; and class=&quot;PO&quot;" notify-when-parent-loads="true" cache-expiry-ms="1">
           <schema id="xbxwa">
             <attribute name="createdate" id="w7dgp"/>
             <attribute name="description" id="q99gk"/>
+            <attribute name="class" id="v3dr3"/>
             <attribute name="description_longdescription" id="rjgbp"/>
             <attribute name="person.displayname--displayname" id="pvnqz"/>
             <attribute name="createby" id="g99r3"/>
@@ -259,6 +260,21 @@
             <attribute name="clientviewable" id="m7w3x"/>
             <attribute name="recordkey" id="bx_z_"/>
             <attribute name="worklogid" unique-id="true" id="zvy5y"/>
+          </schema>
+        </maximo-datasource>
+        <maximo-datasource id="commLogDs" selection-mode="none" relationship="commlog" notify-when-parent-loads="true" cache-expiry-ms="1">
+          <schema id="nbg6y">
+            <attribute name="commlogid" unique-id="true" id="e2yb4"/>
+            <attribute name="createby" id="xgq99"/>
+            <attribute name="createdate" id="rw3_x"/>
+            <attribute name="inbound" id="q8bne"/>
+            <attribute name="message" id="qzye6"/>
+            <attribute name="orgapp" id="nnx2_"/>
+            <attribute name="orgname" id="wxy35"/>
+            <attribute name="orgobject" id="b477m"/>
+            <attribute name="ownerid" id="mq93m"/>
+            <attribute name="ownertable" id="xgpd9"/>
+            <attribute name="sendfrom" id="d66xz"/>
           </schema>
         </maximo-datasource>
       </maximo-datasource>
@@ -275,28 +291,28 @@
         </schema>
       </maximo-datasource>
       <dialogs id="poDetailsDialogList">
-        <dialog id="underConstructionDialog" title="Under Construction!" passive="true" size="lg">
-          <label label="This link is under construction! Check back in later." wrap="true" id="z2r8w"/>
-        </dialog>
         <dialog id="longDescDialog" title="Long Description" passive="true" size="lg">
-          <rich-text-viewer content="{poDetailResource.item.description_longdescription}" stripped="true" id="rd_4m"/>
+          <rich-text-viewer content="{poDs.item.description_longdescription}" stripped="true" id="rd_4m"/>
         </dialog>
         <dialog id="revDetailsDialog" title="Revision Comments" passive="true" size="lg">
-          <rich-text-viewer content="{poDetailResource.item.revcomments_longdescription" stripped="true" id="nk48p"/>
+          <rich-text-viewer content="{poDs.item.revcomments_longdescription" stripped="true" id="nk48p"/>
         </dialog>
         <dialog id="saveDiscardWorkLogDetail" title="Save or discard changes?" sm-auto-height="true" size="sm" primary-action-text="Save" on-primary-action="saveWorkLogSaveDiscard" primary-kind="secondary" primary-button-disabled="{page.state.workLogData.sendDisable}" on-secondary-action="closeWorkLogSaveDiscard" secondary-action-text="Discard">
           <label wrap="true" label="To leave this page, you must first discard or save your changes." id="kx5n_"/>
         </dialog>
         <!-- sliding drawers -->
         <sliding-drawer id="workLogDrawer" validate="workLogValidate" align="start" header-text="Work Log" content-padding="false">
-          <chat-log messages="{page.state.workLogGroupData}" default-log-type="{page.state.initialDefaultLogType}" default-log-type-key="value" datasource="synonymdomainData" content-limit="{page.state.workLogDescLength}" log-type-attribute="{['value', 'description']}" on-click="saveWorkLog" loading="{page.state.chatLogLoading}" is-config-btn="true" watch-changes="watchChatLogChanges" id="poDetailsWorkLog"/>
+          <chat-log messages="{page.state.workLogGroupData}" default-log-type="{page.state.initialDefaultLogType}" default-log-type-key="value" datasource="synonymdomainData" content-limit="{page.state.workLogDescLength}" log-type-attribute="{['value', 'description']}" on-click="saveWorkLog" loading="{page.state.chatLogLoading}" is-config-btn="true" watch-changes="watchChatLogChanges" id="workLog"/>
+        </sliding-drawer>
+        <sliding-drawer id="commLogDrawer" align="start" header-text="Communication Log" content-padding="false">
+          <chat-log messages="{page.state.commLogGroupData}" loading="{page.state.chatLogLoading}" content-limit="{page.state.commLogDescLength}" watch-changes="watchChatLogChanges" id="commLog"/>
         </sliding-drawer>
         <!-- lookups -->
         <lookup id="logTypeLookupDetailsPage" show-search="false" lookup-heading="Select log type" show-count="false" datasource="workLogTypeDomain" on-item-click="setPODetailsLogType" border="true" lookup-attributes="{['value', 'description']}" height="400" width="60"/>
       </dialogs>
       <header-template hidden="{page.state.loading}" title-column-width="{app.state.screen.size === 'lg' ? 45 : 60}" id="poDetailsPageHeaderLoading">
-        <button slot="buttons" label="Approve" icon="carbon:checkmark" loading="{page.state.workloading || page.state.transactionProgress}" kind="secondary" on-click="approvePO" on-click-arg="{{'item': poDetailResource.item, 'datasource': poDetailResource.datasource}}" id="poDetailApproveBtn"/>
-        <button slot="buttons" label="Reject" icon="carbon:error" loading="{page.state.workloading || page.state.transactionProgress}" kind="secondary" on-click="rejectPO" on-click-arg="{{'item': poDetailResource.item, 'datasource': poDetailResource.datasource}}" id="poDetailRejectBtn"/>
+        <button slot="buttons" label="Approve" icon="carbon:checkmark" loading="{page.state.workloading || page.state.transactionProgress}" kind="secondary" on-click="approvePO" on-click-arg="{{'item': poDs.item, 'datasource': poDs.datasource}}" id="poDetailApproveBtn"/>
+        <button slot="buttons" label="Reject" icon="carbon:error" loading="{page.state.workloading || page.state.transactionProgress}" kind="secondary" on-click="rejectPO" on-click-arg="{{'item': poDs.item, 'datasource': poDs.datasource}}" id="poDetailRejectBtn"/>
       </header-template>
       <header-template hidden="{!page.state.loading}" id="poDetailsPageHeaderNotLoading">
         <button slot="buttons" loading="true" kind="ghost" id="q9gjd"/>
@@ -305,11 +321,11 @@
         <border-layout fill-parent="true" padding="true" id="q6vjj">
           <middle vertical-align="center" id="exp96">
             <box padding-start="{app.state.screen.size === 'lg' || app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '.5'}" padding-bottom="{app.state.screen.size === 'lg' || app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '-.5' : '1.5'}" padding-top="{app.state.screen.size === 'lg' || app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '.5' : '1.5'}" id="wg26q">
-              <wrapped-text size="large" label="{poDetailResource.item.description}" sub-label="{poDetailResource.item.ponum}" truncation-type="end" id="nkra5"/>
+              <wrapped-text size="large" label="{poDs.item.description}" sub-label="{poDs.item.ponum}" truncation-type="end" id="nkra5"/>
             </box>
-            <box id="zmvn4">
-              <field label="Revision" value="{poDetailResource.item.revisionnum}" empty-field-placeholder="0" label-placement="start" id="mgxze"/>
-              <wrapped-text label="{poDetailResource.item.revcomments}" hidden="{!poDetailResource.item.revcomments}" id="mp3j6"/>
+            <box id="zmvn4" fill-parent-horizontal="true">
+              <field label="Revision" value="{poDs.item.revisionnum}" empty-field-placeholder="0" label-placement="start" id="mgxze"/>
+              <wrapped-text label="{poDs.item.revcomments}" hidden="{!poDs.item.revcomments}" id="mp3j6"/>
             </box>
           </middle>
         </border-layout>
@@ -324,33 +340,33 @@
           <start id="z93_4">
             <box fill-parent-horizontal="true" border-bottom="{app.device.isMaximoMobile}" padding-start="1" padding-end="1" padding-top="1" padding-bottom="1" direction="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? 'column' : 'row'}" id="nk_5a">
               <button-group id="gq9yd">
-                <button id="workLogBtn" icon="carbon:document" on-click="openLogDrawer" on-click-arg="{{ 'item': poDetailResource.item, 'drawer': 'workLogDrawer', 'datasource': workLogDs }}" kind="secondary" disabled="{page.state.loading}" hover-tooltip="Work Log"/>
-                <button id="commLogBtn" icon="carbon:" on-click="openLogDrawer" on-click-arg="{{ 'item': poDetailResource.item, 'drawer': 'commLogDrawer' }}" kind="secondary" disabled="{page.state.loading}" hover-tooltip="Comm Log"/>
+                <button id="workLogBtn" icon="carbon:document" on-click="openLogDrawer" on-click-arg="{{ 'item': poDs.item, 'drawer': 'workLogDrawer', 'datasource': workLogDs }}" kind="secondary" disabled="{page.state.loading}" hover-tooltip="Work Log"/>
+                <button id="commLogBtn" icon="carbon:forum" on-click="openLogDrawer" on-click-arg="{{ 'item': poDs.item, 'drawer': 'commLogDrawer', 'datasource': commLogDs }}" kind="secondary" disabled="{page.state.loading}" hover-tooltip="Comm Log"/>
               </button-group>
-              <box direction="column" padding="0" id="epze9">
-                <label label="Long Description" padding="top" color="text-02" theme="14-regular" id="ygzpe"/>
-                <rich-text-viewer content="{poDetailResource.item.description_longdescription}" padding-start="0.5" padding-end="0.5" content-limit="256" stripped="true" id="poDetailsLongDescViewer"/>
-              </box>
-              <button hidden="{!poDetailResource.item.description_longdescription}" padding="false" icon="carbon:maximize" kind="secondary" dialog="longDescDialog" id="poDetailsLongDescBtn"/>
+            </box>
+            <box padding="0" id="epze9" fill-parent-horizontal="true" border-bottom="{app.device.isMaximoMobile}" padding-start="1" padding-end="1" padding-bottom="1" padding-top="1" direction="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? 'column' : 'row' }">
+              <label label="Long Description" padding="top" color="text-02" theme="14-regular" id="ygzpe"/>
+              <rich-text-viewer content="{poDs.item.description_longdescription}" padding-start="0.5" padding-end="0.5" content-limit="256" stripped="true" id="longDescViewer"/>
+              <button hidden="{!poDs.item.description_longdescription}" padding="false" icon="carbon:maximize" kind="secondary" dialog="longDescDialog" id="longDescBtn"/>
             </box>
           </start>
           <middle id="zq9jk">
             <border-layout id="xb8j8">
               <top id="qj4_4">
                 <box id="gg64j">
-                  <label label="Default Table Data" id="gg239"/>
+                  <label label="Default Table Data" theme="20-regular" id="gg239"/>
                 </box>
               </top>
               <middle id="kv6zm">
                 <box id="m285_">
-                  <field label="Work Order" value="{poDetailLineDs.item.wonum}" hidden="{!poDetailLineDs.item.wonum}" id="e63bn"/>
-                  <field label="Asset" value="{poDetailLineDs.item.assetnum}" hidden="{!poDetailLineDs.item.assetnum}" id="nq26p"/>
-                  <field label="Requested By" value="{poDetailLineDs.item.requestedby}" hidden="{!poDetailLineDs.item.requestedby}" id="dxpx_"/>
+                  <field label="Work Order" value="{poLineDs.item.wonum}" hidden="{!poLineDs.item.wonum}" id="e63bn"/>
+                  <field label="Asset" value="{poLineDs.item.assetnum}" hidden="{!poLineDs.item.assetnum}" id="nq26p"/>
+                  <field label="Requested By" value="{poLineDs.item.requestedby}" hidden="{!poLineDs.item.requestedby}" id="dxpx_"/>
                 </box>
                 <box id="jpmgd">
-                  <field label="Location" value="{poDetailLineDs.item.location}" hidden="{!poDetailLineDs.item.location}" id="g5nx8"/>
-                  <field label="Storeroom" value="{poDetailLineDs.item.storeloc}" hidden="{!poDetailLineDs.item.storeloc}" id="bnqwe"/>
-                  <field label="GL Debit Account" value="{poDetailLineDs.item.gldebitacct}" hidden="{!poDetailLineDs.item.gldebitacct}" id="epnxd"/>
+                  <field label="Location" value="{poLineDs.item.location}" hidden="{!poLineDs.item.location}" id="g5nx8"/>
+                  <field label="Storeroom" value="{poLineDs.item.storeloc}" hidden="{!poLineDs.item.storeloc}" id="bnqwe"/>
+                  <field label="GL Debit Account" value="{poLineDs.item.gldebitacct}" hidden="{!poLineDs.item.gldebitacct}" id="epnxd"/>
                 </box>
               </middle>
             </border-layout>
@@ -364,17 +380,17 @@
                   </box>
                 </top>
                 <middle id="rr7q5">
-                  <data-list datasource="poDetailLineDs" width="100" show-search="false" show-count="true" selected-background-color="ui-01" background-color="field-01" on-item-click="openLineDetails" on-item-click-arg="{{'item': item }}" select-all-label="Select all lines" sub-label="No lines" title="PO Lines" id="g2wnv">
-                    <box slot="item" id="nwe49">
-                      <field label="Line" value="{item.polinenum}" id="dnrgg"/>
-                      <field label="Item" value="{item.itemnum}" id="e63ez"/>
-                      <field label="Description" value="{item.description}" id="dz9g9"/>
-                      <field label="Quantity" value="{item.quantity}" hidden="{!item.quantity}" id="gk3kv"/>
-                      <field label="Order Unit" value="{item.orderunit}" id="y4mdy"/>
-                      <field label="Unit Cost" value="{item.unitcost}" id="jd7r2"/>
-                      <field label="Line Cost" value="{item.linecost}" id="mk5x5"/>
-                      <field label="Tax" value="{item.tax1}" id="pgy94"/>
-                      <field label="Distributed?" value="{item.isdistributed}" id="ex2a4"/>
+                  <data-list datasource="poLineDs" width="100" show-search="false" show-count="true" selected-background-color="ui-01" background-color="field-01" on-item-click="showDetails" title="PO Lines" id="g2wnv">
+                    <box slot="item" id="zx94v">
+                      <field label="Line" value="{item.polinenum}" id="gvd_x"/>
+                      <field label="Item" value="{item.itemnum}" id="wpz82"/>
+                      <field label="Description" value="{item.description}" id="wgjgj"/>
+                      <field label="Quantity" value="{item.orderqty}" id="v267r"/>
+                      <field label="Order Unit" value="{item.orderunit}" id="znjdg"/>
+                      <field label="Unit Cost" value="{item.unitcost}" id="jbr_2"/>
+                      <field label="Line Cost" value="{item.linecost}" id="ngrzp"/>
+                      <field label="Tax" value="{item.tax1}" id="q_2g_"/>
+                      <field label="Distributed?" value="isdistributed" id="m6d6p"/>
                     </box>
                   </data-list>
                 </middle>
@@ -385,8 +401,8 @@
       </box>
       <box direction="column" id="poDetailsNavigatorBox">
         <navigator width="100%" theme="ui-05" mode="list" fade-background-color="false" id="nn8nd">
-          <navigator-tile tile-label="Attachments" pictogram="maximo:document--attachments" onclick-action="showAttachmentPage" onclick-action-arg="{{'item':poDetailResource.item}}" badge-value="{app.state.doclinksCount}" badge-type="dark-gray" id="poDetailsAttachmentsTile"/>
-          <navigator-tile tile-label="Revision History" onclick-action="openRevisionHistory" onclick-action-arg="{{'item': poDetailResource.item}}" id="poDetailsRevHistoryTile"/>
+          <navigator-tile tile-label="Attachments" pictogram="maximo:document--attachments" onclick-action="showAttachmentPage" onclick-action-arg="{{'item':poDs.item}}" badge-value="{app.state.doclinksCount}" badge-type="dark-gray" id="poDetailsAttachmentsTile"/>
+          <navigator-tile tile-label="Revision History" onclick-action="openRevisionHistory" onclick-action-arg="{{'item': poDs.item}}" id="poDetailsRevHistoryTile"/>
         </navigator>
       </box>
       <border-layout width="100%" padding="true" id="poDetailsPageFooter">
@@ -395,13 +411,13 @@
             <adaptive-column id="re29k">
               <box direction="column" id="xg45q">
                 <label label="Order Date" id="mzrxk"/>
-                <label label="{poDetailResource.item.orderdate}" id="kby6p"/>
+                <label label="{poDs.item.orderdate}" id="kby6p"/>
               </box>
             </adaptive-column>
             <adaptive-column id="w73j8">
               <box direction="column" id="w97x4">
                 <label label="Requested By" id="k2y4d"/>
-                <label label="{poDetailLineDs.item.requestedby}" id="bp4n8"/>
+                <label label="{poLineDs.item.requestedby}" id="bp4n8"/>
               </box>
             </adaptive-column>
           </adaptive-row>
