@@ -12,32 +12,10 @@ import { log, Device } from '@maximo/maximo-js-api';
  * IBM Corp.
  */
 
-/**
- * Return System Property Value 
- * @param {Application} app application object
- * @param {String} systemPropName system property Name.
- */
-const getSystemProp = (app, systemPropName) => {
-    return app.state?.systemProp?.[systemPropName];
-};
 
-/**
- * Return true if system property value is same as expected value else return false 
- * @param {Application} app application object
- * @param {String} systemPropName system property name.
- * @param {String} propValue system property expected value. default value is 1
- */
-const checkSystemProp = async (app, systemPropName, propValue = "1") => {
-    return app.state?.systemProp?.[systemPropName] === propValue;
-}
+const getSystemProp = (app, systemPropName) => { return app.state?.systemProp?.[systemPropName]; };
+const checkSystemProp = async (app, systemPropName, propValue = "1") => { return app.state?.systemProp?.[systemPropName] === propValue; }
 
-/**
- * Return true of false base on allowed property 
- * @param {Application} app application object
- * @param {String} systemPropName system property name for physical Sig.
- * @param {String} statusComp Complete Status name from maximo properties.
- * @param {Boolean} returnType Type of returning value , returnType True will return true/false, returnType false will return 1 or 0
- */
 const checkSysPropArrExist = async (app, systemPropName, statusComp, returnType = true) => {
     const sigCheck = await getSystemProp(app, systemPropName);
     const allowedSignature = sigCheck? sigCheck.split(',').map((status) => status.trim()): [];
@@ -49,13 +27,6 @@ const checkSysPropArrExist = async (app, systemPropName, statusComp, returnType 
     }
 }
 
-/**
- * Return the list of work order status list which is defined in synonymdomain table. 
- * if data already present in state "offlineStatusList" it will prevent repetative calls of synonymdomain
- * @param {app} app application object
- * @param {orgId} orgId Organization Id
- * @param {siteId} siteId Site Id
- */
 const getOfflineStatusList = async (app, orgId, siteId) => {
     let filteredDomainValues = [];
     const synonymDomainsDS = app.findDatasource('synonymdomainData');
@@ -93,11 +64,7 @@ const getOfflineStatusList = async (app, orgId, siteId) => {
 
     
 }
-/**
- * Return List of allowed status based on current status
- * @param {statusList} statusList list of offline status
- * @param {event} event datasource event object
-*/
+
 const getOfflineAllowedStatusList = async (app, event) => {
     const statusList = await getOfflineStatusList(app, event.item.orgid, event.item.siteid);
     const statusArr = [];
@@ -145,11 +112,6 @@ const _resetDataSource = (ds) =>{
   ds.resetState();
 }
 
-/**
- * To filter mobile maxvar for a given varname in order of SITE, ORG, SYSTEM hierarchy
- * @param {varname} of maxvars for mobile
- * @param {defDS} is defaultSetDs - Datasource
- */
 const filterMobileMaxvars = (varname, defDS) => {
   const typeHierarchy = ["SITE", "ORG", "SYSTEM"];
   let MaxVar = [];
@@ -164,13 +126,6 @@ const filterMobileMaxvars = (varname, defDS) => {
   return MaxVar;
 }
 
-// Assisted by watsonx Code Assistant 
-/**
- * Returns the confirm dialog label.
- * @param {object} app - The application object.
- * @param {object} config - The configuration object.
- * @param {array} dynamicLabel - The dynamic label array.
- */
 const getConfirmDialogLabel = (app, config, dynamicLabel = []) => {
   app.state.confirmDialog = {
     title: config.title ? app.getLocalizedLabel(config.title.label, config.title.value) : '',
@@ -186,6 +141,34 @@ const getConfirmDialogLabel = (app, config, dynamicLabel = []) => {
     onCloseClick: config.onCloseClick
   }
   sharedData.showConfirmDialog = true;
+}
+
+const approvePO = (app, page, limits, ds, item) => {
+	
+	let totalPoLimit = 0;
+	limits.forEach((lim) => {
+		log.i(lim.groupname, lim.polimit);
+		totalPoLimit += lim.polimit;
+	})
+	// disable/error on exceeded limit
+	
+	// get polines
+	
+	// check receipttolerance, receipttolqty, & receipttolamt 
+	
+	// maximum allowed qty = ordered qty + received qty 
+	
+	// warning message if user entry > max qty
+	
+	// if checks passed, change status to APPR?
+}
+
+const rejectPO = (app, page, ds, item) => {
+	// open rejection dialog
+	
+	// check that message was saved 
+	
+	// reject 
 }
 
 const clearSharedData = (propertyName) => {
@@ -212,8 +195,10 @@ const functions = {
     _resetDataSource,
     filterMobileMaxvars,
     getConfirmDialogLabel,
+	approvePO,
+	rejectPO,
     clearSharedData,
-    sharedData,
+    sharedData
 };
   
 export default functions;

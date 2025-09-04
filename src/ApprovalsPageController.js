@@ -125,48 +125,14 @@ onAfterLoadData(){
 
   async approvePO(event) {
     this.page.state.loading = true;
-	
-	await CommonUtil.approvePO()
+	let limits = await this.app.callController("getUserLimits");
+	await CommonUtil.approvePO(this.app, this.page, limits, 'assignedpoDS', event);
 	
   }
 
   async rejectPO(event) {
-    this.page.state.poItem = event.item;
     this.page.state.loading = true;
-    this.page.state.disableDoneButton = false;
-    this.page.state.appVar = this.app;
-    this.page.state.referenceDS = event.datasource;
-    this.page.state.referencePage = event.referencePage;
-    this.page.state.currentItem = event.item.ponum;
-    this.page.state.statusDialog = "rejectPO";
-
-    let podetails = this.app.findDatasource("poDetailds");
-    let statusLstDS = this.page.datasources["rejectList"];
-    statusLstDS?.clearSelections();
-
-    const rejectDS = this.page.findDatasource("rejectList");
-    //istanbul ignore else
-    if(!rejectDS?.items?.length) {
-      let dnewreadingDS = this.app.findDatasource("alnDomainDS");
-      await dnewreadingDS.initializeQbe();
-      dnewreadingDS?.setQBE('domainid', '=', 'POREJECT');
-      await dnewreadingDS?.searchQBE();
-      
-      if(dnewreadingDS.items) {
-        await statusLstDS.load({ src: [...dnewreadingDS.items], noCache: true });
-      }
-    }
-    this.page.state.rejectHeader = this.app.getLocalizedLabel(
-      "reject_header",
-      "Reject Purchase Order"
-    );
-    this.page.state.rejectSubHeader = this.app.getLocalizedLabel(
-      "reject_subheader",
-      "Select the rejection code"
-    );
-
-    await this.app.showDialog("rejectPO");
-    this.app.state.showLoaderOnAllPO = this.page.state.loading = false;
+	await CommonUtil.rejectPO(this.app, this.page, 'assignedpoDS', event);
   }
 
   updateSignaturePrompt(selected_status_is_inprg) {

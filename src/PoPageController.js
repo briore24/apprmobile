@@ -324,8 +324,17 @@ class PoPageController {
   }
 
   async openLineDetails() {}
-  async approvePO() {}
-  async rejectPO() {}
+  
+  async approvePO(event) {
+	  this.page.state.loading = true;
+	  let limits = await this.app.callController("getUserLimits");
+	  await CommonUtil.approvePO(this.app, this.page, limits, 'poDs', event);
+  }
+  
+  async rejectPO(event) {
+	  this.page.state.loading = true;
+	  await CommonUtil.rejectPO(this.app, this.page, 'poDs', event);
+  }
 
   async onUpload(manual = true) {
     if (manual && CommonUtil.sharedData.newPageVisit) {
@@ -371,9 +380,7 @@ class PoPageController {
 
   onUpdateDataFailed() { this.saveDataSuccessful = false; }
 
-  onAfterLoadData() {
-    log.i(TAG, "afterLoadData");
-  }
+  onAfterLoadData() { log.i(TAG, "afterLoadData"); }
 
   _closeAllDialogs(page) {
     if (page?.dialogs?.length) {

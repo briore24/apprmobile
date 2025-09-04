@@ -20,6 +20,7 @@ const TAG = 'ApprovalsApp';
 class AppController {
   applicationInitialized(app) {
     this.app = app;
+	this.orgid = app.client?.userInfo?.defaultOrg;
        
     this.setupIncomingContext();    
     // Going back to list page from detail page
@@ -37,6 +38,7 @@ class AppController {
     if (!Device.get().isMaximoMobile) {
       commonUtil.getOfflineStatusList(this.app, this.app.client?.userInfo?.insertOrg, this.app.client?.userInfo?.insertSite);
     }
+	// 
     // Set application reference to be used globally
     appResolver.setApplication(app);
   }
@@ -46,6 +48,28 @@ class AppController {
   navigationItemClicked(item) {
     log.t(TAG, 'Clicked item', item);
     this.app.setCurrentPage({name: 'approvals'});
+  }
+  
+  async getUserLimits() {
+	  let userid = this.app.client?.userInfo?.userName;
+	  let orgid = this.app.client?.userInfo?.defaultOrg;
+	  
+	  let securityDs = this.app.findDatasource('securityDS');
+	  securityDs.setQBE('groupuser.userid', '=', userid);
+	  
+	  let groups = await securityDs.searchQBE();
+	  let names = [];
+	  
+	  groups.forEach((group) => {
+		  names.push(group.groupname);
+	  })
+	  
+	  let limitDs = this.app.findDatasource('limitToleranceDS');
+	  limitDs.setQBE('orgid', '=', orgid);
+	  limitDs.setQBE('groupname', 'in', names);
+	  
+	  let limits = await limitDs.searchQBE();
+	  return limits;
   }
   async getOfflinePoStatusList(evt) {
     let statusArr = [];
