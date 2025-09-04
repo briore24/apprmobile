@@ -83,6 +83,10 @@
         <attribute name="authorized" id="b3qd9"/>
         <attribute name="polimit" id="z2bgr"/>
         <attribute name="orgid" id="zpxd2"/>
+		<attribute name="lowerinvoiceamt"/>
+		<attribute name="upperinvoiceamt"/>
+		<attribute name="lowertaxamt"/>
+		<attribute name="highertaxamt"/>
       </schema>
     </maximo-datasource>
   </maximo-datasource>
@@ -130,13 +134,28 @@
             <attribute name="requestedby" id="xdg99"/>
             <attribute name="polinenum" unique-id="true" id="w8383"/>
             <attribute name="linecost" id="p6jpa"/>
+			<attribute name="unitcost"/>
             <attribute name="orderqty" id="g2pmp"/>
             <attribute name="linetype" id="vmbbd"/>
+			<attribute name="receiptreqd"/>
+			<attribute name="receiptscomplete"/>
+			<attribute name="receivedlinecost"/>
             <attribute name="receipttolerance" id="j23wn"/>
             <attribute name="receipttolamt" id="kqvq7"/>
             <attribute name="receipttolqty" id="x5awj"/>
+			<attribute name="receivedtotalcost"/>
+			<attribute name="receivedunitcost"/>
             <attribute name="ponum" id="vpnp2"/>
             <attribute name="revisionnum" id="ew45v"/>
+			<attribute name="amounttoreceive"/>
+			<attribute name="qtytoreceive"/>
+			<attribute name="linecost1"/>
+			<attribute name="linecost2"/>
+			<attribute name="loadedcost"/>
+			<attribute name="loadedcost1"/>
+			<attribute name="orderunit"/>
+			<attribute name="tax1"/>
+			<attribute name="tax1code"/>
           </schema>
         </maximo-datasource>
       </maximo-datasource>
