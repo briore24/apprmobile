@@ -10,7 +10,7 @@
  * IBM Corp.
  */
 
-import { log, Device, ShellCommunicator } from '@maximo/maximo-js-api';
+import { log, Device } from '@maximo/maximo-js-api';
 import CommonUtil from './SharedResources/utils/CommonUtil';
 const TAG = 'PODetailsPageController';
 
@@ -24,27 +24,81 @@ class PODetailsPageController {
     this.saveDataSuccessful = true;
     CommonUtil.sharedData.newPageVisit = true;
   }
+  async openLogDrawer(event) {
+    this.app.state.chatLogLoading = true;
+    this.page.state.item = event.item;
+    let drawer = event.drawer;
+    let groupData; 
 
-  async openWorkLogDrawer(event) {
-    await CommonUtil.openWorkLogDrawer(this.app, this.page, event, this.page.findDatasource("poDetailWorkLogDs"), "poDetailWorkLogDrawer");
-  }
+    let logDS = this.page.findDatasource(event.datasource);
 
-  openRevisionHistory(item) {
-    console.log('this is still under construction!');
-  }
-
-  navigateToLine(item) {
-    console.log('this is still under construction!');
-    /*
-    if (item?.ponum) {
-      this.app.setCurrentPage({
-        name: 'lines', 
-        params: { ponum: item.ponum, href: item.href },
-      });
-      this.page.state.navigateToLinePage = true;
+    logDS.clearState();
+    logDS.resetState();
+    const synonymDs = this.app.findDatasource("synonymdomainData");
+    await logDS.load().then((response) => {
+      switch(drawer) {
+        case 'commLogDrawer':
+          groupData = this.page.state.commLogGroupData;
+        case 'workLogDrawer':
+          groupData = this.page.state.workLogGroupData;
+      }
+      groupData = response;
+    });
+    if (Device.get().isMaximoMobile && logDS.options.query.relationship) {
+      logDS.schema = logDS.dependsOn.schema.properties[
+        Object.entries(logDS.dependsOn.schema.properties).filter(
+          (item) =>
+            item[1].relation && item[1].relation.toUpperCase() === logDS.options.query.relationship.toUpperCase()
+        ).map((obj) => obj[0])[0]
+      ].items;
     }
-      */
+    switch(drawer) {
+      case 'commLogDrawer':
+        break;
+      case 'workLogDrawer':
+        let schemaLogType = logDS.getSchemaInfo("logtype");
+        let schemaDesc = logDS.getSchemaInfo("description");        
+        let orgID = this.app.client?.userInfo?.insertOrg;
+        let siteID = this.app.client?.userInfo?.insertSite;
+        let logType;
+        if (schemaLogType) {
+          logType = schemaLogType.default?.replace(/!/g, "");
+        }
+        let filteredLogTypeList;
+        synonymDs.setQBE("domainid", "=", "LOGTYPE");
+        synonymDs.setQBE("orgid", orgID);
+        synonymDs.setQBE("siteid", siteID);
+        filteredLogTypeList = await synonymDs.searchQBE();
+        if (filteredLogTypeList.length < 1) {
+          synonymDs.setQBE("siteid", "=", "null");
+          filteredLogTypeList = await synonymDs.searchQBE();
+        }
+        if (filteredLogTypeList.length < 1) {
+          synonymDs.setQBE("orgid", "=", "null");
+          filteredLogTypeList = await synonymDs.searchQBE();
+        }
+        this.page.state.defaultLogType = "!CLIENTNOTE!";
+
+        const logItem = synonymDs.items.find((item) => {
+          return item.maxvalue === logType && item.defaults;
+        })
+
+        const logValue = logItem ? `!${logItem.value}!` : schemaLogType.default;
+        this.page.state.defaultLogType = this.page.state.initialDefaultLogType = logValue;
+
+        if (schemaDesc) {
+          this.page.state.workLogDescLength = schemaDesc.maxLength;
+        }
+        break;
+    }
+    this.page.state.chatLogLoading = false;
+    this.page.showDialog(drawer);
   }
+
+  onAfterLoadData(){
+    log.i(TAG, 'data loaded on details page!');
+  }
+
 
   async pageResumed(page, app) {
     CommonUtil.sharedData.newPageVisit = true;
@@ -52,18 +106,18 @@ class PODetailsPageController {
     page.state.historyDisable = false;
     page.state.isMobile = Device.get().isMaximoMobile;
     const poDetailResource = page.datasources['poDetailResource'];
-	
-	await poDetailResource?.load({ noCache: true, itemUrl: page.params.href });
-
+	  await poDetailResource?.load({ noCache: true, itemUrl: page.params.href });
     const device = Device.get();
 
     page.state.loadedLog = true;
+    page.params.href = page.params.href || page.params.itemhref;
     // page.state.lineLoading = true;
     // offline mode sync
     if (this.page.state.disConnected && this.app.state.networkConnected && this.app.state.refreshOnSubsequentLogin !== false) {
       await poDetailResource?.load({
         noCache: true,
         forceSync: true,
+        itemURL: page.params.href
       });
       this.page.state.disConnected = false;
     } 
@@ -92,7 +146,6 @@ class PODetailsPageController {
 
     let ponum = this.page.datasources['poDetailResource']?.item.ponum;
     page.state.editDetails = !['CAN', 'CLOSE'].includes(this.page.datasources['poDetailResource']?.item?.status_maxvalue);
-    page.state.editPo = !['CAN'].includes(this.page.datasources['poDetailResource']?.item?.status_maxvalue);
 
     if (!app.state.doclinksCountData) {
       app.state.doclinksCountData = {};
@@ -102,13 +155,10 @@ class PODetailsPageController {
         ? poDetailResource.item?.doclinks?.member?.length
         : poDetailResource?.item.doclinkscount;
     }
-
     //Reload the attachment list
     if (device.isMaximoMobile) {
       let poDetailResource = page.datasources['poDetailResource'];
       await poDetailResource.forceReload();
-
-      poDetailResource.item.relatedrecordcount = poDetailResource.item.relatedrecordcount;
 
       app.state.doclinksCountData[ponum] = poDetailResource.item.doclinks ?
         poDetailResource.item.doclinks?.member?.length
@@ -130,7 +180,6 @@ class PODetailsPageController {
     this.app.state.purchaseOrderStatus = poDetailResource?.item?.status;
   }
 
-// update signature prompt based on system property
   updateSignaturePrompt() {
     let allowedSignatureSystemProp = this.app.state?.systemProp?.["maximo.mobile.statusforphysicalsignature"];
     if (allowedSignatureSystemProp) {
@@ -146,16 +195,11 @@ class PODetailsPageController {
   }
 
   async pagePaused() {
-	this.page.findDialog('openChangeStatusDialog')?.closeDialog();
-    this.page.findDialog('poDetailWorkLogDrawer')?.closeDialog();
-	
+	  this.page.findDialog('openChangeStatusDialog')?.closeDialog();
+    this.page.findDialog('workLogDrawer')?.closeDialog();
     this.app?.findPage("approvals")?.findDialog('poStatusChangeDialog')?.closeDialog();
-    this.app?.findPage("approvals")?.findDialog('rejectPO')?.closeDialog();
   }
-  /**
-  * Validate before closing sliding drawer.
-  * @param {validateEvent} validateEvent
-  */
+
   workLogValidate(validateEvent) {
     if (this.page.state.isWorkLogEdit) {
       validateEvent.failed = true;
@@ -174,12 +218,9 @@ class PODetailsPageController {
 
   // calls when discard button chosen on save discard prompt
   closeWorkLogSaveDiscard() { 
-	this.page.findDialog('poDetailWorkLogDrawer')?.closeDialog(); 
+	this.page.findDialog('workLogDrawer')?.closeDialog(); 
   }
-  /**
-  * This method is called when any changes done on work log screen and return value as Object with all field value.
-  * @param {value} value
-  */
+
   watchChatLogChanges(value) {
     // Clear Debounce Timeout
     clearTimeout(this.page.state.workLogChangeTimeout);
@@ -200,15 +241,68 @@ class PODetailsPageController {
   }
 
   async saveWorkLog(value, directSave = false) {
-    await CommonUtil.saveWorkLog(this.app, this.page, this.page.findDatasource('poDetailWorkLogDs'), 'poDetailWorkLogDrawer', value, directSave);
+    let summary = value.summary;
+    let longDesc = value.longDescription;
+    let personID = this.app.client?.userInfo?.personid;
+    let workLogDs = this.page.findDatasource("workLogDs");
+    let id = value.messages.currentItem.worklogid + 1;
+    let logType = value.logType?.value || this.page.state.defaultLogType || workLogDs.getSchemaInfo("logtype")?.default;
+
+    let workLog = {
+      description: summary,
+      description_longdescription: longDesc,
+      createdate: new Date(),
+      createby: personID,
+      logtype: logType,
+      anywherefid: new Date().getTime(),
+      clientviewable: value.visibility,
+      worklogid: id
+    }
+    let options = {
+      responseProperties: "anywherefid,createdate,description,description_longdescription,createby,logtype,worklogid",
+      localPayload: {
+        createby: personID,
+        createdate: new Date(),
+        description: summary,
+        description_longdescription: longDesc,
+        logtype: logType,
+        anywherefid: workLog.anywherefid,
+        worklogid: id
+      }
+
+    };
+    let response;
+
+    if (directSave) {
+      workLogDs.on('update-data-failed', this.onUpdateDataFailed);
+      response = await workLogDs.update(workLog, options);
+      if (response) {
+        workLogDs.off('update-data-failed', this.onUpdateDataFailed);
+      }
+      return;
+    }
+
+    this.app.userInteractionManager.drawerBusy(true);
+    this.page.state.chatLogLoading = true;
+    this.saveDataSuccessful = true;
+    workLogDs.on('update-data-failed', this.onUpdateDataFailed);
+    response = await workLogDs.update(workLog, options);
+    if(response) {
+      workLogDs.off('update-data-failed', this.onUpdateDataFailed);
+    }
+    this.page.state.workLogGroupData = await workLogDs.forceReload();
+    this.app.userInteractionManager.drawerBusy(false);
+    this.page.state.chatLogLoading = false;
+
+    let schemaLogType = workLogDs.getSchemaInfo('logtype');
+    if (schemaLogType) {
+      this.page.state.defaultLogType = schemaLogType.default;
+    }
+    if(this.saveDataSuccessful) {
+      this.page.showDialog("workLogDrawer");
+    }
   }
 
-  /*
-   * Method to open the Change Status slider-drawer.
-   * @param event should contain
-   * item - The Work Order selected.
-   * datasource - The Datasource for synonymdomain.
-   */
   async openPoDtlChangeStatusDialog(event) {
     log.t(
       TAG,
@@ -233,75 +327,10 @@ class PODetailsPageController {
     }
   }
 
-  /**
-   * Opens the Reject Work Order dialog
-   * @param {Event} event - The event that triggered the action
-   */
-  openPoDtlRejectPoDialog(event) {
-    log.t(
-      TAG,
-      'openRejectDialog : event --> ' +
-      event.datasource +
-      ' ponum --> ' +
-      event.item.ponum
-    );
+  async openLineDetails() {}
+  async approvePO() {}
+  async rejectPO() {}
 
-    let schedulePage = this.app.pages.find((element) => {
-      // istanbul ignore else
-      if (element.name === 'approval') {
-        return element;
-      } else {
-        return '';
-      }
-    });
-    //istanbul ignore else
-    if (schedulePage && schedulePage !== '') {
-      schedulePage.callController('rejectPO', event);
-      this.page.state.navigateToSchedulePage = true;
-    }
-  }
-
-  //istanbul ignore next
-  async approvePO(event) {
-    log.t(TAG,
-      'approvePO : event --> ' +
-      event.datasource +
-      ' ponum --> ' +
-      event.item.ponum
-    );
-
-    // check user limits
-	
-	// check contract reference
-	
-	// set status to APPR & return to approvals list page
-  }
-
-
-async rejectPO(event) {
-	log.t(TAG,
-	'rejectPO : event --> ' + 
-	event.datasource + 
-	'ponum --> ' +
-	event.item.ponum
-	);
-	
-	// open rejection sliding drawer
-	
-	// check for comment save
-	
-	// change status & return to approvals list page
-	
-}
-
-  async openLineDetails(item) {
-	  
-  };
-
-  /**
-* This method invokes complete work API once image is uploaded.
-*/
-  //istanbul ignore next
   async onUpload(manual = true) {
     if (manual && CommonUtil.sharedData.newPageVisit) {
       CommonUtil.sharedData.newPageVisit = false;
@@ -349,45 +378,6 @@ async rejectPO(event) {
   _closeAllDialogs(page) {
     if (page?.dialogs?.length) {
       page.dialogs.map((dialog) => page.findDialog(dialog.name).closeDialog());
-    }
-  }
-
-  async handleDeleteTransaction(event) {
-    if (
-      event.app === this.app.name &&
-      (this.app.currentPage.name === this.page.name ||
-        this.app.lastPage.name === this.page.name)
-    ) {
-      const poDetailResource = this.page.datasources['poDetailResource'];
-      //See of the detail page's record is the same one that had the transaction deleted.
-      /* istanbul ignore else */
-      if (poDetailResource?.currentItem?.href === event.href) {
-        let records = await poDetailResource.load({
-          noCache: true,
-          itemUrl: poDetailResource.currentItem.href,
-        });
-
-        //If no record was returned then the work order was removed so redirect the user to the schedule page.
-        /* istanbul ignore else */
-        if (!records || records.length === 0) {
-          this._closeAllDialogs(this.page);
-          const schPage = 'approvals';
-          this.app.setCurrentPage({ name: schPage, resetScroll: true });
-        }
-      } else if (
-        this.app.currentPage.name !== this.page.name &&
-        this.app.currentPage?.getMainDatasource()?.currentItem?.href === event.href
-      ) {
-        await this.app.currentPage
-          .getMainDatasource()
-          .load({ noCache: true, itemUrl: event.href });
-      }
-
-      let schedPage = this.app.findPage("approvals");
-      // istanbul ignore if
-      if (schedPage) {
-        await this.app.findDatasource(schedPage.state.selectedDS).forceReload();
-      }
     }
   }
 

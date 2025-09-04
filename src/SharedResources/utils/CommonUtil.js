@@ -124,13 +124,11 @@ const getOfflineAllowedStatusList = async (app, event) => {
 */
 const isAllowedStatus = (from, to) => {
     let transitionMatrix = {
-      WAPPR: ['COMP','WAPPR','CAN','INPRG','WSCH','CLOSE','WMATL','APPR'],
-      WPCOND: ['COMP','WAPPR','CAN','INPRG','WSCH','CLOSE','WMATL','APPR'],
-      APPR: ['COMP','WAPPR','CAN','INPRG','WSCH','CLOSE','WMATL','APPR'],
-      WSCH: ['COMP','WAPPR','CAN','INPRG','WSCH','CLOSE','WMATL','APPR'],
-      WMATL: ['COMP','WAPPR','CAN','INPRG','CLOSE','WMATL'],
-      INPRG: ['COMP', 'WAPPR','INPRG','CLOSE','WMATL'],
-      COMP: ['COMP', 'CLOSE'],
+      WAPPR: ['WAPPR','CAN','INPRG','CLOSE','APPR','HOLD','PNDREV','REVISE'],
+      APPR: ['WAPPR','CAN','INPRG','CLOSE',,'APPR','HOLD','PNDREV','REVISE'],
+      INPRG: ['WAPPR','INPRG','CLOSE','HOLD','PNDREV','REVISE'],
+      HOLD: ['WAPPR','CAN','INPRG','CLOSE','HOLD','PNDREV','REVISE'],
+      PNDREV: ['WAPPR','REVISE','CLOSE','HOLD','CAN','PNDREV'],
       CLOSE: ['CLOSE'],
       CAN: ['CAN']
     };
@@ -166,162 +164,6 @@ const filterMobileMaxvars = (varname, defDS) => {
   return MaxVar;
 }
 
-/**
- * Common Function to open a sliding-drawer dialog to show Work Log for the purchase Order at Schedule & poDetails Page
- * @param {Application} app The application
- * @param {page} page - page name
- * @param {event} event - event containing information about current item
- * @param {workLogDS} is workLogDS - poWorklogDs from poDetails Page & poWorklogDs from Schedule Page
- * @param {drawerName} is drawer names for poDetails & Schedule Page
- */
-const openWorkLogDrawer = async (app, page, event, workLogDS, drawerName) => {
-  // Initialized Loader on Button when Work Log Drawer Icon Clicked
-  app.state.chatLogLoading = true;
-  const orgId = app.client?.userInfo?.insertOrg;
-  const siteId = app.client?.userInfo?.insertSite;
-  
-  workLogDS.clearState();
-  workLogDS.resetState();
-  
-  await workLogDS.load().then((response) => {
-    page.state.chatLogGroupData = response;
-  });
-
-  // get work log schema 
-  if (Device.get().isMaximoMobile && workLogDS.options.query.relationship) {
-    workLogDS.schema =
-      workLogDS.dependsOn.schema.properties[
-        Object.entries(workLogDS.dependsOn.schema.properties)
-          .filter(
-            (item) =>
-              item[1].relation &&
-              item[1].relation.toUpperCase() ===
-              workLogDS.options.query.relationship.toUpperCase()
-          )
-          .map((obj) => obj[0])[0]
-      ].items;
-  }
-
-  let schemaLogType = workLogDS.getSchemaInfo("logtype");
-  let schemaDescription = workLogDS.getSchemaInfo("description");
-  let logTypeValue;
-  //istanbul ignore else
-  if (schemaLogType) {
-    logTypeValue = schemaLogType.default?.replace(/!/g, "");
-  }
-  // Filter Logtype data from synonydomain Datasource which passed in Chat-log Component
-  const synonymDs = app.findDatasource("synonymdomainData")
-  let filteredLogTypeList;
-  // Initalized QBE with Org and Site
-  synonymDs.clearState();
-  await synonymDs.initializeQbe();
-  synonymDs.setQBE("domainid", "=", "LOGTYPE");
-  synonymDs.setQBE('orgid', orgId);
-  synonymDs.setQBE('siteid', siteId);
-  filteredLogTypeList = await synonymDs.searchQBE();
-
-  // istanbul ignore if
-  if (filteredLogTypeList.length < 1) {
-    synonymDs.setQBE('siteid', '=', 'null');
-    filteredLogTypeList = await synonymDs.searchQBE(); 
-  }
-
-  // istanbul ignore if
-  if (filteredLogTypeList.length < 1) {
-    synonymDs.setQBE('orgid', '=', 'null');
-    filteredLogTypeList = await synonymDs.searchQBE();
-  }
-
-  page.state.workLogItem = event.item;
-  page.state.defaultLogType = "!CLIENTNOTE!";
-
-  const logItem = synonymDs.items.find((item) => {
-    return item.maxvalue === logTypeValue && item.defaults;
-  });
-  const logValue = logItem ? `!${logItem.value}!` : schemaLogType.default;
-  page.state.defaultLogType = page.state.initialDefaultLogType = logValue;
-
-  // set max length from schema info 
-  if (schemaDescription) {
-    page.state.chatLogDescLength = schemaDescription.maxLength;
-  }
-
-  page.state.chatLogLoading = false;
-  page.showDialog(drawerName)
-}
-
-const saveWorkLog = async (app, page, datasource, drawer, value, directSave) => {
-	let summary = value.summary;
-	let longDesc = value.longDescription;
-	let personId = app.client.userInfo.personid;
-	let logType = value.logType?.value || page.state.defaultLogType || datasource.getSchemaInfo("logtype")?.default;
-	let saveDate = new Date();
-	let refid = new Date().getTime();
-	
-	let workLogDS = datasource;
-	
-	let workLog = {
-		description: summary,
-		description_longdescription: longDesc,
-		createdate: saveDate,
-		createby: personId,
-		logtype: logType,
-		anywherefid: refid,
-		clientviewable: value.visibility
-	};
-	
-	let options = {
-		responseProperties: "anywherefid,createdate,description,description_longdescription,createby,logtype",
-		localPayload: {
-			createby: personId,
-			createdate: saveDate,
-			description: summary,
-			description_longdescription: longDesc,
-			logtype: logType,
-			anywherefid: workLog.anywherefid
-		}
-	};
-	let response;
-
-  if (directSave) {
-    workLogDS.on('update-data-failed', page.onUpdateDataFailed);
-    response = await workLogDS.update(workLog, option);	
-    if (response) {
-		  datasource.off("update-data-failed", page.onUpdateDataFailed);
-		  console.log(response);
-	  }
-    return;
-  }
-  try {
-    app.userInteractionManager.drawerBusy(true);
-    page.state.chatLogLoading = true;
-    page.saveDataSuccessful = true;
-
-    workLogDS.on('update-data-failed', page.onUpdateDataFailed);
-    response = await workLogDS.update(workLog, option);
-
-    if (response) {
-      workLogDS.off('update-data-failed', page.onUpdateDataFailed);
-    }
-    
-    page.state.chatLogGroupData = await workLogDS.forceReload();
-  } catch {
-
-  } finally {
-    app.userInteractionManager.drawerBusy(false);
-    page.state.chatLogLoading = false;
-
-    let schemaLogType = datasource.getSchemaInfo('logtype');
-    if (schemaLogType) {
-      page.state.defaultLogType = schemaLogType.default;
-    }
-  }
-
-  if (page.saveDataSuccessful) {
-    page.showDialog(drawer);
-  }
-}
-
 // Assisted by watsonx Code Assistant 
 /**
  * Returns the confirm dialog label.
@@ -352,26 +194,6 @@ const clearSharedData = (propertyName) => {
   }
 }
 
-const approvePO = async (app, page, item) => {
-	// check user security groups
-	
-	// check po limits
-	
-	// check lines
-	
-	// approve record 
-	
-	// return to approvals page
-}
-
-const rejectPO = async (app, page, item) => {
-	// open rejection drawer & wait for comment
-	
-	// confirm comment save & reject record
-	
-	// return to approvals page 
-}
-
 // use below variable to share data app wide, note it's const so you can push key name but don't redeclare it
 const sharedData = {
   isCardOpen: false,
@@ -389,8 +211,6 @@ const functions = {
     isAllowedStatus,
     _resetDataSource,
     filterMobileMaxvars,
-    openWorkLogDrawer,
-	saveWorkLog,
     getConfirmDialogLabel,
     clearSharedData,
     sharedData,

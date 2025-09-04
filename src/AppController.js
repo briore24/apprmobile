@@ -32,7 +32,7 @@ class AppController {
     this.setupIncomingContext();    
     // Going back to list page from detail page
     this.app.on('page-changed', (nextPage, prevPage) => {
-      if (prevPage?.name === 'poDetails' && nextPage?.name === 'approvals' && nextPage.state?.previousPage === 'schedulecardlist' && nextPage.state.mapOriginPage === 'podetail') {
+      if (prevPage?.name === 'poDetails' && nextPage?.name === 'approvals') {
         nextPage.callController("openPrevPage");
       }
     });
@@ -158,18 +158,17 @@ class AppController {
         'WAPPR',
         'INPRG',
         'CAN',
-        'WMATL',
-        'COMP',
         'APPR',
         'CLOSE',
-        'WSCH'
+        'PNDREV',
+        'REVISE',
+        'HOLD'
       ],
-      WPCOND: ['APPR', 'CAN', 'CLOSE', 'COMP', 'INPRG', 'WAPPR', 'WMATL', 'WSCH'],
-      APPR: ['APPR', 'INPRG', 'WMATL', 'COMP', 'WAPPR', 'CLOSE', 'CAN', 'WSCH'],
-      WSCH: ['WSCH', 'INPRG', 'WMATL', 'COMP', 'WAPPR', 'CLOSE', 'APPR', 'CAN'],
-      WMATL: ['WMATL', 'INPRG', 'COMP', 'WAPPR', 'CLOSE', 'CAN'],
-      INPRG: ['INPRG', 'WMATL', 'COMP', 'WAPPR', 'CLOSE'],
-      COMP: ['COMP', 'CLOSE'],
+      APPR: ['APPR', 'INPRG', 'WAPPR', 'CLOSE', 'CAN', 'HOLD', 'PNDREV', 'REVISE'],
+      HOLD: ['HOLD', 'INPRG', 'WAPPR', 'CLOSE', 'APPR', 'CAN', 'PNDREV', 'REVISE'],
+      PNDREV: ['PNDREV', 'INPRG', 'REVISE', 'WAPPR', 'CLOSE', 'CAN', 'HOLD'],
+      INPRG: ['INPRG', 'PNDREV', 'REVISE', 'WAPPR', 'CLOSE', 'HOLD'],
+      REVISE: ['REVISE', 'WAPPR', 'CLOSE', 'CAN', 'HOLD', 'PNDREV'],
       CLOSE: ['CLOSE'],
       CAN: ['CAN']
     };
@@ -189,18 +188,14 @@ class AppController {
   setupIncomingContext() {
     const incomingContext = this.app && this.app.state && this.app.state.incomingContext;
 
-    if (incomingContext && incomingContext.editTrans) {
-      incomingContext.page  = 'poDetails';
-    }
-
-    if (incomingContext && incomingContext.page && (incomingContext.ponum && incomingContext.siteid)) {
+    if (incomingContext?.page && (incomingContext?.ponum && incomingContext?.siteid) || (incomingContext?.href && !incomingContext?.itemId)) {
       this.app.setCurrentPage({name:"approvals"});
       this.app.setCurrentPage({
         name: incomingContext.page,
         resetScroll: true,
         params: {ponum: incomingContext.ponum, siteid: incomingContext.siteid, href: incomingContext.href }
       });
-    } else if(incomingContext && incomingContext.page) {
+    } else if(incomingContext?.page && incomingContext?.href && incomingContext?.itemId) {
       this.app.setCurrentPage({
         name: incomingContext.page,
         resetScroll: true,
@@ -208,7 +203,6 @@ class AppController {
       });
     }
   }
-
   _getStatusDescription(statusArr, internalValue) {
     let description;
     if (statusArr && statusArr.length && internalValue) {
@@ -221,7 +215,6 @@ class AppController {
     }
     return description;
   }
-
   loadApp(args = {}) {
     let appName = args.appName ? args.appName : undefined;
     let breadcrumbData = {returnName: `Returning to ${this.app.name}`, enableReturnBreadcrumb: true};
@@ -235,7 +228,6 @@ class AppController {
     context.breadcrumb = breadcrumbData;
     switcher.gotoApplication(appName, context, options);
   }
-
   async scanActions() {
     const params = this.app.state.scanParameter;
     switch(params.method) {
@@ -253,25 +245,9 @@ class AppController {
     }
     this.app.state.scanParameter = {};
   }
-
-
-
-  resetSkipState() {
-    this.app.state.skipSignature = false;
-  }
-  
-  confirmDialogPrimaryClick() {
-    this.app.state.confirmDialog.onPrimaryClick(this.app);
-  }
-
-  confirmDialogSecondaryClick() {
-    this.app.state.confirmDialog.onSecondaryClick(this.app);
-  }
-
-  confirmDialogCloseClick(app) {
-    app.state.confirmDialog.onCloseClick();
-  }
-
-
+  resetSkipState() { this.app.state.skipSignature = false; }
+  confirmDialogPrimaryClick() { this.app.state.confirmDialog.onPrimaryClick(this.app); }
+  confirmDialogSecondaryClick() { this.app.state.confirmDialog.onSecondaryClick(this.app); }
+  confirmDialogCloseClick(app) { app.state.confirmDialog.onCloseClick(); }
 }
 export default AppController;

@@ -11,7 +11,7 @@
  */
 
 import {log, Device} from '@maximo/maximo-js-api';
-import commonUtil from './Technician/utils/CommonUtil';
+import commonUtil from './utils/CommonUtil';
 
 const TAG = 'ChangeStatusController';
 
@@ -32,10 +32,7 @@ class ChangeStatusController {
     this.page.state.statusMemo = "";
   }
 
-  async openSignatureDialog(purchaseorder) {
-    const podetails = this.app.findDatasource('podetails');
-    await podetails.load({ noCache: true, itemUrl: purchaseorder.href });
-    this.page.state.canloadpodetails = true;
+  async openSignatureDialog() {
     this.app.userInteractionManager.openSignature(
       imageData => {
         log.t(TAG, 'base64 image' + imageData);
@@ -55,11 +52,6 @@ class ChangeStatusController {
       })
   }
 
-  /*
-   * Method to change the status. This is called from from the following pages:
-   *    - Schedule Page
-   *    - Work Detail Page
-   */
   async changeStatus() {
     let parentPage = this.page.parent;
     const poDetails = parentPage.state.poItem;
@@ -82,7 +74,7 @@ class ChangeStatusController {
     }
     this.app.state.skipSignature = false;
 
-    if (parentPage && (parentPage.state.referencePage === 'schedule' || parentPage.state.referencePage === 'approvals')) {
+    if (parentPage && parentPage.state.referencePage === 'approvals') {
       referencePage = parentPage;
     } else {
       referencePage = this.app.pages.find((element) => {
@@ -139,9 +131,8 @@ class ChangeStatusController {
         await currPODatasource.invokeAction(action, option);
         await currPODatasource.forceReload();
         parentPage.findDialog(parentPage.state.statusDialog).closeDialog();
-        if (this.page.state.selectedStatusMaxValue === 'COMP' || this.page.state.selectedStatusMaxValue === 'CAN' || this.page.state.selectedStatusMaxValue === 'CLOSE') {
-          const schPage = (this.app.findPage("schedule")) ? 'schedule' : 'approvals';
-          this.app.setCurrentPage({name: schPage});
+        if (this.page.state.selectedStatusMaxValue === 'CAN' || this.page.state.selectedStatusMaxValue === 'CLOSE') {
+          this.app.setCurrentPage("approvals");
         }
       } finally {
         parentPage.state.loadingstatus = false;

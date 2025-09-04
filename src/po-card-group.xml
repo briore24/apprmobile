@@ -1,7 +1,7 @@
 <card-group datasource="{page.state.selectedDS}" can-sort="true" show-refresh="true" disconnected="{!app.state.networkConnected}" refresh-disconnected-message="This feature is not available while offline" enable-barcode-scanner="true" readers="{[`ean_reader`]}" timeout="{45}" hide-count-search="{(page.state.selectedSwitch===1)}" id="poCardGroup">
   <filter-button slot="actions" kind="ghost" datasource="{page.state.selectedDS}" id="djzbd"/>
   <multi-sort-button slot="actions" kind="ghost" datasource="{page.state.selectedDS}" icon="Carbon:caret--sort" id="m2bpv"/>
-  <approvals-card-template id="approvalscardtemplate" chevron-kind="{index === 0 ? 'ghost' : 'primary'}" slot="item" show-chevron="true" on-chevron-click="showPODetail" on-chevron-click-arg="{item}">
+  <approvals-card-template id="approvalscardtemplate" chevron-kind="{index === 0 ? 'ghost' : 'primary'}" slot="item" show-chevron="true" on-chevron-click="showPODetail" on-chevron-click-arg="{ item }">
     <wrapped-text slot="slot1" size="large" max-length="100" label="{item.description}" sub-label="{item.ponum}" id="v9wqa"/>
     <tag-group slot="slot2" wrap="true" max-tag-width="{app.state.screen.size !== 'sm' &amp;&amp; app.state.screen.size !== 'md' ? 300 : 200}" align="end" tags="{item.computedPOStatusPriority}" id="a7ra6"/>
     <box slot="slot4" direction="column" flex-basis="50" id="dk8jz">
@@ -13,7 +13,6 @@
     <button-group slot="slot7" padding="false" align="end" id="d2maj">
       <button label="Accept" icon="carbon:checkmark" kind="primary" on-click="acceptPO" on-click-arg="{item}" id="jn7vz"/>
       <button label="Reject" icon="carbon:close" kind="secondary" on-click="rejectPO" on-click-arg="{item}" id="v7zy3"/>
-      <button label="View" icon="carbon:view" kind="{index === 0 ? page.state.firstLogin ? 'secondary' : 'primary' : 'secondary'}" on-click="showPODetail" on-click-arg="{item}" id="r8mrp"/>
     </button-group>
   </approvals-card-template>
 </card-group>

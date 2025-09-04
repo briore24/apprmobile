@@ -1,8 +1,15 @@
 
-<application>
+<maximo-application navigator-tile-order="200" controller="AppController" theme="touch" product-name="Maximo" product-name-adaptive="Maximo" title="PO Approvals" id="apprmobile" mas-id="manage" version="9.1.0.0" default-log-level="debug" user-menu-enabled="true" nav-initial-open-state="false" mas-enabled="false">
+	<properties>
+		<property name="mxe.mobile.navigation.windows"/>
+		<property name="mxe.mobile.navigation.ios"/>
+		<property name="mxe.mobile.navigation.android"/>
+	</properties>
 	<states>
+		<state  name="poOSName" value="MXAPIPO" type="string"/>
 	</states>
 	<menu slot="navigation-items">
+		<menu-item label="PO Approvals" icon="maximo:work-orders-approve" page="approvals"/>
 	</menu>
 	<maximo-datasource id="synonymdomainData" object-structure="mxapisynonymdomain" saved-query="MOBILEDOMAIN" selection-mode="single" lookup-data="true" offline-immediate-download="true">
 		<schema>
@@ -11,7 +18,7 @@
 	<dialogs>
 	</dialogs>
 	<pages>
-		<page id="polist">
+		<page id="approvals" padding="true" path="/approvals" title="Approvals" icon="maximo:work-orders-approve" controller="ApprovalsPageController">
 			<states>
 				<state name="selectedSwitch" value="0" type="number"/>
 				<state name="selectedDS" value="powapprDs" type="string"/>
@@ -20,13 +27,16 @@
 				<state name="previousPage" value="" type="string"/>
 				<state name="checkForUpdateButton" value="false" type="boolean"/>
 			</states>
-			<maximo-datasource id="powapprDs" object-structure="mxapipo" saved-query="POWAPPR" controller="poDataController">
+			<maximo-datasource id="powapprDs" object-structure="mxapipo" saved-query="POWAPPR" controller="poDataController" offline-immediate-download="true" pre-load="false" order-by="priority" selection-mode="none" default="true" page-size="25">
 				<schema>
 					<attribute name="ponum" sortable="false" searchable="true"/>
 					<attribute name="potype" searchable="true"/>
 					<attribute name="description" searchable="true"/>
 					<attribute name="priority" searchable="true"/>
 					<attribute name="status" sortable="true" searchable="true"/>
+					<attribute name="status_description" sortable="false"/>
+					<attribute name="status_maxvalue" sortable="false" index="true"/>
+					<attribute name="np_statusmemo"/>
 					<attribute name="siteid" sortable="false" searchable="true"/>
 					<attribute name="orgid" sortable="false"/>
 				</schema>
@@ -39,6 +49,16 @@
 				</schema>
 			</json-datasource>
 			<!-- GUI start -->
+			 <header-template hide-breadcrumb="true" title-column-width="{page.state.breadcrumbWidth ? page.state.breadcrumbWidth : app.state.screen.size === 'md' ? 50 : app.state.screen.size === 'lg' ? 30 : app.state.screen.size === 'xlg' ? 21 : 65}">
+				<dropdown slot="dropdown" background-color="white" selected-item="{page.state.selectedDS}" on-change="loadPOListData" hide-unselected-placeholder="true">
+					<dropdown-item value="powapprDs" text="Purchase Orders Awaiting Approval"/>
+				</dropdown>
+			 </header-template>
+			 <stacked-panel selected-index="{page.state.selectedSwitch}">
+				<panel>
+					<include src="./po-card-group.xml"/>
+				</panel>
+			 </stacked-panel>
 			<dialogs>
 				<sliding-drawer id="changeStatusDialog" align="start" header-text="Change Status" content-padding="false" controller="ChangeStatusController">
 					<box direction="column">
@@ -76,7 +96,7 @@
 		<page id="podetails" controller="PODetailsPageController">
 			<states>
 			</states>
-			<maximo-datasource id="poDs" object-structure="mxapipo" item-id="ponum" controller="PODetailsDataController">
+			<maximo-datasource id="poDs" object-structure="mxapipo" item-id="ponum" controller="PODetailsDataController" where="ponum=&quot;{page.params.ponum}&quot; and siteid=&quot;{page.params.siteid}&quot;" cache-expiry-ms="1">
 				<schema>
 					<attribute name="ponum" unique-id="true"/>
 					<attribute name="description"/>
@@ -88,6 +108,8 @@
 				</schema>
 				<maximo-datasource id="polineDs" relationship="poline" depends-on="po" item-id="polinenum" notify-when-parent-loads="true">
 					<schema>
+						<attribute name="ponum"/>
+						<attribute name="siteid"/>
 						<!-- list attrs -->
 						<attribute name="polinenum" unique-id="true"/>
 						<attribute name="itemnum"/>
@@ -143,7 +165,7 @@
 				</schema>
 			</maximo-datasource>
 			<!-- GUI START -->
-			<header-template hidden="{page.state.loading}">
+			<header-template hidden="{page.state.loading}" title-column-width="{app.state.screen.size === 'lg' ? 45 : 60}">
 				<button slot="buttons" label="Approve" icon="carbon:checkmark" kind="secondary" on-click="approvePO" on-click-arg="{{'item': poDs.item, 'datasource': poDs}}" id="podetailsApproveBtn"/>
 				<button slot="buttons" label="Reject" icon="carbon:error" kind="secondary" on-click="rejectPO" on-click-arg="{{'item': poDs.item, 'datasource': poDs}}" id="podetailsRejectBtn"/>
 			</header-template>
@@ -159,15 +181,17 @@
 					</middle>
 				</border-layout>
 			</box>
-			<box background-color="field-01" fill-parent-horizontal="true" direction="column" padding-start="" padding-end="" padding-top="" padding-bottom="">
-				<border-layout>
+			<box background-color="field-01" fill-parent-horizontal="true" direction="column" padding-start="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '0.5'}" padding-end="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '0.5'}" padding-top="0" padding-bottom="0">
+				<border-layout padding="false" fill-parent="true" top-border="true">
 					<top>
 						<box>
 							<label label="Details" theme="20-regular"/>
 						</box>
 					</top>
 					<middle>
-
+						<box>
+							<label label="PO Details"/>
+						</box>
 					</middle>
 				</border-layout>
 			</box>
@@ -249,4 +273,4 @@
 	</pages>
 	<messages>
 	</messages>
-</application>
+</maximo-application>

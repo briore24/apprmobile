@@ -10,7 +10,7 @@
  * IBM Corp.
  */
 
-import { log, Device, ShellCommunicator } from "@maximo/maximo-js-api";
+import { log, Device } from "@maximo/maximo-js-api";
 import "regenerator-runtime/runtime";
 import SynonymUtil from "./SharedResources/utils/SynonymUtil";
 import CommonUtil from "./SharedResources/utils/CommonUtil";
@@ -34,7 +34,7 @@ class ApprovalsPageController {
 
   showPODetail(item) {
     // istanbul ignore else
-    if (item && item.ponum && !this.page.state.transactionProgress) {
+    if (item && item.ponum) {
       this.app.setCurrentPage({
         name: "poDetails",
         resetScroll: true,
@@ -42,59 +42,10 @@ class ApprovalsPageController {
           ponum: item.ponum,
           siteid: item.siteid,
           firstLogin: this.page.state.firstLogin,
+          //href: this.page.params.href
         },
       });
     }
-  }
-
-
-  async openWorkLogDrawer(event) {
-    this.page.state.editPo = !['CAN'].includes(event?.item?.status_maxvalue);
-    await CommonUtil.openWorkLogDrawer(this.app, this.page, event, this.page.findDatasource("poWorkLogDs"), "workLogDrawer");
-  }
-
-  workLogValidate(validateEvent) {
-    if (this.page.state.isWorkLogEdit) {
-      validateEvent.failed = true;
-      this.page.showDialog('saveDiscardWorkLog');
-    } else {
-      validateEvent.failed = false;
-    }
-  }
-
-// called on save
-  saveWorkLogSaveDiscard() {
-    // Save Entered Data to chat Log
-    if (!this.page.state.workLogData?.sendDisable) {
-      this.saveWorkLog(this.page.state.workLogData);
-    }
-  }
-// called on discard
-  closeWorkLogSaveDiscard() {
-    this.page.findDialog('workLogDrawer')?.closeDialog();
-  }
-
-  watchChatLogChanges(value) {
-    // Clear Debounce Timeout
-    clearTimeout(this.page.state.workLogChangeTimeout);
-    // Set Debounce Timeout
-    this.page.state.workLogChangeTimeout = setTimeout(() => {
-      if (value?.summary || value?.longDescription || (this.page.state.initialDefaultLogType && value?.logType?.value !== this.page.state.initialDefaultLogType?.replace(/!/g, "")) || value?.visibility) {
-        this.page.state.isWorkLogEdit = true;
-        this.page.state.workLogData = value;
-        // Clear Debounce Timeout
-        clearTimeout(this.page.state.workLogChangeTimeout);
-      } else {
-        this.page.state.isWorkLogEdit = false;
-        this.page.state.workLogData = null;
-        // Clear Debounce Timeout
-        clearTimeout(this.page.state.workLogChangeTimeout);
-      }
-    }, 500);
-  }
-
-  async saveWorkLog(value, directSave = false) {
-    await CommonUtil.saveWorkLog(this.app, this.page, this.page.findDatasource('poWorkLogDs'), this.page.findDialog('workLogDrawer'), value);
   }
 
   async openChangeStatusDialog(event) {
