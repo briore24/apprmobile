@@ -14,6 +14,7 @@ import { log, Device } from "@maximo/maximo-js-api";
 import "regenerator-runtime/runtime";
 import SynonymUtil from "./SharedResources/utils/SynonymUtil";
 import CommonUtil from "./SharedResources/utils/CommonUtil";
+import POUtil from "./SharedResources/utils/POUtil";
 const TAG = "ApprovalsPageController";
 
 
@@ -126,13 +127,13 @@ onAfterLoadData(){
   async approvePO(event) {
     this.page.state.loading = true;
 	let limits = await this.app.callController("getUserLimits");
-	await CommonUtil.approvePO(this.app, this.page, limits, 'assignedpoDS', event);
+	await POUtil.approvePO(this.app, this.page, limits, 'assignedpoDS', event);
 	
   }
 
   async rejectPO(event) {
     this.page.state.loading = true;
-	await CommonUtil.rejectPO(this.app, this.page, 'assignedpoDS', event);
+	await POUtil.rejectPO(this.app, this.page, 'assignedpoDS', event);
   }
 
   updateSignaturePrompt(selected_status_is_inprg) {

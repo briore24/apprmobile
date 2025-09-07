@@ -12,6 +12,7 @@
 
 import { log, Device } from '@maximo/maximo-js-api';
 import CommonUtil from './SharedResources/utils/CommonUtil';
+import POUtil from './SharedResources/utils/POUtil';
 const TAG = 'PoPageController';
 
 class PoPageController {
@@ -328,12 +329,12 @@ class PoPageController {
   async approvePO(event) {
 	  this.page.state.loading = true;
 	  let limits = await this.app.callController("getUserLimits");
-	  await CommonUtil.approvePO(this.app, this.page, limits, 'poDs', event);
+	  await POUtil.approvePO(this.app, this.page, limits, 'poDs', event);
   }
   
   async rejectPO(event) {
 	  this.page.state.loading = true;
-	  await CommonUtil.rejectPO(this.app, this.page, 'poDs', event);
+	  await POUtil.rejectPO(this.app, this.page, 'poDs', event);
   }
 
   async onUpload(manual = true) {

@@ -143,34 +143,6 @@ const getConfirmDialogLabel = (app, config, dynamicLabel = []) => {
   sharedData.showConfirmDialog = true;
 }
 
-const approvePO = (app, page, limits, ds, item) => {
-	
-	let totalPoLimit = 0;
-	limits.forEach((lim) => {
-		log.i(lim.groupname, lim.polimit);
-		totalPoLimit += lim.polimit;
-	})
-	// disable/error on exceeded limit
-	
-	// get polines
-	
-	// check receipttolerance, receipttolqty, & receipttolamt 
-	
-	// maximum allowed qty = ordered qty + received qty 
-	
-	// warning message if user entry > max qty
-	
-	// if checks passed, change status to APPR?
-}
-
-const rejectPO = (app, page, ds, item) => {
-	// open rejection dialog
-	
-	// check that message was saved 
-	
-	// reject 
-}
-
 const clearSharedData = (propertyName) => {
   if(sharedData[propertyName]) {
     delete sharedData[propertyName];
@@ -195,8 +167,6 @@ const functions = {
     _resetDataSource,
     filterMobileMaxvars,
     getConfirmDialogLabel,
-	approvePO,
-	rejectPO,
     clearSharedData,
     sharedData
 };
