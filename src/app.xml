@@ -128,8 +128,9 @@
           <attribute name="orgid" sortable="false" id="a_vg5"/>
           <attribute name="np_statusmemo" id="zd69q"/>
           <attribute name="poid" sortable="false" unique-id="true" id="gzwj2"/>
+          <attribute name="computedTotalCost" id="v8xxm"/>
         </schema>
-        <maximo-datasource id="assignedpoLineDs" relationship="poline" notify-when-parent-loads="true" cache-expiry-ms="1">
+        <maximo-datasource id="assignedpoLineDS" relationship="poline" notify-when-parent-loads="true" cache-expiry-ms="1" depends-on="assignedpoDS" controller="ApprovalsDataController">
           <schema id="be6__">
             <attribute name="requestedby" id="xdg99"/>
             <attribute name="polinenum" unique-id="true" id="w8383"/>

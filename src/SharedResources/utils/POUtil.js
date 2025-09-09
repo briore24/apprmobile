@@ -12,34 +12,17 @@
  
  import { log, Device } from '@maximo/maximo-js-api';
  
- const getTotalCost  = (app, page, item) => {
-	 // get line info 
-	 
-	 // check line currency code
-	 
-	 // perform conversions if needed
-	 
-	 // add total line costs + tax
-	 
-	 // check po currency
-	 
-	 // perform conversions if needed
-	 
-	 // add po tax
-	 
-	 // return total cost
- }
- 
-const approvePO = (app, page, limits, ds, item) => {
-	
+const approvePO = (limits, ds, item) => {
 	let totalPoLimit = 0;
 	limits.forEach((lim) => {
 		log.i(lim.groupname, lim.polimit);
 		totalPoLimit += lim.polimit;
 	})
-	// disable/error on exceeded limit
-	
-	// get polines
+	let totalCost = item.computedTotalCost;
+	if (totalCost > totalPoLimit) {
+		console.log("total cost exceeds total PO limit");
+		// handle error 
+	}
 	
 	// check receipttolerance, receipttolqty, & receipttolamt 
 	
@@ -58,8 +41,10 @@ const rejectPO = (app, page, ds, item) => {
 	// reject 
 }
 
-const functions = {
 
+const functions = {
+	approvePO,
+	rejectPO
 };
 
 

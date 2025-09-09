@@ -43,7 +43,7 @@ class ApprovalsPageController {
           ponum: item.ponum,
           siteid: item.siteid,
           firstLogin: this.page.state.firstLogin,
-          //href: this.page.params.href
+          href: this.page.params.href
         },
       });
     }
@@ -121,13 +121,15 @@ class ApprovalsPageController {
   }
 
 onAfterLoadData(){
+	
 	log.i(TAG, 'data loaded on approvals page!');
 }
 
   async approvePO(event) {
     this.page.state.loading = true;
 	let limits = await this.app.callController("getUserLimits");
-	await POUtil.approvePO(this.app, this.page, limits, 'assignedpoDS', event);
+	
+	await POUtil.approvePO(limits, 'assignedpoDS', event);
 	
   }
 
@@ -151,14 +153,40 @@ onAfterLoadData(){
   async onUpload() {
     this.page.state.sigUploaded = true;
   }
+  
+  async getLines(item) {
+	let ponum = item.ponum;
+	let lineDS = this.page.findDatasource('assignedpoLineDS');
+	//  let totalCost = 0;
+	await lineDS?.load({ noCache: true, itemUrl: this.page.params.href });
+	
+	lineDS.clearQBE();
+	lineDS.setQBE("ponum", "=", ponum);
+	try {
+		let result = await lineDS.searchQBE();
+		return result;
+		
+	} catch(err) {
+		alert(err);
+	}
+  }
 
   async pageResumed(page) {
     this.trackUserLogin(page, this?.app?.client?.userInfo?.loginID);
+	page.state.loading = true;
+	const mainDS = page.findDatasource('assignedpoDS');
+	await mainDS?.load({ noCache: true, itemUrl: page.params.href });
+	
+	mainDS.forEach((item) => {
+		mainDS.callController('computedTotalCost', item)
+	});
+	
     if (this.app.currentPage?.name === 'approvals' && this.app.lastPage?.name === 'poDetails') {
       CommonUtil.sharedData.navigatedFromPOPage = true;
     }
     //On firstLogin the list should sync with server
     if (page.state.firstLogin && this.app.state.networkConnected && this.app.state.refreshOnSubsequentLogin !== false) {
+		// sync with server
       await this.page.datasources[page.state.selectedDS]?.forceSync();
     } else if (CommonUtil.sharedData.searchedText) {
       let datasource = this.page.findDatasource(page.state.selectedDS);
@@ -170,7 +198,6 @@ onAfterLoadData(){
     } else {
       await this.page.findDatasource(page.state.selectedDS)?.forceReload();
     }
-
     let incomingContext = this.app.state.incomingContext;
     // istanbul ignore else
     if (incomingContext?.breadcrumb?.enableReturnBreadcrumb) {

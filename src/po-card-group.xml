@@ -4,13 +4,9 @@
   <approvals-card-template id="approvalscardtemplate" chevron-kind="{index === 0 ? 'ghost' : 'primary'}" slot="item" show-chevron="true" on-chevron-click="showPODetail" on-chevron-click-arg="{ item }">
     <wrapped-text slot="slot1" size="large" max-length="100" label="{item.description}" sub-label="{item.ponum}" id="v9wqa"/>
     <tag-group slot="slot2" wrap="true" max-tag-width="{app.state.screen.size !== 'sm' &amp;&amp; app.state.screen.size !== 'md' ? 300 : 200}" align="end" tags="{item.computedPOStatusPriority}" id="a7ra6"/>
-    <box slot="slot4" flex-basis="50" fill-parent-horizontal="true" direction="column" id="v36vg">
-      <field label="Revision" value="{item.revisionnum}" empty-field-placeholder="0" id="myry6"/>
-    </box>
-    <box slot="slot7" flex-basis="50" direction="column" id="ddqz3" fill-parent-horizontal="true">
-      <field label="Total Cost" value="{item.totalcost}" id="p5a6n"/>
-      <field label="Tax" value="{item.tax1}" id="gavmz"/>
-    </box>
+    <field slot="slot4" label="Total Cost" value="{item.computedTotalCost}" hidden="{!item.computedTotalCost}" id="p64ag"/>
+    <field slot="slot5" label="Type" value="{item.potype}" hidden="{!item.potype}" id="gb245"/>
+    <field slot="slot7" label="Priority" value="{item.priority}" hidden="{!item.priority}" id="d3d6p"/>
     <button-group slot="slot13" padding="false" align="end" id="d2maj">
       <button label="Approve" icon="carbon:checkmark" kind="primary" on-click="approvePO" on-click-arg="{item}" id="jn7vz"/>
       <button label="Reject" icon="carbon:close" kind="secondary" on-click="rejectPO" on-click-arg="{item}" id="v7zy3"/>
