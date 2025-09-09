@@ -279,6 +279,7 @@
             <attribute name="requestedby" id="dmj9g"/>
             <attribute name="linecost" id="b8m_6"/>
 						
+            
             <attribute name="orderqty" id="dabg3"/>
             <attribute name="linetype" id="dm32x"/>
             <attribute name="orderunit" id="zpeyw"/>
@@ -379,10 +380,27 @@
         </sliding-drawer>
         <!-- lookups -->
         <lookup id="logTypeLookupDetailsPage" show-search="false" lookup-heading="Select log type" show-count="false" datasource="workLogTypeDomain" on-item-click="setPODetailsLogType" border="true" lookup-attributes="{['value', 'description']}" height="400" width="60"/>
+        <dialog id="limitExceededDetailDialog" title="PO Limit Exceeded" danger="true" primary-action-text="Okay" on-primary-action="closeDialog">
+          <border-layout padding="false" fill-parent="true" id="erdwb">
+            <middle id="qk43a">
+              <label wrap="true" label="The total cost of this purchase order is {page.state.totalCost}, which is greater than your approval limit of {page.state.totalPoLimit}." padding="none" id="xd4n6"/>
+            </middle>
+          </border-layout>
+        </dialog>
+        <dialog id="rejectDetailDialog" title="Reject PO" primary-action-text="Submit" on-primary-action="rejectPO" on-primary-action-arg="{{ 'item': poDS.item }}" secondary-action-text="Cancel" on-secondary-action="cancelRejectPO">
+          <border-layout padding="false" fill-parent="true" id="yb_3j">
+            <top id="xynk2">
+              <label wrap="true" label="Please enter a reason for the rejection." id="rby79"/>
+            </top>
+            <middle id="ymajz">
+              <text-area required="true" value="{page.state.rejectionComment}" placeholder="Please explain your rejection" id="a5888"/>
+            </middle>
+          </border-layout>
+        </dialog>
       </dialogs>
       <header-template hidden="{page.state.loading}" title-column-width="{app.state.screen.size === 'lg' ? 45 : 60}" id="poDetailsPageHeaderLoading">
-        <button slot="buttons" label="Approve" icon="carbon:checkmark" loading="{page.state.workloading || page.state.transactionProgress}" kind="secondary" on-click="approvePO" on-click-arg="{{'item': poDS.item, 'datasource': poDS.datasource}}" id="poDetailApproveBtn"/>
-        <button slot="buttons" label="Reject" icon="carbon:error" loading="{page.state.workloading || page.state.transactionProgress}" kind="secondary" on-click="rejectPO" on-click-arg="{{'item': poDS.item, 'datasource': poDS.datasource}}" id="poDetailRejectBtn"/>
+        <button slot="buttons" label="Approve" icon="carbon:checkmark" loading="{page.state.workloading || page.state.transactionProgress}" kind="secondary" on-click="approvePO" on-click-arg="{ poDS.item }" id="poDetailApproveBtn"/>
+        <button slot="buttons" label="Reject" icon="carbon:error" loading="{page.state.workloading || page.state.transactionProgress}" kind="secondary" on-click="openRejectDialog" on-click-arg="{{ 'item': poDS.item }}" id="poDetailRejectBtn"/>
       </header-template>
       <header-template hidden="{!page.state.loading}" id="poDetailsPageHeaderNotLoading">
         <button slot="buttons" loading="true" kind="ghost" id="q9gjd"/>
@@ -453,7 +471,7 @@
           <bottom id="brdd8">
             <box fill-parent-horizontal="true" border-bottom="{app.device.isMaximoMobile}" padding-start="1" padding-end="1" padding-top="1" padding-bottom="1" direction="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? 'column' : 'row'}" id="nk_5a">
               <button-group id="gq9yd">
-                <button id="workLogBtn" icon="carbon:document" on-click="openLogDrawer" on-click-arg="{{ 'item': poDS.item, 'drawer': 'workLogDrawer', 'datasource': workLogDs }}" kind="secondary" disabled="{page.state.loading}" hover-tooltip="Work Log"/>
+                <button id="workLogBtn" icon="carbon:document" on-click="openLogDrawer" on-click-arg="{{ 'item': poDS.item }}" kind="secondary" disabled="{page.state.loading}" hover-tooltip="Work Log"/>
               </button-group>
             </box>
           </bottom>

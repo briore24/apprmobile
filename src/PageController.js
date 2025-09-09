@@ -64,24 +64,31 @@ class PageController {
 	}
 	
 	async rejectPO(event) {
-		// check for input 
+		let item = event.item;
+		let comment = this.page.state.rejectionComment;
 		
-		// error on no input
+		// TODO: add checks for line completeness & user privileges
 		
-		// change status & save input on success
+		if (comment !== "") {
+			let status = {
+				value: 'CLOSE',
+				maxvalue: 'CLOSE',
+				description: 'Close'
+			};
+			await this.page.callController("changeStatus", item, status, comment);
+		}
 	}
 	
 	async cancelRejectPO() {
 		this.page.findDialog('rejectDialog').closeDialog();
 	}
+	
+	
 	async openLogDrawer(event) {
 		this.app.state.chatLogLoading = true;
 		this.page.state.item = event.item;
-		let drawer = event.drawer;
-		
 		let groupData;
-		
-		let logDS = event.datasource;
+		let logDS = this.page.findDatasource('workLogDs');
 		
 		logDS.clearState();
 		logDS.resetState();
@@ -97,61 +104,69 @@ class PageController {
 				).map((obj) => obj[0])[0]].items;
 			]
 		}
-		switch (drawer) {
-			case 'commLogDrawer':
-				this.page.state.commLogGroupData = groupData;
-				let subj = logDS.getSchemaInfo("subject");
-				if (subj) {
-				  this.page.state.commLogDescLength = subj.maxLength;
-				}
-				break;
-			case 'workLogDrawer':
-				this.page.state.workLogGroupData = groupData;
-				let schemaLogType = logDS.getSchemaInfo("logtype");
-				let schemaDesc = logDS.getSchemaInfo("description");        
-				let orgID = this.app.client?.userInfo?.insertOrg;
-				let siteID = this.app.client?.userInfo?.insertSite;
-				let logType;
-				if (schemaLogType) {
-				  logType = schemaLogType.default?.replace(/!/g, "");
-				}
-				let filteredLogTypeList;
-				synonymDs.setQBE("domainid", "=", "LOGTYPE");
-				synonymDs.setQBE("orgid", orgID);
-				synonymDs.setQBE("siteid", siteID);
-				filteredLogTypeList = await synonymDs.searchQBE();
-				if (filteredLogTypeList.length < 1) {
-				  synonymDs.setQBE("siteid", "=", "null");
-				  filteredLogTypeList = await synonymDs.searchQBE();
-				}
-				if (filteredLogTypeList.length < 1) {
-				  synonymDs.setQBE("orgid", "=", "null");
-				  filteredLogTypeList = await synonymDs.searchQBE();
-				}
-				this.page.state.defaultLogType = "!CLIENTNOTE!";
+		this.page.state.workLogGroupData = groupData;
+		let schemaLogType = logDS.getSchemaInfo("logtype");
+		let schemaDesc = logDS.getSchemaInfo("description");        
+		let orgID = this.app.client?.userInfo?.insertOrg;
+		let siteID = this.app.client?.userInfo?.insertSite;
+		let logType;
+		if (schemaLogType) {
+		  logType = schemaLogType.default?.replace(/!/g, "");
+		}
+		let filteredLogTypeList;
+		synonymDs.setQBE("domainid", "=", "LOGTYPE");
+		synonymDs.setQBE("orgid", orgID);
+		synonymDs.setQBE("siteid", siteID);
+		filteredLogTypeList = await synonymDs.searchQBE();
+		if (filteredLogTypeList.length < 1) {
+		  synonymDs.setQBE("siteid", "=", "null");
+		  filteredLogTypeList = await synonymDs.searchQBE();
+		}
+		if (filteredLogTypeList.length < 1) {
+		  synonymDs.setQBE("orgid", "=", "null");
+		  filteredLogTypeList = await synonymDs.searchQBE();
+		}
+		this.page.state.defaultLogType = "!CLIENTNOTE!";
 
-				const logItem = synonymDs.items.find((item) => {
-				  return item.maxvalue === logType && item.defaults;
-				})
+		const logItem = synonymDs.items.find((item) => {
+		  return item.maxvalue === logType && item.defaults;
+		});
 
-				const logValue = logItem ? `!${logItem.value}!` : schemaLogType.default;
-				this.page.state.defaultLogType = this.page.state.initialDefaultLogType = logValue;
+		const logValue = logItem ? `!${logItem.value}!` : schemaLogType.default;
+		this.page.state.defaultLogType = this.page.state.initialDefaultLogType = logValue;
 
-				if (schemaDesc) {
-				  this.page.state.workLogDescLength = schemaDesc.maxLength;
-				}
-				break;
+		if (schemaDesc) {
+		  this.page.state.workLogDescLength = schemaDesc.maxLength;
 		}
 		
 		this.page.state.chatLogLoading = false;
-		this.page.showDialog(drawer);
+		this.page.showDialog('workLogDrawer');
 	}
 	
 	async approvePO(event) {
 		this.page.state.loading = true;
+		let item = event;
 		let limits = await this.app.callController("getUserLimits");
-		
-		await POUtil.approvePO(this.app, this.page, limits, this.page.findDatasource(this.page.state.selectedDS), event);
+		let totalPoLimit = 0;
+		// TODO: add additional checks 
+		limits.forEach((lim) => {
+			totalPoLimit += lim.polimit;
+		});
+		if (item.computedTotalCost > totalPoLimit) {
+			this.page.state.totalCost = item.computedTotalCost;
+			this.page.state.totalPoLimit = totalPoLimit;
+			this.page.showDialog("limitExceededDialog");
+		}
+		else {
+			let status = {
+				value: 'APPR',
+				maxvalue: 'APPR',
+				description: 'Approved'
+			};
+			// TODO: prompt for status memo
+			let memo = "approval";
+			await this.page.callController("changeStatus", item, status, memo);
+		}
 	}
 	
 	async pageResumed(page, app) {

@@ -12,6 +12,7 @@
 
 import { log, Device } from '@maximo/maximo-js-api';
 import CommonUtil from './SharedResources/utils/CommonUtil';
+import SynonymUtil from './SharedResources/utils/SynonymUtil';
 import POUtil from './SharedResources/utils/POUtil';
 const TAG = 'PoPageController';
 
@@ -26,75 +27,61 @@ class PoPageController {
     CommonUtil.sharedData.newPageVisit = true;
   }
   async openLogDrawer(event) {
-    this.app.state.chatLogLoading = true;
-    this.page.state.item = event.item;
-    let drawer = event.drawer;
-    let groupData; 
+	this.app.state.chatLogLoading = true;
+	this.page.state.item = event.item;
+	let groupData;
+	let logDS = this.page.findDatasource('workLogDs');
+	
+	logDS.clearState();
+	logDS.resetState();
+	
+	const synonymDS = this.app.findDatasource("synonymdomainData");
+	await logDS.load().then((response) => { groupData = response; });
+	
+	if (this.device.isMaximoMobile && logDS.options.query.relationship) {
+		logDS.schema = logDS.dependsOn.schema.properties[
+			Object.entries(logDS.dependsOn.schema.properties).filter(
+			(item) =>
+				item[1].relation && item[1].relation.toUpperCase() === logDS.options.query.relationship.toUpperCase()
+			).map((obj) => obj[0])[0]].items;
+	}
+	this.page.state.workLogGroupData = groupData;
+	let schemaLogType = logDS.getSchemaInfo("logtype");
+	let schemaDesc = logDS.getSchemaInfo("description");        
+	let orgID = this.app.client?.userInfo?.insertOrg;
+	let siteID = this.app.client?.userInfo?.insertSite;
+	let logType;
+	if (schemaLogType) {
+	  logType = schemaLogType.default?.replace(/!/g, "");
+	}
+	let filteredLogTypeList;
+	synonymDs.setQBE("domainid", "=", "LOGTYPE");
+	synonymDs.setQBE("orgid", orgID);
+	synonymDs.setQBE("siteid", siteID);
+	filteredLogTypeList = await synonymDs.searchQBE();
+	if (filteredLogTypeList.length < 1) {
+	  synonymDs.setQBE("siteid", "=", "null");
+	  filteredLogTypeList = await synonymDs.searchQBE();
+	}
+	if (filteredLogTypeList.length < 1) {
+	  synonymDs.setQBE("orgid", "=", "null");
+	  filteredLogTypeList = await synonymDs.searchQBE();
+	}
+	this.page.state.defaultLogType = "!CLIENTNOTE!";
 
-    let logDS = event.datasource;
+	const logItem = synonymDs.items.find((item) => {
+	  return item.maxvalue === logType && item.defaults;
+	});
 
-    logDS.clearState();
-    logDS.resetState();
-    const synonymDs = this.app.findDatasource("synonymdomainData");
-    await logDS.load().then((response) => {
-      groupData = response;
-    });
+	const logValue = logItem ? `!${logItem.value}!` : schemaLogType.default;
+	this.page.state.defaultLogType = this.page.state.initialDefaultLogType = logValue;
 
-    if (Device.get().isMaximoMobile && logDS.options.query.relationship) {
-      logDS.schema = logDS.dependsOn.schema.properties[
-        Object.entries(logDS.dependsOn.schema.properties).filter(
-          (item) =>
-            item[1].relation && item[1].relation.toUpperCase() === logDS.options.query.relationship.toUpperCase()
-        ).map((obj) => obj[0])[0]
-      ].items;
-    }
-    switch(drawer) {
-	  case 'commLogDrawer':
-		this.page.state.commLogGroupData = groupData;
-		let subj = logDS.getSchemaInfo("subject");
-		if (subj) {
-		  this.page.state.commLogDescLength = subj.maxLength;
-		}
-		break;
-	  case 'workLogDrawer':
-		this.page.state.workLogGroupData = groupData;
-		let schemaLogType = logDS.getSchemaInfo("logtype");
-		let schemaDesc = logDS.getSchemaInfo("description");        
-		let orgID = this.app.client?.userInfo?.insertOrg;
-		let siteID = this.app.client?.userInfo?.insertSite;
-		let logType;
-		if (schemaLogType) {
-		  logType = schemaLogType.default?.replace(/!/g, "");
-		}
-		let filteredLogTypeList;
-		synonymDs.setQBE("domainid", "=", "LOGTYPE");
-		synonymDs.setQBE("orgid", orgID);
-		synonymDs.setQBE("siteid", siteID);
-		filteredLogTypeList = await synonymDs.searchQBE();
-		if (filteredLogTypeList.length < 1) {
-		  synonymDs.setQBE("siteid", "=", "null");
-		  filteredLogTypeList = await synonymDs.searchQBE();
-		}
-		if (filteredLogTypeList.length < 1) {
-		  synonymDs.setQBE("orgid", "=", "null");
-		  filteredLogTypeList = await synonymDs.searchQBE();
-		}
-		this.page.state.defaultLogType = "!CLIENTNOTE!";
-
-		const logItem = synonymDs.items.find((item) => {
-		  return item.maxvalue === logType && item.defaults;
-		})
-
-		const logValue = logItem ? `!${logItem.value}!` : schemaLogType.default;
-		this.page.state.defaultLogType = this.page.state.initialDefaultLogType = logValue;
-
-		if (schemaDesc) {
-		  this.page.state.workLogDescLength = schemaDesc.maxLength;
-		}
-		break;
-    }
-    this.page.state.chatLogLoading = false;
-    this.page.showDialog(drawer);
+	if (schemaDesc) {
+	  this.page.state.workLogDescLength = schemaDesc.maxLength;
+	}
+	
+	this.page.state.chatLogLoading = false;
+	this.page.showDialog('workLogDrawer');
   }
 
   async pageResumed(page, app) {
@@ -328,14 +315,83 @@ class PoPageController {
   }
 
   async approvePO(event) {
-	  this.page.state.loading = true;
-	  let limits = await this.app.callController("getUserLimits");
-	  await POUtil.approvePO(this.app, this.page, limits, 'poDs', event);
+	this.page.state.loading = true;
+	let item = event;
+	let limits = await this.app.callController("getUserLimits");
+	let totalPoLimit = 0;
+	// TODO: add additional checks 
+	limits.forEach((lim) => {
+		totalPoLimit += lim.polimit;
+	});
+	if (item.computedTotalCost > totalPoLimit) {
+		this.page.state.totalCost = item.computedTotalCost;
+		this.page.state.totalPoLimit = totalPoLimit;
+		this.page.showDialog("limitExceededDetailDialog");
+	}
+	else {
+		let status = {
+			value: 'APPR',
+			maxvalue: 'APPR',
+			description: 'Approved'
+		}
+		// TODO: prompt for status memo
+		let memo = "approval";
+		await this.page.callController("changeStatus", item, status, memo);
+	}
+  }
+  
+  async openRejectDialog(item) {
+	  this.page.showDialog('rejectDetailDialog');
   }
   
   async rejectPO(event) {
+	let item = event.item;
+	let comment = this.page.state.rejectionComment;
+	
+	// TODO: add checks for line completeness & user privileges
+	if (comment !== "") {
+		let status = {
+			value: 'CLOSE',
+			maxvalue: 'CLOSE',
+			description: 'Close'
+		};
+		await this.page.callController("changeStatus", item, status, comment);
+		this.page.state.rejectionComment = "";
+	}
+  }
+  
+  async changeStatus(item, newStatus, statusMemo) {
 	  this.page.state.loading = true;
-	  await POUtil.rejectPO(this.app, this.page, 'poDs', event);
+	  let dataFormatter = this.app.dataFormatter;
+	  let action = 'changeStatus';
+	  let curDate = dataFormatter.convertDatetoISO(new Date());
+	  let option = {
+		  record: item,
+		  parameters: {
+			  status: newStatus.value,
+			  date: curDate,
+			  memo: statusMemo
+		  },
+		  headers: {
+			  'x-method-override': 'PATCH'
+		  },
+		  responseProperties: 'status, rel.postatus{postatusid, changeby, changedate, status}',
+		  localPayload: {
+			  status: newStatus.value,
+			  status_maxvalue: newStatus.maxvalue,
+			  status_description: newStatus.description,
+			  statusdate: curDate
+		  },
+		  query: { interactive: false, ignorecollectionref: 1 },
+		  esigCheck: 0
+	  };
+	  try {
+		  let ds = this.page.findDatasource('poDS');
+		  await ds.invokeAction(action, option);
+		  await ds.forceReload();
+	  } finally {
+		  this.page.state.loading = false;
+	  }
   }
 
   async onUpload(manual = true) {
