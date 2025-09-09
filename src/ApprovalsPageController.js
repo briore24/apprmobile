@@ -46,7 +46,12 @@ class ApprovalsPageController {
           href: this.page.params.href
         },
       });
+	  this.app.state.item = item;
     }
+  }
+  
+  async openRejectDialog(item) {
+	  this.app.showDialog('rejectDialog');
   }
 
   async openChangeStatusDialog(event) {
@@ -67,7 +72,7 @@ class ApprovalsPageController {
     await statusLstDS.load({ src: statusArr, noCache: true });
 
     // set maximum length of comment text-area in changestatus through checking datasource schema
-    const selectedDS = event.selectedDatasource;
+    const selectedDS = this.page.findDatasource(event.selectedDatasource);
     //istanbul ignore else
     if (selectedDS) {
       const commentsMaxLength = selectedDS.getFieldSize(
@@ -122,20 +127,53 @@ class ApprovalsPageController {
 
 onAfterLoadData(){
 	
-	log.i(TAG, 'data loaded on approvals page!');
+	// log.i(TAG, 'data loaded on approvals page!');
+}
+
+async closeDialog(event) {
+	this.page.findDialog(event)?.closeDialog();
 }
 
   async approvePO(event) {
     this.page.state.loading = true;
+	let item = event;
 	let limits = await this.app.callController("getUserLimits");
-	
-	await POUtil.approvePO(limits, 'assignedpoDS', event);
-	
+	let totalPoLimit = 0;
+	// TODO: add additional checks 
+	limits.forEach((lim) => {
+		totalPoLimit += lim.polimit;
+	});
+	if (item.computedTotalCost > totalPoLimit) {
+		this.page.state.totalCost = item.computedTotalCost;
+		this.page.state.totalPoLimit = totalPoLimit;
+		this.page.showDialog("limitExceededDialog");
+	}
+	else {
+		let status = {
+			value: 'APPR',
+			maxvalue: 'APPR',
+			description: 'Approved'
+		};
+		// TODO: prompt for status memo
+		let memo = "approval";
+		await this.page.callController("changeStatus", item, status, memo);
+	}
   }
 
   async rejectPO(event) {
-    this.page.state.loading = true;
-	await POUtil.rejectPO(this.app, this.page, 'assignedpoDS', event);
+	let item = event.item;
+	let comment = this.page.state.rejectionComment;
+	
+	// TODO: add checks for line completeness & user privileges
+	
+	if (comment !== "") {
+		let status = {
+			value: 'CLOSE',
+			maxvalue: 'CLOSE',
+			description: 'Close'
+		};
+		await this.page.callController("changeStatus", item, status, comment);
+	}
   }
 
   updateSignaturePrompt(selected_status_is_inprg) {
@@ -150,6 +188,40 @@ onAfterLoadData(){
     }
   }
 
+  async changeStatus(item, newStatus, statusMemo) {
+	  this.page.state.loading = true;
+	  let dataFormatter = this.app.dataFormatter;
+	  let action = 'changeStatus';
+	  let curDate = dataFormatter.convertDatetoISO(new Date());
+	  let option = {
+		  record: item,
+		  parameters: {
+			  status: newStatus.value,
+			  date: curDate,
+			  memo: statusMemo
+		  },
+		  headers: {
+			  'x-method-override': 'PATCH'
+		  },
+		  responseProperties: 'status, rel.postatus{postatusid, changeby, changedate, status}',
+		  localPayload: {
+			  status: newStatus.value,
+			  status_maxvalue: newStatus.maxvalue,
+			  status_description: newStatus.description,
+			  statusdate: curDate
+		  },
+		  query: { interactive: false, ignorecollectionref: 1 },
+		  esigCheck: 0
+	  };
+	  try {
+		  let ds = this.page.findDatasource(this.page.state.selectedDS);
+		  await ds.invokeAction(action, option);
+		  await ds.forceReload();
+	  } finally {
+		  this.page.state.loading = false;
+	  }
+  }
+  
   async onUpload() {
     this.page.state.sigUploaded = true;
   }
@@ -174,13 +246,6 @@ onAfterLoadData(){
   async pageResumed(page) {
     this.trackUserLogin(page, this?.app?.client?.userInfo?.loginID);
 	page.state.loading = true;
-	const mainDS = page.findDatasource('assignedpoDS');
-	await mainDS?.load({ noCache: true, itemUrl: page.params.href });
-	
-	mainDS.forEach((item) => {
-		mainDS.callController('computedTotalCost', item)
-	});
-	
     if (this.app.currentPage?.name === 'approvals' && this.app.lastPage?.name === 'poDetails') {
       CommonUtil.sharedData.navigatedFromPOPage = true;
     }

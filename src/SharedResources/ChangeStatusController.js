@@ -54,8 +54,8 @@ class ChangeStatusController {
 
   async changeStatus() {
     let parentPage = this.page.parent;
-    const poDetails = parentPage.state.poItem;
-    if (this.page.state.selectedStatusMaxValue === 'COMP' && this.app.name !== "apprmobile") {
+    const poDetails = parentPage.state.item;
+    if (this.app.name !== "apprmobile") {
       parentPage.state.loadingstatus = true;
       const datasheetResult = await commonUtil.validateDataSheet(this.app, parentPage, poDetails, calMethodConfig);
       parentPage.state.loadingstatus = false;
@@ -64,7 +64,7 @@ class ChangeStatusController {
       }
     }
     let selectedDSName = parentPage.state.referenceDS;
-    let purchaseorder = parentPage.state.poItem;
+    let purchaseorder = parentPage.state.item;
     let selectedStatus = this.page.state.selectedStatus;
     let referencePage;
     // Signature Check
@@ -93,11 +93,11 @@ class ChangeStatusController {
       log.t(
         TAG,
         "changeStatus : Page Item = " +
-        parentPage.state.poItem.ponum +
+        parentPage.state.item.ponum +
         " selectedDSName --> " +
         selectedDSName +
         " Parent Page poItem --> " +
-        parentPage.state.poItem.ponum
+        parentPage.state.item.ponum
       );
 
       currDate = dataFormatter.convertDatetoISO(currDate);

@@ -52,38 +52,14 @@ class ApprovalsDataController {
   }
 
   computedTotalCost(item) {
-	if (!item.computedTotalCost) {
-		item.computedTotalCost = 0;
+	let totalcost = 0;
+	let lines = item.poline;
+	if (lines !== 'undefined') {
+		lines.forEach((line) => {
+			totalcost += line.loadedcost;
+		});
 	}
-	let lines = this.datasource.callController("getLines", item);
-	lines.then((result) => {
-		if(result.length > 0) {
-			result.forEach((line) => {
-				item.computedTotalCost += line.loadedcost;
-			})
-		}
-	})
-
-	
-	return item.computedTotalCost;
-  }
-  
-  async getLines(item) {
-	  let lines = [];
-	  let lineDS = this.page.findDatasource('assignedpoLineDS');
-	  
-	  try {
-		await lineDS?.load({ noCache: true, itemUrl: this.page.params.href });
-	  
-		lineDS.forEach((line) => {
-		if (line.ponum === item.ponum) {
-			lines.push(line);
-		}});
-	  } catch (err) {
-		  log.i(item, err);
-	  } finally {
-		  return lines;
-	  }
+	return totalcost;
   }
   
   async onAfterLoadData(dataSource, items) {
@@ -97,13 +73,6 @@ class ApprovalsDataController {
       if(page.state.dataSourceIntializationCount > 1){
         page.state.checkForUpdateButton = true;                      
       }
-	  
-	  items.forEach((item) => {
-		  if (!item.computedTotalCost) {
-			  item.computedTotalCost = 0;
-		  }
-		  dataSource.callController("computedTotalCost", item);
-	  });
     }
   }
 }

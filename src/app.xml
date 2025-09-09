@@ -1,4 +1,4 @@
-<maximo-application navigator-tile-order="200" controller="AppController" theme="touch" product-name="Maximo" product-name-adaptive="Maximo" title="PO Approvals" id="apprmobile" mas-id="manage" version="9.1.0.0" default-log-level="debug" user-menu-enabled="true" nav-initial-open-state="false" mas-enabled="false">
+<maximo-application navigator-tile-order="200" controller="AppController" theme="touch" product-name="Maximo" product-name-adaptive="Maximo" title="PO Approvals" id="apprmobile" mas-id="manage" version="9.1.0.0" default-log-level="error" user-menu-enabled="true" nav-initial-open-state="false" mas-enabled="false">
   <properties id="n5nx9">
     <property name="maximo.mobile.statusforphysicalsignature" id="ee54n"/>
     <property name="maximo.mobile.completestatus" id="bdwkx"/>
@@ -16,6 +16,7 @@
     <state name="refreshOnSubsequentLogin" value="false" type="boolean" id="n8yd4"/>
     <state name="skipSignature" value="false" type="boolean" id="xn6p6"/>
     <state name="poOSName" value="MXAPIPO" type="string" id="dxkem"/>
+    <state name="rejectionComment" value="" type="string" id="aaepx"/>
   </states>
   <menu slot="navigation-items" id="ax__k">
     <menu-item label="PO Approvals" icon="maximo:work-orders-approve" page="approvals" id="xz3x6"/>
@@ -111,11 +112,10 @@
         <state name="firstPO" value="" type="string" id="mkg6z"/>
         <state name="firstLogin" value="false" type="boolean" id="nwpyg"/>
         <state name="previousPage" type="string" value="" id="n8r2j"/>
-        <state name="compDomainStatus" value="" type="string" id="z35nd"/>
-        <state name="dataSourceIntializationCount" value="0" type="number" id="qwvyg"/>
+        <state name="dsInitCount" value="0" type="number" id="qwvyg"/>
         <state name="checkForUpdateButton" value="false" type="boolean" id="zqzdk"/>
       </states>
-      <maximo-datasource id="assignedpoDS" object-structure="mxapipo" saved-query="POWAPPR" mobile-qbe-filter="{{'status_maxvalue': '!=COMP,CAN,CLOSE,WAPPR'}}" offline-immediate-download="true" order-by="priority" pre-load="false" controller="ApprovalsDataController" selection-mode="none" default="true" page-size="25" item-url="{page.params.href}">
+      <maximo-datasource id="assignedpoDS" object-structure="mxapipodoc" saved-query="POWAPPR" mobile-qbe-filter="{{'status_maxvalue': '!=COMP,CAN,CLOSE,WAPPR'}}" offline-immediate-download="true" order-by="priority" pre-load="true" controller="ApprovalsDataController" selection-mode="none" default="true" page-size="25" item-url="{page.params.href}">
         <schema id="amk2z">
           <attribute name="ponum" sortable="false" searchable="true" id="r9w6v"/>
           <attribute name="description" searchable="true" id="d324b"/>
@@ -128,37 +128,13 @@
           <attribute name="orgid" sortable="false" id="a_vg5"/>
           <attribute name="np_statusmemo" id="zd69q"/>
           <attribute name="poid" sortable="false" unique-id="true" id="gzwj2"/>
-          <attribute name="computedTotalCost" id="v8xxm"/>
+          <attribute name="computedTotalCost" computed-function="computedTotalCost" title="Total Cost" id="v8xxm"/>
+          <attribute name="computedPOStatusPriority" computed-function="computedPOStatusPriority" id="mage5"/>
+          <attribute name="rel.poline{loadedcost,requestedby}" id="k5ndy"/>
+          <attribute name="vendor" id="gk4v3"/>
+          <attribute name="contact" id="dw9a7"/>
+          <attribute name="currencycode" id="b9q4a"/>
         </schema>
-        <maximo-datasource id="assignedpoLineDS" relationship="poline" notify-when-parent-loads="true" cache-expiry-ms="1" depends-on="assignedpoDS" controller="ApprovalsDataController">
-          <schema id="be6__">
-            <attribute name="requestedby" id="xdg99"/>
-            <attribute name="polinenum" unique-id="true" id="w8383"/>
-            <attribute name="linecost" id="p6jpa"/>
-            <attribute name="unitcost" id="ww5db"/>
-            <attribute name="orderqty" id="g2pmp"/>
-            <attribute name="linetype" id="vmbbd"/>
-            <attribute name="receiptreqd" id="xvkdk"/>
-            <attribute name="receiptscomplete" id="xw_5z"/>
-            <attribute name="receivedlinecost" id="rwd2d"/>
-            <attribute name="receipttolerance" id="j23wn"/>
-            <attribute name="receipttolamt" id="kqvq7"/>
-            <attribute name="receipttolqty" id="x5awj"/>
-            <attribute name="receivedtotalcost" id="d7mb3"/>
-            <attribute name="receivedunitcost" id="b5wvk"/>
-            <attribute name="ponum" id="vpnp2"/>
-            <attribute name="revisionnum" id="ew45v"/>
-            <attribute name="amounttoreceive" id="vj85q"/>
-            <attribute name="qtytoreceive" id="p422r"/>
-            <attribute name="linecost1" id="rrmj4"/>
-            <attribute name="linecost2" id="j5a_3"/>
-            <attribute name="loadedcost" id="z338e"/>
-            <attribute name="loadedcost1" id="njgwn"/>
-            <attribute name="orderunit" id="n4b7y"/>
-            <attribute name="tax1" id="qj6y4"/>
-            <attribute name="tax1code" id="nbpr7"/>
-          </schema>
-        </maximo-datasource>
       </maximo-datasource>
       <json-datasource id="dsstatusDomainList" src="{[]}" items="statusItems" selection-mode="single" id-attribute="value">
         <schema id="gr2dm">
@@ -210,6 +186,23 @@
             <button icon="carbon:checkmark--outline" kind="primary" loading="{page.state.loadingstatus===true}" on-click="changeStatus" id="approvalsChangeStatusBtn"/>
           </button-group>
         </sliding-drawer>
+        <dialog id="limitExceededDialog" title="PO Limit Exceeded" danger="true" primary-action-text="Okay" on-primary-action="closeDialog">
+          <border-layout padding="false" fill-parent="true" id="e8yvv">
+            <middle id="wmzep">
+              <label wrap="true" label="The total cost of this purchase order is {page.state.totalCost}, which is greater than your approval limit of {page.state.totalPoLimit}." padding="none" id="zw62e"/>
+            </middle>
+          </border-layout>
+        </dialog>
+        <dialog id="rejectDialog" title="Reject PO" primary-action-text="Submit" on-primary-action="rejectPO" on-primary-action-arg="{{ 'item': assignedpoDS.item }}" secondary-action-text="Cancel" on-secondary-action="cancelRejectPO">
+          <border-layout padding="false" fill-parent="true" id="n6azz">
+            <top id="kqrpb">
+              <label wrap="true" label="Please enter a reason for the rejection." id="zx4y9"/>
+            </top>
+            <middle id="yyw45">
+              <text-area required="true" id="pvkq5" value="{page.state.rejectionComment}" placeholder="Please explain your rejection"/>
+            </middle>
+          </border-layout>
+        </dialog>
       </dialogs>
     </page>
     <page padding="true" id="poDetails" path="/poDetails" title="Purchase Order" controller="PoPageController">
@@ -220,7 +213,7 @@
         <state name="workLogGroupData" type="object" id="n8zk3"/>
         <state name="commLogGroupData" type="object" id="v_d3x"/>
       </states>
-      <maximo-datasource id="poDs" default="true" object-structure="mxapipo" controller="PoDataController" where="ponum=&quot;{page.params.ponum}&quot;" cache-expiry-ms="1" item-url="{page.params.href}">
+      <maximo-datasource id="poDS" default="true" object-structure="mxapipodoc" controller="DataController" where="ponum=&quot;{page.params.ponum}&quot;" cache-expiry-ms="1" item-url="{page.params.href}">
         <schema id="na2_d">
           <attribute name="ponum" unique-id="true" id="v6bq7"/>
           <attribute name="poid" id="yxyad"/>
@@ -275,25 +268,28 @@
           <!-- bill to -->
           <attribute name="billto" id="yp365"/>
           <attribute name="billtoattn" id="vvyg8"/>
+          <attribute name="rel.poline{loadedcost}" id="ae8ka"/>
+          <attribute name="computedTotalCost" computed-function="computedTotalCost" id="d28b3"/>
         </schema>
-        <maximo-datasource id="poLineDs" selection-mode="none" relationship="poline" notify-when-parent-loads="true" cache-expiry-ms="1">
-          <schema id="wxjx8">
-            <attribute name="polinenum" unique-id="true" id="x74rz"/>
-            <attribute name="itemnum" id="z8_pj"/>
-            <attribute name="description" id="gydq6"/>
-            <attribute name="requestedby" id="y24g8"/>
-            <attribute name="linecost" id="eq25_"/>
-            <attribute name="orderqty" id="q2pb4"/>
-            <attribute name="linetype" id="bberg"/>
-            <attribute name="orderunit" id="j5r8x"/>
-            <attribute name="unitcost" id="ekme5"/>
-            <attribute name="tax1" id="x9pae"/>
-            <attribute name="isdistributed" id="b9982"/>
-            <attribute name="wonum" id="m848j"/>
-            <attribute name="assetnum" id="q9m_8"/>
-            <attribute name="location" id="rgdbk"/>
-            <attribute name="storeloc" id="x8ex7"/>
-            <attribute name="gldebitacct" id="vvngd"/>
+        <maximo-datasource id="polineDS" selection-mode="none" order-by="polinenum" relationship="poline">
+          <schema id="xbq9w">
+            <attribute name="polinenum" id="kj2p8"/>
+            <attribute name="itemnum" id="z4wm4"/>
+            <attribute name="description" id="p9w22"/>
+            <attribute name="requestedby" id="dmj9g"/>
+            <attribute name="linecost" id="b8m_6"/>
+						
+            <attribute name="orderqty" id="dabg3"/>
+            <attribute name="linetype" id="dm32x"/>
+            <attribute name="orderunit" id="zpeyw"/>
+            <attribute name="unitcost" id="apan5"/>
+            <attribute name="tax1" id="kmdgb"/>
+            <attribute name="isdistributed" id="r8e8a"/>
+            <attribute name="wonum" id="aar7a"/>
+            <attribute name="assetnum" id="bywvz"/>
+            <attribute name="location" id="bqdxe"/>
+            <attribute name="storeloc" id="mnjv6"/>
+            <attribute name="gldebitacct" id="yr4kb"/>
           </schema>
         </maximo-datasource>
         <maximo-datasource id="workLogDs" selection-mode="none" order-by="createdate" relationship="worklog" object-structure="worklog" where="recordkey=&quot;{page.params.ponum}&quot; and class=&quot;PO&quot;" notify-when-parent-loads="true" cache-expiry-ms="1">
@@ -341,17 +337,17 @@
       </maximo-datasource>
       <dialogs id="poDetailsDialogList">
         <dialog id="longDescDialog" title="Long Description" passive="true" size="lg">
-          <rich-text-viewer content="{poDs.item.description_longdescription}" stripped="true" id="rd_4m"/>
+          <rich-text-viewer content="{poDS.item.description_longdescription}" stripped="true" id="rd_4m"/>
         </dialog>
         <dialog id="revDetailsDialog" title="Revision Comments" passive="true" size="lg">
-          <rich-text-viewer content="{poDs.item.revcomments_longdescription" stripped="true" id="nk48p"/>
+          <rich-text-viewer content="{poDS.item.revcomments_longdescription" stripped="true" id="nk48p"/>
         </dialog>
         <dialog id="saveDiscardWorkLogDetail" title="Save or discard changes?" sm-auto-height="true" size="sm" primary-action-text="Save" on-primary-action="saveWorkLogSaveDiscard" primary-kind="secondary" primary-button-disabled="{page.state.workLogData.sendDisable}" on-secondary-action="closeWorkLogSaveDiscard" secondary-action-text="Discard">
           <label wrap="true" label="To leave this page, you must first discard or save your changes." id="kx5n_"/>
         </dialog>
         <!-- sliding drawers -->
         <sliding-drawer id="workLogDrawer" validate="workLogValidate" align="start" header-text="Logs" content-padding="false">
-          <tabs selected="1" id="a3k29">
+          <tabs selected="0" id="a3k29">
             <tab label="Work Log" id="kg323">
               <chat-log messages="{page.state.workLogGroupData}" default-log-type="{page.state.initialDefaultLogType}" default-log-type-key="value" datasource="synonymdomainData" content-limit="{page.state.workLogDescLength}" log-type-attribute="{['value', 'description']}" on-click="saveWorkLog" loading="{page.state.chatLogLoading}" is-config-btn="true" watch-changes="watchChatLogChanges" id="workLog"/>
             </tab>
@@ -385,8 +381,8 @@
         <lookup id="logTypeLookupDetailsPage" show-search="false" lookup-heading="Select log type" show-count="false" datasource="workLogTypeDomain" on-item-click="setPODetailsLogType" border="true" lookup-attributes="{['value', 'description']}" height="400" width="60"/>
       </dialogs>
       <header-template hidden="{page.state.loading}" title-column-width="{app.state.screen.size === 'lg' ? 45 : 60}" id="poDetailsPageHeaderLoading">
-        <button slot="buttons" label="Approve" icon="carbon:checkmark" loading="{page.state.workloading || page.state.transactionProgress}" kind="secondary" on-click="approvePO" on-click-arg="{{'item': poDs.item, 'datasource': poDs.datasource}}" id="poDetailApproveBtn"/>
-        <button slot="buttons" label="Reject" icon="carbon:error" loading="{page.state.workloading || page.state.transactionProgress}" kind="secondary" on-click="rejectPO" on-click-arg="{{'item': poDs.item, 'datasource': poDs.datasource}}" id="poDetailRejectBtn"/>
+        <button slot="buttons" label="Approve" icon="carbon:checkmark" loading="{page.state.workloading || page.state.transactionProgress}" kind="secondary" on-click="approvePO" on-click-arg="{{'item': poDS.item, 'datasource': poDS.datasource}}" id="poDetailApproveBtn"/>
+        <button slot="buttons" label="Reject" icon="carbon:error" loading="{page.state.workloading || page.state.transactionProgress}" kind="secondary" on-click="rejectPO" on-click-arg="{{'item': poDS.item, 'datasource': poDS.datasource}}" id="poDetailRejectBtn"/>
       </header-template>
       <header-template hidden="{!page.state.loading}" id="poDetailsPageHeaderNotLoading">
         <button slot="buttons" loading="true" kind="ghost" id="q9gjd"/>
@@ -395,7 +391,7 @@
         <border-layout fill-parent="true" padding="true" id="q6vjj">
           <middle vertical-align="center" id="exp96">
             <box padding-start="{app.state.screen.size === 'lg' || app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '0' : '.5'}" padding-bottom="{app.state.screen.size === 'lg' || app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '-.5' : '1.5'}" padding-top="{app.state.screen.size === 'lg' || app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? '.5' : '1.5'}" id="wg26q">
-              <wrapped-text size="large" label="{poDs.item.description}" sub-label="{poDs.item.ponum}" truncation-type="end" id="nkra5"/>
+              <wrapped-text size="large" label="{poDS.item.description}" sub-label="{poDS.item.ponum}" truncation-type="end" id="nkra5"/>
             </box>
           </middle>
         </border-layout>
@@ -408,10 +404,10 @@
             </box>
           </top>
           <start id="z93_4">
-            <box padding="0" id="epze9" fill-parent-horizontal="true" border-bottom="{app.device.isMaximoMobile}" padding-start="1" padding-end="1" padding-bottom="1" padding-top="1" direction="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? 'column' : 'row' }">
+            <box padding="0" id="epze9" fill-parent-horizontal="true" border-bottom="{app.device.isMaximoMobile}" padding-start="1" padding-end="1" padding-bottom="1" padding-top="1" direction="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? 'column' : 'row' }" hidden="{!poDS.item.description_longdescription}">
               <label label="Long Description" padding="top" color="text-02" theme="14-regular" id="ygzpe"/>
-              <rich-text-viewer content="{poDs.item.description_longdescription}" padding-start="0.5" padding-end="0.5" content-limit="256" stripped="true" id="longDescViewer"/>
-              <button hidden="{!poDs.item.description_longdescription}" padding="false" icon="carbon:maximize" kind="secondary" dialog="longDescDialog" id="longDescBtn"/>
+              <rich-text-viewer content="{poDS.item.description_longdescription}" padding-start="0.5" padding-end="0.5" content-limit="256" stripped="true" id="longDescViewer"/>
+              <button hidden="{!poDS.item.description_longdescription}" padding="false" icon="carbon:maximize" kind="secondary" dialog="longDescDialog" id="longDescBtn"/>
             </box>
           </start>
           <middle id="zq9jk">
@@ -423,23 +419,21 @@
               </top>
               <middle id="kv6zm">
                 <box id="m285_">
-                  <field label="Work Order" value="{poLineDs.item.wonum}" id="e63bn"/>
-                  <field label="Asset" value="{poLineDs.item.assetnum}" id="nq26p"/>
-                  <field label="Requested By" value="{poLineDs.item.requestedby}" id="dxpx_"/>
+                  <field label="Work Order" value="{polineDS.item.wonum}" hidden="{!polineDS.item.wonum}" id="e63bn"/>
+                  <field label="Asset" value="{polineDS.item.assetnum}" hidden="{!polineDS.item.assetnum}" id="nq26p"/>
+                  <field label="Requested By" value="{polineDS.item.requestedby}" hidden="{!polineDS.item.requestedby}" id="dxpx_"/>
                 </box>
                 <box id="jpmgd">
-                  <field label="Location" value="{poLineDs.item.location}" id="g5nx8"/>
-                  <field label="Storeroom" value="{poLineDs.item.storeloc}" id="bnqwe"/>
-                  <field label="GL Debit Account" value="{poLineDs.item.gldebitacct}" id="epnxd"/>
+                  <field label="Location" value="{polineDS.item.location}" hidden="{!polineDS.item.location}" id="g5nx8"/>
+                  <field label="Storeroom" value="{polineDS.item.storeloc}" hidden="{!polineDS.item.storeloc}" id="bnqwe"/>
+                  <field label="GL Debit Account" value="{polineDS.item.gldebitacct}" hidden="{!polineDS.item.gldebitacct}" id="epnxd"/>
                 </box>
               </middle>
             </border-layout>
-          </middle>
-          <end id="bd97v">
             <box direction="column" id="poDetailsLineBox" background-color="field-01" fill-parent-horizontal="true">
               <border-layout padding="false" fill-parent="true" top-border="true" id="vrdym">
                 <middle id="rr7q5">
-                  <data-list datasource="poLineDs" width="100" show-search="false" show-count="true" selected-background-color="ui-01" background-color="field-01" on-item-click="showDetails" title="PO Lines" id="g2wnv">
+                  <data-list datasource="polineDS" width="100" show-search="false" show-count="true" selected-background-color="ui-01" background-color="field-01" on-item-click="showDetails" title="PO Lines" id="g2wnv">
                     <box slot="item" id="zx94v">
                       <field label="Line" value="{item.polinenum}" id="gvd_x"/>
                       <field label="Item" value="{item.itemnum}" id="wpz82"/>
@@ -449,17 +443,17 @@
                       <field label="Unit Cost" value="{item.unitcost}" id="jbr_2"/>
                       <field label="Line Cost" value="{item.linecost}" id="ngrzp"/>
                       <field label="Tax" value="{item.tax1}" id="q_2g_"/>
-                      <field label="Distributed?" value="isdistributed" id="m6d6p"/>
+                      <field label="Distributed?" value="{item.isdistributed}" id="m6d6p"/>
                     </box>
                   </data-list>
                 </middle>
               </border-layout>
             </box>
-          </end>
+          </middle>
           <bottom id="brdd8">
             <box fill-parent-horizontal="true" border-bottom="{app.device.isMaximoMobile}" padding-start="1" padding-end="1" padding-top="1" padding-bottom="1" direction="{app.state.screen.size === 'sm' || app.state.screen.size === 'md' ? 'column' : 'row'}" id="nk_5a">
               <button-group id="gq9yd">
-                <button id="workLogBtn" icon="carbon:document" on-click="openLogDrawer" on-click-arg="{{ 'item': poDs.item, 'drawer': 'workLogDrawer', 'datasource': workLogDs }}" kind="secondary" disabled="{page.state.loading}" hover-tooltip="Work Log"/>
+                <button id="workLogBtn" icon="carbon:document" on-click="openLogDrawer" on-click-arg="{{ 'item': poDS.item, 'drawer': 'workLogDrawer', 'datasource': workLogDs }}" kind="secondary" disabled="{page.state.loading}" hover-tooltip="Work Log"/>
               </button-group>
             </box>
           </bottom>
@@ -467,7 +461,7 @@
       </box>
       <box direction="column" id="poDetailsNavigatorBox">
         <navigator width="100%" theme="ui-05" mode="list" fade-background-color="false" id="nn8nd">
-          <navigator-tile tile-label="Attachments" pictogram="maximo:document--attachments" onclick-action="showAttachmentPage" onclick-action-arg="{{'item':poDs.item}}" badge-value="{app.state.doclinksCount}" badge-type="dark-gray" id="poDetailsAttachmentsTile"/>
+          <navigator-tile tile-label="Attachments" pictogram="maximo:document--attachments" onclick-action="showAttachmentPage" onclick-action-arg="{{'item':poDS.item}}" badge-value="{app.state.doclinksCount}" badge-type="dark-gray" id="poDetailsAttachmentsTile"/>
         </navigator>
       </box>
       <border-layout width="100%" padding="true" id="poDetailsPageFooter">
@@ -476,13 +470,13 @@
             <adaptive-column id="re29k">
               <box direction="column" id="xg45q">
                 <label label="Order Date" id="mzrxk"/>
-                <label label="{poDs.item.orderdate}" id="kby6p"/>
+                <label label="{poDS.item.orderdate}" id="kby6p"/>
               </box>
             </adaptive-column>
             <adaptive-column id="w73j8">
               <box direction="column" id="w97x4">
                 <label label="Requested By" id="k2y4d"/>
-                <label label="{poLineDs.item.requestedby}" id="bp4n8"/>
+                <label label="{polineDS.item.requestedby}" id="bp4n8"/>
               </box>
             </adaptive-column>
           </adaptive-row>
@@ -490,13 +484,13 @@
       </border-layout>
     </page>
     <page id="attachments" title="Attachments" padding="true" controller="SharedResources/AttachmentController">
-      <maximo-datasource id="purchaseOrderAttachmentResource" default="true" object-structure="mxapipo">
+      <maximo-datasource id="purchaseOrderAttachmentResource" default="true" object-structure="mxapipodoc">
         <schema id="qv7z_">
           <attribute name="ponum" id="a3v8e"/>
           <attribute name="description" id="kd2ka"/>
           <attribute name="poid" unique-id="true" id="d9xga"/>
         </schema>
-        <maximo-datasource id="attachmentListDS" attachment="true" page-size="250" relationship="doclinks" selection-mode="none">
+        <maximo-datasource id="attachmentListDS" attachment="true" page-size="250" relationship="doclinks" selection-mode="none" depends-on="purchaseOrderAttachmentResource">
           <schema id="rx7_8">
             <attribute name="*" unique-id="true" id="p235p"/>
           </schema>
@@ -531,8 +525,6 @@
     <message id="rejected_po" text="Purchase order {0} was rejected"/>
     <message id="rejected_po_failure" text="Purchase order {0} could not be rejected. Resync data and try again."/>
     <message id="completed_po" text="Purchase order {0} was completed."/>
-    <message id="reject_header" text="Reject Purchase order"/>
-    <message id="reject_subheader" text="Select the rejection code"/>
     <message id="record_not_available_device" text="Record not available in the device"/>
     <message id="messages_header_save_changes" text="Save or discard changes?"/>
     <message id="dialogcontroller_itemsChangedNotSaved" text="To leave this page, you must first discard or save your changes."/>

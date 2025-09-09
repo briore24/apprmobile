@@ -4,12 +4,26 @@
   <approvals-card-template id="approvalscardtemplate" chevron-kind="{index === 0 ? 'ghost' : 'primary'}" slot="item" show-chevron="true" on-chevron-click="showPODetail" on-chevron-click-arg="{ item }">
     <wrapped-text slot="slot1" size="large" max-length="100" label="{item.description}" sub-label="{item.ponum}" id="v9wqa"/>
     <tag-group slot="slot2" wrap="true" max-tag-width="{app.state.screen.size !== 'sm' &amp;&amp; app.state.screen.size !== 'md' ? 300 : 200}" align="end" tags="{item.computedPOStatusPriority}" id="a7ra6"/>
-    <field slot="slot4" label="Total Cost" value="{item.computedTotalCost}" hidden="{!item.computedTotalCost}" id="p64ag"/>
-    <field slot="slot5" label="Type" value="{item.potype}" hidden="{!item.potype}" id="gb245"/>
-    <field slot="slot7" label="Priority" value="{item.priority}" hidden="{!item.priority}" id="d3d6p"/>
+    <box slot="slot6" direction="column" fill-parent="true" id="y472r">
+      <field label="Type" value="{item.potype}" id="ppw4w"/>
+    </box>
+    <box slot="slot7" direction="column" fill-parent="true" children-sizes="50,50" id="bww_v">
+      <box direction="row" padding-top=".5" padding-bottom=".5" children-sizes="5,90" id="yr6yx">
+        <box fill-parent="true" padding="0" id="mryj6">
+          <icon icon="maximo:cost-total" id="yn2wd"/>
+        </box>
+        <box fill-parent="true" direction="column" id="e2w84">
+          <field value="{item.computedTotalCost}" empty-field-placeholder="0" label="{item.currencycode}" label-placement="top" id="rzegz"/>
+        </box>
+      </box>
+    </box>
+    <field slot="slot8" label="Vendor" value="{item.vendor}" hidden="{!item.vendor}" id="nwnry"/>
+    <field slot="slot9" label="Contact" value="{item.contact}" hidden="{!item.contact}" id="rkb5e"/>
+    <field slot="slot10" label="Priority" value="{item.priority}" id="k9k96"/>
+    <field slot="slot12" label="Revision" value="{item.revisionnum}" empty-field-placeholder="0" id="zv7qg"/>
     <button-group slot="slot13" padding="false" align="end" id="d2maj">
       <button label="Approve" icon="carbon:checkmark" kind="primary" on-click="approvePO" on-click-arg="{item}" id="jn7vz"/>
-      <button label="Reject" icon="carbon:close" kind="secondary" on-click="rejectPO" on-click-arg="{item}" id="v7zy3"/>
+      <button label="Reject" icon="carbon:close" kind="secondary" on-click="openRejectDialog" on-click-arg="{item}" id="v7zy3"/>
     </button-group>
   </approvals-card-template>
 </card-group>

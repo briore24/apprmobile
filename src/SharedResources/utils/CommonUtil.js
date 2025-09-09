@@ -61,8 +61,6 @@ const getOfflineStatusList = async (app, orgId, siteId) => {
       synonymDomainsDS.clearQBE();
     }
     return app.state.offlineStatusList;
-
-    
 }
 
 const getOfflineAllowedStatusList = async (app, event) => {
@@ -92,7 +90,7 @@ const getOfflineAllowedStatusList = async (app, event) => {
 const isAllowedStatus = (from, to) => {
     let transitionMatrix = {
       WAPPR: ['WAPPR','CAN','INPRG','CLOSE','APPR','HOLD','PNDREV','REVISE'],
-      APPR: ['WAPPR','CAN','INPRG','CLOSE',,'APPR','HOLD','PNDREV','REVISE'],
+      APPR: ['CAN','INPRG','CLOSE',,'APPR','HOLD','PNDREV','REVISE'],
       INPRG: ['WAPPR','INPRG','CLOSE','HOLD','PNDREV','REVISE'],
       HOLD: ['WAPPR','CAN','INPRG','CLOSE','HOLD','PNDREV','REVISE'],
       PNDREV: ['WAPPR','REVISE','CLOSE','HOLD','CAN','PNDREV'],

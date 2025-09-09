@@ -49,49 +49,49 @@ class PoPageController {
       ].items;
     }
     switch(drawer) {
-      case 'commLogDrawer':
-        this.page.state.commLogGroupData = groupData;
-        let subj = logDS.getSchemaInfo("subject");
-        if (subj) {
-          this.page.state.commLogDescLength = subj.maxLength;
-        }
-        break;
-      case 'workLogDrawer':
-        this.page.state.workLogGroupData = groupData;
-        let schemaLogType = logDS.getSchemaInfo("logtype");
-        let schemaDesc = logDS.getSchemaInfo("description");        
-        let orgID = this.app.client?.userInfo?.insertOrg;
-        let siteID = this.app.client?.userInfo?.insertSite;
-        let logType;
-        if (schemaLogType) {
-          logType = schemaLogType.default?.replace(/!/g, "");
-        }
-        let filteredLogTypeList;
-        synonymDs.setQBE("domainid", "=", "LOGTYPE");
-        synonymDs.setQBE("orgid", orgID);
-        synonymDs.setQBE("siteid", siteID);
-        filteredLogTypeList = await synonymDs.searchQBE();
-        if (filteredLogTypeList.length < 1) {
-          synonymDs.setQBE("siteid", "=", "null");
-          filteredLogTypeList = await synonymDs.searchQBE();
-        }
-        if (filteredLogTypeList.length < 1) {
-          synonymDs.setQBE("orgid", "=", "null");
-          filteredLogTypeList = await synonymDs.searchQBE();
-        }
-        this.page.state.defaultLogType = "!CLIENTNOTE!";
+	  case 'commLogDrawer':
+		this.page.state.commLogGroupData = groupData;
+		let subj = logDS.getSchemaInfo("subject");
+		if (subj) {
+		  this.page.state.commLogDescLength = subj.maxLength;
+		}
+		break;
+	  case 'workLogDrawer':
+		this.page.state.workLogGroupData = groupData;
+		let schemaLogType = logDS.getSchemaInfo("logtype");
+		let schemaDesc = logDS.getSchemaInfo("description");        
+		let orgID = this.app.client?.userInfo?.insertOrg;
+		let siteID = this.app.client?.userInfo?.insertSite;
+		let logType;
+		if (schemaLogType) {
+		  logType = schemaLogType.default?.replace(/!/g, "");
+		}
+		let filteredLogTypeList;
+		synonymDs.setQBE("domainid", "=", "LOGTYPE");
+		synonymDs.setQBE("orgid", orgID);
+		synonymDs.setQBE("siteid", siteID);
+		filteredLogTypeList = await synonymDs.searchQBE();
+		if (filteredLogTypeList.length < 1) {
+		  synonymDs.setQBE("siteid", "=", "null");
+		  filteredLogTypeList = await synonymDs.searchQBE();
+		}
+		if (filteredLogTypeList.length < 1) {
+		  synonymDs.setQBE("orgid", "=", "null");
+		  filteredLogTypeList = await synonymDs.searchQBE();
+		}
+		this.page.state.defaultLogType = "!CLIENTNOTE!";
 
-        const logItem = synonymDs.items.find((item) => {
-          return item.maxvalue === logType && item.defaults;
-        })
+		const logItem = synonymDs.items.find((item) => {
+		  return item.maxvalue === logType && item.defaults;
+		})
 
-        const logValue = logItem ? `!${logItem.value}!` : schemaLogType.default;
-        this.page.state.defaultLogType = this.page.state.initialDefaultLogType = logValue;
+		const logValue = logItem ? `!${logItem.value}!` : schemaLogType.default;
+		this.page.state.defaultLogType = this.page.state.initialDefaultLogType = logValue;
 
-        if (schemaDesc) {
-          this.page.state.workLogDescLength = schemaDesc.maxLength;
-        }
-        break;
+		if (schemaDesc) {
+		  this.page.state.workLogDescLength = schemaDesc.maxLength;
+		}
+		break;
     }
     this.page.state.chatLogLoading = false;
     this.page.showDialog(drawer);
@@ -242,7 +242,10 @@ class PoPageController {
     let longDesc = value.longDescription;
     let personID = this.app.client?.userInfo?.personid;
     let workLogDs = this.page.findDatasource("workLogDs");
-    let id = value.messages.currentItem.worklogid + 1;
+    let id = 0;
+	if (value.messages.currentItem.worklogid) {
+		id += value.messages.currentItem.worklogid + 1;
+	}
     let logType = value.logType?.value || this.page.state.defaultLogType || workLogDs.getSchemaInfo("logtype")?.default;
 
     let workLog = {
@@ -324,8 +327,6 @@ class PoPageController {
     }
   }
 
-  async openLineDetails() {}
-  
   async approvePO(event) {
 	  this.page.state.loading = true;
 	  let limits = await this.app.callController("getUserLimits");

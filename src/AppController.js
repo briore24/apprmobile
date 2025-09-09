@@ -12,6 +12,9 @@
 
 /* eslint-disable no-console */
 import {log, Device, AppSwitcher} from '@maximo/maximo-js-api';
+import StorageManager from '@maximo/map-component/build/ejs/framework/storage/StorageManager';
+import LocalStorageManager from '@maximo/map-component/build/ejs/framework/storage/LocalStorageManager';
+import FileSystemStorageManager from '@maximo/map-component/build/ejs/framework/storage/FileSystemStorageManager';
 import appResolver from './SharedResources/utils/AppResolver';
 import commonUtil from './SharedResources/utils/CommonUtil';
 
@@ -21,6 +24,12 @@ class AppController {
   applicationInitialized(app) {
     this.app = app;
 	this.orgid = app.client?.userInfo?.defaultOrg;
+	
+	if (Device.get().isMaximoMobile) {
+		StorageManager.setImplementation(FileSystemStorageManager);
+	} else {
+		StorageManager.setImplementation(LocalStorageManager);
+	}
        
     this.setupIncomingContext();    
     // Going back to list page from detail page
