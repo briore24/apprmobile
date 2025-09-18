@@ -30,15 +30,14 @@ class PoPageController {
 	this.app.state.chatLogLoading = true;
 	this.page.state.item = event.item;
 	let groupData;
+	let device = Device.get();
 	let logDS = this.page.findDatasource('workLogDs');
 	
 	logDS.clearState();
 	logDS.resetState();
-	
-	const synonymDS = this.app.findDatasource("synonymdomainData");
 	await logDS.load().then((response) => { groupData = response; });
 	
-	if (this.device.isMaximoMobile && logDS.options.query.relationship) {
+	if (device.isMaximoMobile && logDS.options.query.relationship) {
 		logDS.schema = logDS.dependsOn.schema.properties[
 			Object.entries(logDS.dependsOn.schema.properties).filter(
 			(item) =>
@@ -50,6 +49,7 @@ class PoPageController {
 	let schemaDesc = logDS.getSchemaInfo("description");        
 	let orgID = this.app.client?.userInfo?.insertOrg;
 	let siteID = this.app.client?.userInfo?.insertSite;
+	let synonymDS = this.app.findDatasource("synonymdomainData");
 	let logType;
 	if (schemaLogType) {
 	  logType = schemaLogType.default?.replace(/!/g, "");

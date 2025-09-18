@@ -1,38 +1,36 @@
-import { log, Device } from '@maximo/maximo-js-api';
-import CommonUtil from './SharedResources/utils/CommonUtil';
+import { Device, log } from '@maximo/maximo-js-api';
 
 class DataController {
 	onDatasourceInitialized(ds, owner, app) {
 		this.datasource = ds;
 		this.owner = owner;
 		this.app = app;
-		this.page = this.app.currentPage;
 	}
 	
 	computedTotalCost(item) {
-		let totalcost = 0;
+		let totalCost = 0;
 		let lines = item.poline;
-		
-		if (lines.length > 0) {
+		if (lines !== 'undefined') {
 			lines.forEach((line) => {
-				totalcost += line.loadedcost;
-			})
+				totalCost += line.loadedcost;
+			});
 		}
-		return totalcost;
+		return totalCost;
 	}
 	
 	async onAfterLoadData(ds, items) {
-		if (ds.name === this.page.state.selectedDS) {
+		if (ds.name === this.app.state.selectedDS) {
+			this.app.state.dsInitCount += 1;
+			if (this.app.state.dsInitCount > 1) {
+				let page = this.app.findPage("approvals");
+				page.state.checkForUpdateButton = true;
+			}
+			
 			if (items.length > 0) {
 				this.app.state.firstPO = items[0].ponum;
 			}
-			this.page.state.dsInitCount += 1;
-			if (this.page.state.dsInitCount > 1) {
-				this.page.state.checkForUpdateButton = true;
-			}
 		}
 	}
-	
 }
 
 export default DataController;

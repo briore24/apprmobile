@@ -1,12 +1,12 @@
-<card-group datasource="{page.state.selectedDS}" can-sort="true" show-refresh="true" disconnected="{!app.state.networkConnected}" refresh-disconnected-message="This feature is not available while offline" enable-barcode-scanner="true" readers="{[`ean_reader`]}" timeout="{45}" hide-count-search="{(page.state.selectedSwitch===1)}" id="poCardGroup">
-  <filter-button slot="actions" kind="ghost" datasource="{page.state.selectedDS}" id="djzbd"/>
-  <multi-sort-button slot="actions" kind="ghost" datasource="{page.state.selectedDS}" icon="Carbon:caret--sort" id="m2bpv"/>
+<card-group datasource="{app.state.selectedDS}" can-sort="true" show-refresh="true" disconnected="{!app.state.networkConnected}" refresh-disconnected-message="This feature is not available while offline" enable-barcode-scanner="true" readers="{[`ean_reader`]}" timeout="{45}" hide-count-search="{(page.state.selectedSwitch===1)}" id="poCardGroup">
+  <filter-button slot="actions" kind="ghost" datasource="{app.state.selectedDS}" id="djzbd"/>
+  <multi-sort-button slot="actions" kind="ghost" datasource="{app.state.selectedDS}" icon="Carbon:caret--sort" id="m2bpv"/>
   <approvals-card-template id="approvalscardtemplate" chevron-kind="{index === 0 ? 'ghost' : 'primary'}" slot="item" show-chevron="true" on-chevron-click="showPODetail" on-chevron-click-arg="{ item }">
     <wrapped-text slot="slot1" size="large" max-length="100" label="{item.description}" sub-label="{item.ponum}" id="v9wqa"/>
     <tag-group slot="slot2" wrap="true" max-tag-width="{app.state.screen.size !== 'sm' &amp;&amp; app.state.screen.size !== 'md' ? 300 : 200}" align="end" tags="{item.computedPOStatusPriority}" id="a7ra6"/>
-    <box slot="slot6" direction="column" fill-parent="true" id="y472r">
-      <field label="Type" value="{item.potype}" id="ppw4w"/>
-    </box>
+
+    <field slot="slot4" label="Type" value="{item.potype}" id="ppw4w"/>
+
     <box slot="slot7" direction="column" fill-parent="true" children-sizes="50,50" id="bww_v">
       <box direction="row" padding-top=".5" padding-bottom=".5" children-sizes="5,90" id="yr6yx">
         <box fill-parent="true" padding="0" id="mryj6">
@@ -17,8 +17,8 @@
         </box>
       </box>
     </box>
-    <field slot="slot8" label="Vendor" value="{item.vendor}" hidden="{!item.vendor}" id="nwnry"/>
-    <field slot="slot9" label="Contact" value="{item.contact}" hidden="{!item.contact}" id="rkb5e"/>
+    <field slot="slot8" label="Vendor" value="{item.vendor}" id="nwnry"/>
+    <field slot="slot9" label="Contact" value="{item.contact}" id="rkb5e"/>
     <field slot="slot10" label="Priority" value="{item.priority}" id="k9k96"/>
     <field slot="slot12" label="Revision" value="{item.revisionnum}" empty-field-placeholder="0" id="zv7qg"/>
     <button-group slot="slot13" padding="false" align="end" id="d2maj">
